@@ -1,0 +1,16 @@
+{
+  "name": "monitor",
+  "version": "1.0.0",
+  "description": "Webserver zum anzeigen von Slides auf einem Monitor",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jonathan Kaufmann <jonathan.vitadrogerie@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "ini": "^4.1.1",
+    "path": "^0.12.7"
+  }
+}
