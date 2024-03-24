@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Ruderclub Baden - Monitor Clubraum</title>
+        <meta name="description" id="description" content="Seite zum Anzeigen von Fotoalben">
+        <meta name="autor" id="autor" content="Jonathan Kaufmann">
+        <link rel="icon" type="image" id="favicon" href="">
+        <link rel="stylesheet" href="style.css">
+        <script src="index.js"></script>
+    </head>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Seitenmetadaten anpassen
+            document.title = sitetitle;
+            document.getElementById('autor').setAttribute('content', siteauthor);
+            document.getElementById('favicon').setAttribute('href', favicon);
+
+            document.getElementById('sitetitle').innerHTML = sitetitle;
+            document.getElementById('copyright').innerHTML = 'Copyright '+new Date().getFullYear()+' by '+siteauthor;
+
+            // Funktion zum laden der Seite und Alben aufrufen
+            initSite();
+        });
+    </script>
+
+<body>
+
+<div id="slideshow-container"></div>
+
+<footer>
+    <div class="footer-left">
+        <h2>Willkommen im Ruderclub Baden</h2>
+    </div>
+    <div class="footer-right" style="text-align: right;">
+        <p id="current-date"></p>
+        <p id="current-time"></p>
+    </div>
+</footer>
+
+<script>
+    var slideIndex = 0;
+    var slideshowContainer = document.getElementById('slideshow-container');
+    var slideDuration = parseInt('{{slideDuration}}') || 3000;
+
+    // Lade Bilder dynamisch
+    function loadImages() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/images', true);
+
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+                var images = xhr.responseText.split('\n');
+                for (var i = 0; i < images.length; i++) {
+                    if (images[i]) {
+                        var slide = document.createElement('div');
+                        slide.className = 'mySlides';
+                        var image = document.createElement('img');
+                        image.src = 'images/' + images[i];
+                        image.alt = 'Slide ' + (i + 1);
+                        slide.appendChild(image);
+                        slideshowContainer.appendChild(slide);
+                    }
+                }
+                showSlides();
+            }
+        };
+
+        xhr.send();
+    }
+
+    loadImages();
+
+    function showSlides() {
+        var slides = document.getElementsByClassName("mySlides");
+        for (var i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        slideIndex++;
+        if (slideIndex > slides.length) {
+            slideIndex = 1;
+        }
+        slides[slideIndex - 1].style.display = "block";
+        setTimeout(showSlides, slideDuration);
+    }
+
+    function updateClock() {
+        var currentTime = new Date();
+        var year = currentTime.getFullYear();
+        var month = currentTime.getMonth() + 1; // Monate beginnen mit 0 (Januar)
+        var day = currentTime.getDate();
+        var hours = currentTime.getHours();
+        var minutes = currentTime.getMinutes();
+        var seconds = currentTime.getSeconds();
+
+        // Füge führende Nullen hinzu, wenn nötig
+        minutes = (minutes < 10 ? "0" : "") + minutes;
+        seconds = (seconds < 10 ? "0" : "") + seconds;
+
+        // Setze Zeit bei current-time bzw. current-time-clean
+        document.getElementById("current-time").innerHTML = "Aktuelle Zeit: " + hours + ":" + minutes;
+        document.getElementById("current-time").innerHTML = hours + ":" + minutes;
+
+        // Setze Zeit bei current-date bzw. current-date-clean
+        document.getElementById("current-date").innerHTML = "Aktuelles Datum: " + day + "." + month + "." + year;
+        document.getElementById("current-date").innerHTML = day + "." + month + "." + year;
+
+        setTimeout(updateClock, 1000);
+    }
+
+    updateClock();
+</script>
+
+</body>
+</html>
