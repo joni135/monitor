@@ -93,7 +93,10 @@ app.get('/', (req, res) => {
     if (monitorparams.weatherdata.weather) {
         try {
             weatherdatafile = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorparams.weatherdata.weather);
-            weatherScript = `<script type="text/javascript">const weatherdata = ${weatherdatafile}</script>`;
+            weatherScript = `
+                <script type="text/javascript">
+                    const weatherdata = ${weatherdatafile};
+                </script>`;
             app.use(express.static(path.join(__dirname, config.maininfos.weathercalculator.symbolpath)));
         } catch(err) {
             Errors.push ({

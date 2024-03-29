@@ -18,100 +18,42 @@
             document.getElementById('autor').setAttribute('content', siteauthor);
             document.getElementById('favicon').setAttribute('href', favicon);
 
-            document.getElementById('sitetitle').innerHTML = sitetitle;
-            document.getElementById('copyright').innerHTML = 'Copyright '+new Date().getFullYear()+' by '+siteauthor;
-
             // Funktion zum laden der Seite und Alben aufrufen
             initSite();
+
+            updateClock();
+            displayWeather();
+            displayHydro();
+
+            checkRuderverbot();
+
+            loadImages();
         });
     </script>
-
-<body>
-
-<div id="slideshow-container"></div>
-
-<footer>
-    <div class="footer-left">
-        <h2>Willkommen im Ruderclub Baden</h2>
-    </div>
-    <div class="footer-right" style="text-align: right;">
-        <p id="current-date"></p>
-        <p id="current-time"></p>
-    </div>
-</footer>
-
-<script>
-    var slideIndex = 0;
-    var slideshowContainer = document.getElementById('slideshow-container');
-    var slideDuration = parseInt('{{slideDuration}}') || 3000;
-
-    // Lade Bilder dynamisch
-    function loadImages() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', '/images', true);
-
-        xhr.onload = function () {
-            if (xhr.status == 200) {
-                var images = xhr.responseText.split('\n');
-                for (var i = 0; i < images.length; i++) {
-                    if (images[i]) {
-                        var slide = document.createElement('div');
-                        slide.className = 'mySlides';
-                        var image = document.createElement('img');
-                        image.src = 'images/' + images[i];
-                        image.alt = 'Slide ' + (i + 1);
-                        slide.appendChild(image);
-                        slideshowContainer.appendChild(slide);
-                    }
-                }
-                showSlides();
-            }
-        };
-
-        xhr.send();
-    }
-
-    loadImages();
-
-    function showSlides() {
-        var slides = document.getElementsByClassName("mySlides");
-        for (var i = 0; i < slides.length; i++) {
-            slides[i].style.display = "none";
-        }
-        slideIndex++;
-        if (slideIndex > slides.length) {
-            slideIndex = 1;
-        }
-        slides[slideIndex - 1].style.display = "block";
-        setTimeout(showSlides, slideDuration);
-    }
-
-    function updateClock() {
-        var currentTime = new Date();
-        var year = currentTime.getFullYear();
-        var month = currentTime.getMonth() + 1; // Monate beginnen mit 0 (Januar)
-        var day = currentTime.getDate();
-        var hours = currentTime.getHours();
-        var minutes = currentTime.getMinutes();
-        var seconds = currentTime.getSeconds();
-
-        // Füge führende Nullen hinzu, wenn nötig
-        minutes = (minutes < 10 ? "0" : "") + minutes;
-        seconds = (seconds < 10 ? "0" : "") + seconds;
-
-        // Setze Zeit bei current-time bzw. current-time-clean
-        document.getElementById("current-time").innerHTML = "Aktuelle Zeit: " + hours + ":" + minutes;
-        document.getElementById("current-time").innerHTML = hours + ":" + minutes;
-
-        // Setze Zeit bei current-date bzw. current-date-clean
-        document.getElementById("current-date").innerHTML = "Aktuelles Datum: " + day + "." + month + "." + year;
-        document.getElementById("current-date").innerHTML = day + "." + month + "." + year;
-
-        setTimeout(updateClock, 1000);
-    }
-
-    updateClock();
-</script>
-
-</body>
+    <body>
+        <main id="slideshow-container"></main>
+        <footer>
+            <table>
+                <tr>
+                    <td id="currwther_text" class="currentweather row-1 col-1">jetzt:</td>
+                    <td id="currwther_symbol" class="currentweather row-1 col-2 weathersymbol">symbol_code</td>
+                    <td id="currwther_temperatur" class="currentweather row-1 col-3">TTT_C</td>
+                    <td id="currwther_rain" class="currentweather row-1 col-4">PROBPCP_PERCENT</td>
+                    <td id="currwther_wind" class="currentweather row-1 col-5 windarrow">FF_KMH DD_DEG</td>
+                    <td id="hydro_discharge" class="hydrodata row-1 col-7">discharge</td>
+                    <td id="hydro_watertemp" class="hydrodata row-1 col-8">waterTemperature</td>
+                    <td id="welcometext" class="row-1 col-9">Willkommen im<br><span class="text2x">Ruderclub Baden</span></td>
+                </tr>
+                <tr>
+                    <td id="aftnxtwther_text" class="afternextweather row-2 col-1">in 2h:</td>
+                    <td id="aftnxtwther_symbol" class="afternextweather row-2 col-2 weathersymbol">symbol_code</td>
+                    <td id="aftnxtwther_temperatur" class="afternextweather row-2 col-3">TTT_C</td>
+                    <td id="aftnxtwther_rain" class="afternextweather row-2 col-4">PROBPCP_PERCENT</td>
+                    <td id="aftnxtwther_wind" class="afternextweather row-2 col-5 windarrow">FF_KMH DD_DEG</td>
+                    <td id="statusRuderverbot" class="row-2 col-7 col-8 text2x" colspan="2"></td>
+                    <td id="current-date-time" class="row-2 col-9">date time</td>
+                </tr>
+            </table>
+        </footer>
+    </body>
 </html>

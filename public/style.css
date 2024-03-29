@@ -1,0 +1,83 @@
+html {
+    --maincolor: #ff0000;
+    --color-dark: black;
+    --color-bright: white;
+    --textsize: 20px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh; /* 100% der Bildschirmhöhe */
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+}
+
+
+/* ALLGEMEINE STYLEDEFINITIONEN */
+.text2x {
+    font-size: calc(var(--textsize) * 2);
+}
+
+
+/* BILDERSHOWDARSTELLUNG*/
+main {
+    flex: 1;
+    max-height: 100vh;
+    overflow: hidden;
+    position: relative;
+    margin: auto;
+}
+
+.mySlides {
+    display: none;
+    transition: opacity 5s;
+}
+
+main img {
+    background-color: white;
+    background-repeat: no-repeat;
+    background-position: center top;
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+}
+
+
+/* FUSSZEILE */
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 20vh;
+    background-color: #ff0000;
+    color: white;
+}
+
+table {
+    width: 100%;
+    padding: 10px;
+    bottom: 0;
+}
+
+td {
+    vertical-align: top;
+    line-height: 150%;
+    font-size: var(--textsize);
+    min-width: 60px;
+}
+
+.col-9 {
+    right: 0;
+    text-align: right;
+    max-width: 20vw;
+}
+
+.weathersymbol img {
+    height: calc(var(--textsize) * 3);
+}
+
+.windarrow img {
+    height: calc(var(--textsize) * 1.5);
+}
