@@ -36,8 +36,7 @@ main img {
     min-height: 100vh;
     max-width: 100vw;
     max-height: 120vh;
-    /* object-fit: cover; */
-    object-fit: fill;
+    object-fit: cover;
 }
 
 .fade {
