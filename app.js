@@ -77,56 +77,51 @@ app.get('/', (req, res) => {
     };
 
 
-    // Erstelle Abfragenspezifisches Skript, dass dem Client im HTML gesendet wird
-    customScript = `
-        <script type="text/javascript">
-            const reqparam = ${JSON.stringify(reqparam)};
-            const errors = ${JSON.stringify(Errors)};
-            const sitetitle = "${config.maininfos.sitetitleprefix+monitorparams.name}";
-            const siteauthor = "${config.maininfos.siteauthor}";
-            const favicon = "${monitorparams.favicon}";
-            const imagespath = "${monitorparams.images}";
-            const slideduration = "${monitorparams.slideduration}";
-        </script>`;
-
-
     // Ergänze Wetterdaten wenn benötigt
-    if (monitorparams.weatherdata.weather) {
-        try {
-            weatherdatafile = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorparams.weatherdata.weather);
-            weatherScript = `
-                <script type="text/javascript">
-                    const weatherdata = ${weatherdatafile};
-                </script>`;
+    try {
+        if (monitorparams.weatherdata.weather) {
+            weatherdata = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorparams.weatherdata.weather);
             app.use(express.static(path.join(__dirname, config.maininfos.weathercalculator.symbolpath)));
-        } catch(err) {
-            Errors.push ({
-                'title': `Wetterdaten konnte nicht gelesen werden`,
-                'content': `Die Dateien für die Wetterdaten konnten nicht gelesen werden!\n${err.message}`,
-                'fatal': true
-            });
-            weatherScript = ''
+        } else {
+            weatherdata = JSON.stringify({})
         };
-    } else {
-        weatherScript = ''
+    } catch(err) {
+        Errors.push ({
+            'title': `Wetterdaten konnte nicht gelesen werden`,
+            'content': `Die Dateien für die Wetterdaten konnten nicht gelesen werden!\n${err.message}`,
+            'fatal': false
+        });
+        weatherdata = JSON.stringify({})
     };
 
 
     // Ergänze Hydrodaten wenn benötigt
-    if (monitorparams.weatherdata.hydro) {
-        try {
-            hydrodatafile = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorparams.weatherdata.hydro);
-            hydroScript = `<script type="text/javascript">const hydrodata = ${hydrodatafile}</script>`;
-        } catch(err) {
-            Errors.push ({
-                'title': `Hydrodaten konnte nicht gelesen werden`,
-                'content': `Die Dateien für die Hydrodaten konnten nicht gelesen werden!\n${err.message}`,
-                'fatal': true
-            });
-            hydroScript = ''
+    try {
+        if (monitorparams.weatherdata.hydro) {
+            hydrodata = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorparams.weatherdata.hydro);
+        } else {
+            hydrodata = JSON.stringify({})
         };
-    } else {
-        hydroScript = ''
+    } catch(err) {
+        Errors.push ({
+            'title': `Hydrodaten konnte nicht gelesen werden`,
+            'content': `Die Dateien für die Hydrodaten konnten nicht gelesen werden!\n${err.message}`,
+            'fatal': false
+        });
+        hydrodata = JSON.stringify({})
+    };
+
+
+    // Ergänze Titel der Slides wenn vorhanden
+    try {
+        slidetitles = fs.readFileSync(config.maininfos.system.publicfolder+monitorparams.images+config.maininfos.slideshow.slidetitlefile);
+    } catch(err) {
+        Errors.push ({
+            'title': `Slidetitel konnten nicht gelesen werden`,
+            'content': `Die Datei, die Informationen zu den Slides beinhaltet, konnten nicht gelesen werden!\n${err.message}`,
+            'fatal': false
+        });
+        slidetitles = JSON.stringify({})
     };
 
 
@@ -138,14 +133,27 @@ app.get('/', (req, res) => {
         };
     };
 
+    // Erstelle Abfragenspezifisches Skript, dass dem Client im HTML gesendet wird
+    customScript = `
+        <script type="text/javascript">
+            const reqparam = ${JSON.stringify(reqparam)};
+            const errors = ${JSON.stringify(Errors)};
+            const sitetitle = "${config.maininfos.sitetitleprefix+monitorparams.name}";
+            const siteauthor = "${config.maininfos.siteauthor}";
+            const favicon = "${monitorparams.favicon}";
+            const imagespath = "${monitorparams.images}";
+            const slideduration = "${monitorparams.slideduration}";
+            const slidetitles = ${slidetitles};
+            const weatherdata = ${weatherdata};
+            const hydrodata = ${hydrodata};
+        </script>`;
+
 
     // Generiere Pfad des zu sendenden HTML-Files, abhängig von Fehlern und Konfiguration
     if (fatalErrorCount == 0) {
         htmlFilePath = path.join(__dirname, config.maininfos.system.publicfolder, `${monitorparams.file}`);
     } else {
         htmlFilePath = path.join(__dirname, config.maininfos.system.publicfolder, `error.html`);
-        weatherScript = ''
-        hydroScript = ''
     };
 
 
@@ -153,17 +161,16 @@ app.get('/', (req, res) => {
     fs.readFile(htmlFilePath, 'utf8', (err, data) => {
         if (err) {
             // Fehler beim Lesen der Datei
-            res.writeHead(500, {'Content-Type': 'text/plain'});
-            res.end('Undefined Internal Server Error');
+            res.status(500).send({
+                'title': `HTML konnte nicht geladen werden`,
+                'content': err,
+                'fatal': true
+            });
             return;
         }
 
         // Gelesenem HTML Skript mit Parameter hinzufügen
         data = data.replace('</head>', `${customScript}</head>`);
-
-        // Ergänze Wetterdaten
-        data = data.replace('</head>', `${weatherScript}</head>`);
-        data = data.replace('</head>', `${hydroScript}</head>`);
 
         // Sende die HTML-Datei als Antwort
         res.writeHead(200, {'Content-Type': 'text/html'});
@@ -173,31 +180,37 @@ app.get('/', (req, res) => {
 });
 
 
+// Liste alle Bilder aus Ordner aus (wird von App intern verwendet)
+app.get('/listimages', (req, res) => {
+    const parsedUrl = url.parse(req.url, true);
+    const queryParameters = parsedUrl.query;
+    var imagesPath = ''
 
+    if (queryParameters.specificfolder) {
+        imagesPath = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.specificfolder);
+    } else {
+        res.status(500).send({
+            'title': `Bilder konnten nicht gelistet werden`,
+            'content': `Der URL-Parameter SPECIFICFOLDER ist nicht angegeben! Dieser ist pflicht...`,
+            'fatal': true
+        });
+        return;
+    };
 
-
-
-// old version
-app.get('/images', (req, res) => {
-    const imagesPath = path.join(__dirname, 'public', 'images');
     fs.readdir(imagesPath, (err, files) => {
         if (err) {
-            console.error(err);
-            res.status(500).send('Internal Server Error');
+            res.status(500).send({
+                'title': `Bilder konnten nicht gelistet werden`,
+                'content': err,
+                'fatal': true
+            });
+            return;
         } else {
             const images = files.filter(file => file.endsWith('.jpg') || file.endsWith('.jpeg') || file.endsWith('.png') || file.endsWith('.JPG'));
             res.send(images.join('\n'));
-        }
+        };
     });
 });
-
-app.get('/rcb-clubraum', (req, res) => {
-    res.sendFile(path.join(__dirname, 'rcb-clubraum.html'));
-});
-
-
-
-
 
 
 // debug listen port
