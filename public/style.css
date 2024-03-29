@@ -1,7 +1,7 @@
 html {
     --maincolor: #ff0000;
     --color-dark: black;
-    --color-bright: white;
+    --color-light: white;
     --textsize: 20px;
 }
 
@@ -30,19 +30,25 @@ main {
     margin: auto;
 }
 
-.mySlides {
-    display: none;
-    transition: opacity 5s;
+main img {
+    background-color: var(--color-light);
+    min-width: 100%;
+    min-height: 100vh;
+    max-width: 100vw;
+    max-height: 120vh;
+    /* object-fit: cover; */
+    object-fit: fill;
 }
 
-main img {
-    background-color: white;
-    background-repeat: no-repeat;
-    background-position: center top;
-    width: 100%;
-    height: 100vh;
-    object-fit: cover;
-}
+.fade {
+    animation-name: fade;
+    animation-duration: 1.5s;
+  }
+
+@keyframes fade {
+    from {opacity: 0} 
+    to {opacity: 1}
+  }
 
 
 /* FUSSZEILE */

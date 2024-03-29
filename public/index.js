@@ -20,6 +20,7 @@ function initSite() {
         console.log('Seitentitel:', sitetitle)
         console.log('Seitenautor:', siteauthor)
         console.log('Favicon-Pfad:', favicon);
+        console.log('Bilder-Pfad:', imagespath);
         if (weatherdata) {
           console.log('Wetterdaten:', weatherdata);
         };
@@ -88,46 +89,51 @@ function updateClock() {
 
 
 // Lade Bilder dynamisch
-var slideIndex = 0;
-var slideshowContainer = document.getElementById('slideshow-container');
-var slideDuration = parseInt('{{slideDuration}}') || 3000;
+var slideshowContainer = document.getElementById('slideshow');
 
 function loadImages() {
+  var slideshowContainer = document.getElementById('slideshow');
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/images', true);
+    xhr.open('GET', imagespath, true);
 
     xhr.onload = function () {
-        if (xhr.status == 200) {
-            var images = xhr.responseText.split('\n');
-            for (var i = 0; i < images.length; i++) {
-                if (images[i]) {
-                    var slide = document.createElement('div');
-                    slide.className = 'mySlides';
-                    var image = document.createElement('img');
-                    image.src = 'images/' + images[i];
-                    image.alt = 'Slide ' + (i + 1);
-                    slide.appendChild(image);
-                    slideshowContainer.appendChild(slide);
-                }
-            }
-            showSlides();
-        }
+      if (xhr.status == 200) {
+        var images = xhr.responseText.split('\n');
+        for (var i = 0; i < images.length; i++) {
+          if (images[i]) {
+            var slide = document.createElement('div');
+            slide.id = 'slide-' + (i + 1);
+            slide.className = 'slideElement fade';
+            var image = document.createElement('img');
+            image.src = imagespath + images[i];
+            image.alt = 'Slide ' + (i + 1);
+            slide.appendChild(image);
+            slideshowContainer.appendChild(slide);
+          
+          };
+        };
+        showSlides();
+      }
     };
 
     xhr.send();
   };
 
+var slideIndex = 0;
+
 function showSlides() {
-    var slides = document.getElementsByClassName("mySlides");
+    var slides = document.getElementsByClassName("slideElement");
     for (var i = 0; i < slides.length; i++) {
-        slides[i].style.display = "none";
-    }
+        slides[i].classList.remove('active');
+        slides[i].style.display = "none";  
+    };
     slideIndex++;
     if (slideIndex > slides.length) {
         slideIndex = 1;
-    }
-    slides[slideIndex - 1].style.display = "block";
-    setTimeout(showSlides, slideDuration);
+    };
+    slides[slideIndex - 1].classList.add('active');
+    slides[slideIndex-1].style.display = "block"; 
+    setTimeout(showSlides, slideduration);
   };
 
 

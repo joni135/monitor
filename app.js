@@ -86,6 +86,7 @@ app.get('/', (req, res) => {
             const siteauthor = "${config.maininfos.siteauthor}";
             const favicon = "${monitorparams.favicon}";
             const imagespath = "${monitorparams.images}";
+            const slideduration = "${monitorparams.slideduration}";
         </script>`;
 
 
