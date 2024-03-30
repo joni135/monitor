@@ -1,6 +1,12 @@
 // Setze Wetterdaten in HTML ein
 function displayWeather() {
     
+    if (document.getElementById("currwther_text") && reqparam.debug == 'true') {
+      const currwther_datetime = new Date(weatherdata.current.date_time);
+      const currwther_hours = currwther_datetime.getHours();
+      const currwther_minutes = currwther_datetime.getMinutes();
+      document.getElementById("currwther_text").innerHTML += `<br><span class="textsizehalf">(${currwther_hours.toString().padStart(2, '0')}:${currwther_minutes.toString().padStart(2, '0')})</span>`;
+    };
     if (document.getElementById("currwther_symbol")) {
       document.getElementById("currwther_symbol").innerHTML = `<img src="${weatherdata.current.symbol_code}.svg">`;
     };
@@ -14,6 +20,12 @@ function displayWeather() {
       document.getElementById("currwther_wind").innerHTML = `${Math.round(weatherdata.current.FF_KMH)}km/h<br><img style="transform-origin: 50% 50%; transform: rotate(${weatherdata.current.DD_DEG}deg);" src="winddir.svg">`;
     };
     
+    if (document.getElementById("aftnxtwther_text") && reqparam.debug == 'true') {
+      const aftnxtwther_datetime = new Date(weatherdata.afternext.date_time);
+      const aftnxtwther_hours = aftnxtwther_datetime.getHours();
+      const aftnxtwther_minutes = aftnxtwther_datetime.getMinutes();
+      document.getElementById("aftnxtwther_text").innerHTML += `<br><span class="textsizehalf">(${aftnxtwther_hours.toString().padStart(2, '0')}:${aftnxtwther_minutes.toString().padStart(2, '0')})</span>`;
+    };
     if (document.getElementById("aftnxtwther_symbol")) {
       document.getElementById("aftnxtwther_symbol").innerHTML = `<img src="${weatherdata.afternext.symbol_code}.svg">`;
     };
@@ -56,7 +68,7 @@ function checkRuderverbot() {
       statustext = "Starke Strömung, nur bis 6er!";
     };
     if (weatherdata.afternext.symbol_code < 0) { // in 2h Dunkel
-      statustext = "Es wird Dunkel, Licht mitnehmen!";
+      statustext = "Es wird Dunkel...";
     };
     if (weatherdata.current.symbol_code < 0 && weatherdata.afternext.symbol_code < 0) { // komplett Dunkel
       statustext = "RUDERVERBOT! (Dunkelheit)";
@@ -78,7 +90,7 @@ function checkRuderverbot() {
     };
   
     if (statustext != "") {
-      console.warn(statustext);
+      // console.warn(statustext);
       document.getElementById("welcometext").innerHTML = "";
       document.getElementById("statusRuderverbot").innerHTML = statustext; //`<b>${statustext}</b>`;
     };

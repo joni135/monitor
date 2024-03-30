@@ -2,6 +2,7 @@ html {
     --maincolor: #ff0000;
     --color-dark: black;
     --color-light: white;
+    --titlesize: 40px;
     --textsize: 20px;
 }
 
@@ -16,7 +17,10 @@ body {
 
 
 /* ALLGEMEINE STYLEDEFINITIONEN */
-.text2x {
+.textsizehalf {
+  font-size: calc(var(--textsize) / 2);
+}
+.textsizedouble {
     font-size: calc(var(--textsize) * 2);
 }
 
@@ -30,6 +34,16 @@ main {
     margin: auto;
 }
 
+.fade {
+    animation-name: fade;
+    animation-duration: 0.5s;
+  }
+
+@keyframes fade {
+    from {opacity: 0.5} 
+    to {opacity: 1}
+  }
+
 main img {
     background-color: var(--color-light);
     min-width: 100%;
@@ -37,16 +51,27 @@ main img {
     max-width: 100vw;
     max-height: 120vh;
     object-fit: cover;
-}
-
-.fade {
-    animation-name: fade;
-    animation-duration: 1.5s;
   }
 
-@keyframes fade {
-    from {opacity: 0} 
-    to {opacity: 1}
+.slideTitle {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    z-index: 2;
+    margin: 0;
+    font-size: var(--titlesize);
+    color: var(--color-dark);
+  }
+.slideTitle::after {
+    content: "";
+    position: absolute;
+    top: -5300px;
+    z-index: -1;
+    width: 5000px;
+    height: 5000px;
+    background-color: var(--color-light);
+    opacity: 0.8;
+    transform: rotate(-8deg) translateX(-3000px);
   }
 
 
@@ -55,34 +80,34 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 20vh;
+    padding-top: 10px;
     background-color: #ff0000;
     color: white;
-}
+  }
 
 table {
     width: 100%;
     padding: 10px;
     bottom: 0;
-}
+  }
 
 td {
     vertical-align: top;
     line-height: 150%;
     font-size: var(--textsize);
     min-width: 60px;
-}
+  }
 
 .col-9 {
     right: 0;
     text-align: right;
     max-width: 20vw;
-}
+  }
 
 .weathersymbol img {
     height: calc(var(--textsize) * 3);
-}
+  }
 
 .windarrow img {
     height: calc(var(--textsize) * 1.5);
-}
+  }

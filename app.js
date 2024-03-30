@@ -83,7 +83,7 @@ app.get('/', (req, res) => {
             weatherdata = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorparams.weatherdata.weather);
             app.use(express.static(path.join(__dirname, config.maininfos.weathercalculator.symbolpath)));
         } else {
-            weatherdata = JSON.stringify({})
+            weatherdata = JSON.stringify({});
         };
     } catch(err) {
         Errors.push ({
@@ -91,7 +91,7 @@ app.get('/', (req, res) => {
             'content': `Die Dateien für die Wetterdaten konnten nicht gelesen werden!\n${err.message}`,
             'fatal': false
         });
-        weatherdata = JSON.stringify({})
+        weatherdata = JSON.stringify({});
     };
 
 
@@ -100,7 +100,7 @@ app.get('/', (req, res) => {
         if (monitorparams.weatherdata.hydro) {
             hydrodata = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorparams.weatherdata.hydro);
         } else {
-            hydrodata = JSON.stringify({})
+            hydrodata = JSON.stringify({});
         };
     } catch(err) {
         Errors.push ({
@@ -108,7 +108,7 @@ app.get('/', (req, res) => {
             'content': `Die Dateien für die Hydrodaten konnten nicht gelesen werden!\n${err.message}`,
             'fatal': false
         });
-        hydrodata = JSON.stringify({})
+        hydrodata = JSON.stringify({});
     };
 
 
@@ -121,15 +121,15 @@ app.get('/', (req, res) => {
             'content': `Die Datei, die Informationen zu den Slides beinhaltet, konnten nicht gelesen werden!\n${err.message}`,
             'fatal': false
         });
-        slidetitles = JSON.stringify({})
+        slidetitles = JSON.stringify({});
     };
 
 
     // Prüfe Prozess auf fatale Fehler
-    let fatalErrorCount = 0
+    let fatalErrorCount = 0;
     for (let Error of Errors) {
         if (Error.fatal == true) {
-            fatalErrorCount += 1
+            fatalErrorCount += 1;
         };
     };
 
@@ -167,7 +167,7 @@ app.get('/', (req, res) => {
                 'fatal': true
             });
             return;
-        }
+        };
 
         // Gelesenem HTML Skript mit Parameter hinzufügen
         data = data.replace('</head>', `${customScript}</head>`);
@@ -184,7 +184,7 @@ app.get('/', (req, res) => {
 app.get('/listimages', (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const queryParameters = parsedUrl.query;
-    var imagesPath = ''
+    var imagesPath = '';
 
     if (queryParameters.specificfolder) {
         imagesPath = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.specificfolder);

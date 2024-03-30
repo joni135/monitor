@@ -2,10 +2,10 @@
 
 index.conf
 weathercalculator
-Slideprogramm_Jelle
 test*.*
 public/images_*/
 Thumbs.db
+archiv/
 
 ## Node.js system
 

@@ -1,23 +1,39 @@
-// Lade Bilder dynamisch
-var slideshowContainer = document.getElementById('slideshow');
+// Alle Bilder aus Ordner auslesen (per API-Request) und in HTML ergänzen
+function loadImages() {  
+    var slideshowContainer = document.getElementById('slideshow');
 
-function loadImages() {
-  var slideshowContainer = document.getElementById('slideshow');
+    // HTML-API-Abfrage auf eigene Node.js-App machen, um alle 
     var imagerequest = new XMLHttpRequest();
     imagerequest.open('GET', `/listimages?specificfolder=${imagespath}`, true);
 
     imagerequest.onload = function () {
       if (imagerequest.status == 200) {
         var images = imagerequest.responseText.split('\n');
+
+        // Einzelne Bilder in HTML einbetten
         for (var i = 0; i < images.length; i++) {
           if (images[i]) {
+
+            // Erstelle slideElement (div)
             var slide = document.createElement('div');
             slide.id = 'slide-' + (i + 1);
             slide.className = 'slideElement fade';
+
+            // Erstelle Bild von slideElement
             var image = document.createElement('img');
             image.src = imagespath + images[i];
             image.alt = 'Slide ' + (i + 1);
+            image.className = 'slideImage';
             slide.appendChild(image);
+
+            // Erstelle Titel von slideElement wenn vorhanden
+            if (slidetitles[images[i]]) {
+              var title = document.createElement('div');
+              title.innerHTML = slidetitles[images[i]];
+              title.className = 'slideTitle';
+              slide.appendChild(title);
+            }
+
             slideshowContainer.appendChild(slide);
           
           };
@@ -43,5 +59,5 @@ function showSlides() {
     };
     slides[slideIndex - 1].classList.add('active');
     slides[slideIndex-1].style.display = "block"; 
-    setTimeout(showSlides, slideduration);
+    setTimeout(showSlides, slideduration*1000);
   };
