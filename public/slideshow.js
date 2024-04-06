@@ -3,36 +3,50 @@ function loadImages() {
     var slideshowContainer = document.getElementById('slideshow');
 
     // HTML-API-Abfrage auf eigene Node.js-App machen, um alle 
-    var imagerequest = new XMLHttpRequest();
-    imagerequest.open('GET', `/listimages?specificfolder=${imagespath}`, true);
+    var sliderequest = new XMLHttpRequest();
+    sliderequest.open('GET', `/getslides?slidefolder=${slidepath}`, true);
 
-    imagerequest.onload = function () {
-      if (imagerequest.status == 200) {
-        var images = imagerequest.responseText.split('\n');
+    sliderequest.onload = function () {
+      if (sliderequest.status == 200) {
+        slidesData = JSON.parse(sliderequest.responseText);
+        if (reqparam.debug == 'true') {
+          console.log('Slidedaten: ', slidesData);
+        };
 
-        // Einzelne Bilder in HTML einbetten
-        for (var i = 0; i < images.length; i++) {
-          if (images[i]) {
+        // Einzelne Slides in HTML einbetten
+        for (var i = 0; i < slidesData.length; i++) {
+          if (slidesData[i]) {
+            var slideData = slidesData[i];
 
             // Erstelle slideElement (div)
             var slide = document.createElement('div');
             slide.id = 'slide-' + (i + 1);
-            slide.className = 'slideElement fade';
-
-            // Erstelle Bild von slideElement
-            var image = document.createElement('img');
-            image.src = imagespath + images[i];
-            image.alt = 'Slide ' + (i + 1);
-            image.className = 'slideImage';
-            slide.appendChild(image);
+            slide.className = `slideElement fade ${slideData.type}`;
+            
+            if (slideData.type === 'img') { // Erstelle Bildelement
+              var image = document.createElement('img');
+              image.src = slidepath + slideData.path;
+              image.alt = slideData.id;
+              image.id = slideData.id;
+              image.className = 'slideImage slideContent';
+              slide.appendChild(image);
+            } else if (slideData.type === 'iframe') { // Erstelle Iframeelement
+              var iframe = document.createElement('iframe');
+              iframe.src = slideData.path;
+              iframe.title = slideData.id;
+              iframe.style = 'width: 99vw;'
+              iframe.id = slideData.id;
+              iframe.className = 'slideIframe slideContent';
+              slide.appendChild(iframe);
+            };
 
             // Erstelle Titel von slideElement wenn vorhanden
-            if (slidetitles[images[i]]) {
+            if (slideData.title && slideData.title !== '') {
               var title = document.createElement('div');
-              title.innerHTML = slidetitles[images[i]];
+              title.innerHTML = slideData.title;
               title.className = 'slideTitle';
               slide.appendChild(title);
-            }
+            };
 
             slideshowContainer.appendChild(slide);
           
@@ -42,7 +56,7 @@ function loadImages() {
       }
     };
 
-    imagerequest.send();
+    sliderequest.send();
   };
 
 var slideIndex = 0;

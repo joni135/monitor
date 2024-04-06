@@ -3,7 +3,8 @@
 index.conf
 weathercalculator
 test*.*
-public/images_*/
+public/slides_*/
+*.json
 Thumbs.db
 archiv/
 

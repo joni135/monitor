@@ -20,9 +20,8 @@ function initSite() {
         console.log('Seitentitel:', sitetitle)
         console.log('Seitenautor:', siteauthor)
         console.log('Favicon-Pfad:', favicon);
-        console.log('Bilder-Pfad:', imagespath);
+        console.log('Slides-Pfad:', slidepath);
         console.log('Slidedauer:', slideduration);
-        console.log('Slidetitel:', slidetitles);
         console.log('Wetterdaten:', weatherdata);
         console.log('Hydrodaten:', hydrodata);
     };

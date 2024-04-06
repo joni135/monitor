@@ -44,7 +44,7 @@ main {
     to {opacity: 1}
   }
 
-main img {
+.slideContent {
     background-color: var(--color-light);
     min-width: 100%;
     min-height: 100vh;

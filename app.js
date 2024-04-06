@@ -6,8 +6,8 @@ const url = require('url');
 
 
 // Lesen der Konfigurationsdatei
-const configfile = fs.readFileSync('index.conf');
-const config = JSON.parse(configfile);
+const configFile = fs.readFileSync('index.conf');
+const config = JSON.parse(configFile);
 
 
 // Erstelle Webapp auf Port 8080 (wird über Docker umgeleitet) und gebe Ordner frei
@@ -53,6 +53,26 @@ app.get('/', (req, res) => {
             'title': `Parameter "MONITOR" nicht angegeben`,
             'content': `Der URL-Parameter MONITOR ist nicht angegeben! Dieser Parameter ist ein Pflichtattribut...`,
             'fatal': true
+        });
+    };
+
+    if (queryParameters.type) { // parameter TYPE (DISPLAY or ADMIN)
+        if (['display', 'admin'].includes(queryParameters.type.toLowerCase())) {
+            reqparam.type = queryParameters.type.toLowerCase();
+        } else {
+            reqparam.type = 'display';
+            Errors.push ({
+                'title': `Parameter "TYPE" falsch angegeben`,
+                'content': `Der URL-Parameter TYPE ist falsch angegeben! Der Wert wurde auf "${reqparam.type}" gesetzt`,
+                'fatal': false
+            });
+        };
+    } else {
+        reqparam.type = 'display';
+        Errors.push ({
+            'title': `Parameter "TYPE" nicht angegeben`,
+            'content': `Der URL-Parameter TYPE ist nicht angegeben! Der Wert wurde auf "${reqparam.type}" gesetzt`,
+            'fatal': false
         });
     };
 
@@ -112,19 +132,6 @@ app.get('/', (req, res) => {
     };
 
 
-    // Ergänze Titel der Slides wenn vorhanden
-    try {
-        slidetitles = fs.readFileSync(config.maininfos.system.publicfolder+monitorparams.images+config.maininfos.slideshow.slidetitlefile);
-    } catch(err) {
-        Errors.push ({
-            'title': `Slidetitel konnten nicht gelesen werden`,
-            'content': `Die Datei, die Informationen zu den Slides beinhaltet, konnten nicht gelesen werden!\n${err.message}`,
-            'fatal': false
-        });
-        slidetitles = JSON.stringify({});
-    };
-
-
     // Prüfe Prozess auf fatale Fehler
     let fatalErrorCount = 0;
     for (let Error of Errors) {
@@ -141,9 +148,8 @@ app.get('/', (req, res) => {
             const sitetitle = "${config.maininfos.sitetitleprefix+monitorparams.name}";
             const siteauthor = "${config.maininfos.siteauthor}";
             const favicon = "${monitorparams.favicon}";
-            const imagespath = "${monitorparams.images}";
+            const slidepath = "${monitorparams.slides}";
             const slideduration = "${monitorparams.slideduration}";
-            const slidetitles = ${slidetitles};
             const weatherdata = ${weatherdata};
             const hydrodata = ${hydrodata};
         </script>`;
@@ -180,36 +186,36 @@ app.get('/', (req, res) => {
 });
 
 
-// Liste alle Bilder aus Ordner aus (wird von App intern verwendet)
-app.get('/listimages', (req, res) => {
+
+// Liste alle Slides aus Konfigurationsdatei aus
+app.get('/getslides', (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const queryParameters = parsedUrl.query;
-    var imagesPath = '';
+    var slidesConfigPath = '';
+    
 
-    if (queryParameters.specificfolder) {
-        imagesPath = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.specificfolder);
+    if (queryParameters.slidefolder) {
+        slidesConfigPath = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder, config.maininfos.slidesconfig);
     } else {
         res.status(500).send({
-            'title': `Bilder konnten nicht gelistet werden`,
-            'content': `Der URL-Parameter SPECIFICFOLDER ist nicht angegeben! Dieser ist pflicht...`,
+            'title': `Slides konnten nicht gelistet werden`,
+            'content': `Der URL-Parameter SLIDEFOLDER ist nicht angegeben! Dieser ist pflicht...`,
             'fatal': true
         });
         return;
     };
 
-    fs.readdir(imagesPath, (err, files) => {
-        if (err) {
-            res.status(500).send({
-                'title': `Bilder konnten nicht gelistet werden`,
-                'content': err,
-                'fatal': true
-            });
-            return;
-        } else {
-            const images = files.filter(file => file.endsWith('.jpg') || file.endsWith('.jpeg') || file.endsWith('.png') || file.endsWith('.JPG'));
-            res.send(images.join('\n'));
-        };
-    });
+    try {
+        const slidesConfigFile = fs.readFileSync(slidesConfigPath);
+        const slides = JSON.parse(slidesConfigFile);
+        res.status(200).send(slides);
+    } catch(err) {
+        res.status(500).send({
+            'title': `Slideskonfigurationen konnten nicht geladen werden`,
+            'content': err,
+            'fatal': true
+        });
+    };
 });
 
 
