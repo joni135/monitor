@@ -1,8 +1,9 @@
-// Alle Bilder aus Ordner auslesen (per API-Request) und in HTML ergänzen
-function loadImages() {  
+// Alle Slides aus Datei auslesen (per API-Request) und in HTML ergänzen
+function loadSlides() {  
     var slideshowContainer = document.getElementById('slideshow');
+    slideshowContainer.innerHTML = '';
 
-    // HTML-API-Abfrage auf eigene Node.js-App machen, um alle 
+    // HTML-API-Abfrage auf eigene Node.js-App machen, um alle Slides abzurufen
     var sliderequest = new XMLHttpRequest();
     sliderequest.open('GET', `/getslides?slidefolder=${slidepath}`, true);
 

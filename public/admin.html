@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Adminportal Monitor</title>
+        <meta name="description" id="description" content="Seite zum Bearbeiten des Monitors">
+        <meta name="autor" id="autor" content="Jonathan Kaufmann">
+        <link rel="icon" type="image" id="favicon" href="">
+        <link rel="stylesheet" href="admin.css">
+        <script src="index.js"></script>
+        <script src="admin.js"></script>
+    </head>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Seitenmetadaten anpassen
+            document.title = 'Adminportal '+sitetitle;
+            document.getElementById('autor').setAttribute('content', siteauthor);
+            document.getElementById('favicon').setAttribute('href', favicon);
+
+            document.getElementById('titleimage').setAttribute('src', favicon);
+            document.getElementById('sitetitle').innerHTML = 'Adminportal '+sitetitle;
+            document.getElementById('copyright').innerHTML = 'Copyright '+new Date().getFullYear()+' by '+siteauthor;
+            
+            // Funktion zum laden der Seite
+            initSite();
+
+            loadSlides();
+        });
+    </script>
+    <body>
+        <header>
+            <img id="titleimage" src="" alt="favicon">
+            <h1 id="sitetitle">Adminportal Monitor</h1>
+        </header>
+        <main>
+            <button onclick="openPopup('addImageSlide')">Bild-Slide hinzufügen</button>
+            <button onclick="openPopup('addIframeSlide')">Iframe-Slide hinzufügen</button>
+            <table id="slidetable">
+                <tr id="kopfzeile">
+                    <th>Vorschau</th>
+                    <th>Titel</th>
+                    <th>Dateipfad</th>
+                    <th></th>
+                </tr>
+            </table>
+        </main>
+        <footer>
+            <p id="copyright">Copyright by Jonathan Kaufmann</p>
+        </footer>
+
+        <!-- Overlay bei aktiviertem Popup-Fenster -->
+        <div id="overlay"></div>
+
+        <!-- Popup-Fenster für das hinzufügen einer Bilder-Slide -->
+        <div id="addImageSlide" class="Popup">
+            <form id="addImageSlideForm" enctype="multipart/form-data">
+                <label for="ImageFileInput">Bilddatei<span style="color: red;">*</span>:</label>
+                <input type="file" name="file" id="ImageFileInput">
+                <label for="ImageTitleInput">Folientitel:</label>
+                <input type="text" id="ImageTitleInput">
+                <label for="ImageEndtimeInput">Enddatum des anzeigens:</label>
+                <input type="datetime-local" id="ImageEndtimeInput">
+            </form>
+            <button onclick="addImageSlide()">Hinzufügen</button>
+            <button onclick="closePopup('addImageSlide')">Abbrechen</button>
+        </div>
+
+        <!-- Popup-Fenster für das hinzufügen einer Iframe-Slide -->
+        <div id="addIframeSlide" class="Popup">
+            <form id="addIframeSlideForm" enctype="multipart/form-data">
+                <label for="IframeUrlInput">URL<span style="color: red;">*</span>:</label>
+                <input type="url" id="IframeUrlInput">
+                <label for="IframeTitleInput">Folientitel:</label>
+                <input type="text" id="IframeTitleInput">
+                <label for="IframeEndtimeInput">Enddatum des anzeigens:</label>
+                <input type="datetime-local" id="IframeEndtimeInput">
+            </form>
+            <button onclick="addIframeSlide()">Hinzufügen</button>
+            <button onclick="closePopup('addIframeSlide')">Abbrechen</button>
+        </div>
+
+        <!-- Popup-Fenster für das hinzufügen einer Iframe-Slide -->
+        <div id="editSlide" class="Popup">
+            <button onclick="editSlide()">Ändern</button>
+            <button onclick="closePopup('editSlide')">Abbrechen</button>
+        </div>
+
+        <!-- Popup-Fenster für die Bestätigungsmeldungen -->
+        <div id="confirmationMessage" class="Popup">
+            <h3 id="confirmationMessageTitel"></h3>
+            <p id="confirmationMessageText"></p>
+            <button onclick="closePopup('confirmationMessage')">Schliessen</button>
+        </div>
+
+    </body>
+</html>

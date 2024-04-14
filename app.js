@@ -1,6 +1,7 @@
 // Laden aller benötigten Bibliotheken
 const express = require('express');
 const path = require('path');
+const formidable = require('formidable');
 const fs = require('fs');
 const url = require('url');
 
@@ -157,7 +158,11 @@ app.get('/', (req, res) => {
 
     // Generiere Pfad des zu sendenden HTML-Files, abhängig von Fehlern und Konfiguration
     if (fatalErrorCount == 0) {
-        htmlFilePath = path.join(__dirname, config.maininfos.system.publicfolder, `${monitorparams.file}`);
+        if (reqparam.type === 'admin') {
+            htmlFilePath = path.join(__dirname, config.maininfos.system.publicfolder, `admin.html`);
+        } else {
+            htmlFilePath = path.join(__dirname, config.maininfos.system.publicfolder, `${monitorparams.file}`);
+        };
     } else {
         htmlFilePath = path.join(__dirname, config.maininfos.system.publicfolder, `error.html`);
     };
@@ -216,6 +221,60 @@ app.get('/getslides', (req, res) => {
             'fatal': true
         });
     };
+});
+
+
+// POST-Anfrage für das Hochladen des Fotos
+app.post('/uploadimage', (req, res) => {
+    const parsedUrl = url.parse(req.url, true);
+    const queryParameters = parsedUrl.query;
+    var uploadDirectory = '';
+    
+    if (queryParameters.slidefolder) {
+        uploadDirectory = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder);
+    } else {
+        res.status(500).send({
+            'title': `Fehler beim Hochladen des Fotos`,
+            'content': `Der URL-Parameter SLIDEFOLDER ist nicht angegeben! Dieser ist pflicht...`,
+            'fatal': true
+        });
+        return;
+    };
+
+    // Formular parsen und hochgeladenes Bild umbenennen
+    const form = new formidable.IncomingForm();
+
+    form.parse(req, (err, fields, files) => {
+        if (err) {
+            res.status(500).send({
+                'title': `Fehler beim parsen des HTML-Formulars`,
+                'content': err,
+                'fatal': true
+            });
+            return;
+        };
+    
+        const imageData = files.file[0];
+
+        const oldPath = imageData.filepath;
+        const newPath = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder, imageData.originalFilename);
+        fs.copyFile(oldPath, newPath, (err) => {
+            if (err) {
+                res.status(500).send({
+                   'title': `Fehler beim abspeichern der Datei auf dem Server`,
+                    'content': err,
+                    'fatal': true
+                });
+            } else {
+                res.status(200).send({
+                    'title': `Datei hochgeladen`,
+                    'content': `Datei "${imageData.originalFilename}" erfolgreich hochgeladen`,
+                    'fatal': false
+                });
+            };
+        });
+    });
+    
 });
 
 

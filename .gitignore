@@ -1,6 +1,6 @@
 ## directoryspecific
 
-index.conf
+#index.conf
 weathercalculator
 test*.*
 public/slides_*/
