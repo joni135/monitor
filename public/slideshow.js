@@ -19,38 +19,45 @@ function loadSlides() {
           if (slidesData[i]) {
             var slideData = slidesData[i];
 
-            // Erstelle slideElement (div)
-            var slide = document.createElement('div');
-            slide.id = 'slide-' + (i + 1);
-            slide.className = `slideElement fade ${slideData.type}`;
-            
-            if (slideData.type === 'img') { // Erstelle Bildelement
-              var image = document.createElement('img');
-              image.src = slidepath + slideData.path;
-              image.alt = slideData.id;
-              image.id = slideData.id;
-              image.className = 'slideImage slideContent';
-              slide.appendChild(image);
-            } else if (slideData.type === 'iframe') { // Erstelle Iframeelement
-              var iframe = document.createElement('iframe');
-              iframe.src = slideData.path;
-              iframe.title = slideData.id;
-              iframe.style = 'width: 99vw;'
-              iframe.id = slideData.id;
-              iframe.className = 'slideIframe slideContent';
-              slide.appendChild(iframe);
+            var starttimeDate = new Date(slideData.starttime);
+            var endtimeDate = new Date(slideData.endtime);
+            var currentDate = new Date();
+            if ((starttimeDate < currentDate | slideData.starttime === "") && (endtimeDate > currentDate | slideData.endtime === "")) {
+
+              // Erstelle slideElement (div)
+              var slide = document.createElement('div');
+              slide.id = 'slide-' + (i + 1);
+              slide.className = `slideElement fade ${slideData.type}`;
+
+              if (slideData.type === 'img') { // Erstelle Bildelement
+                var image = document.createElement('img');
+                image.src = slideData.path;
+                image.alt = slideData.id;
+                image.id = slideData.id;
+                image.className = 'slideImage slideContent';
+                slide.appendChild(image);
+              } else if (slideData.type === 'iframe') { // Erstelle Iframeelement
+                var iframe = document.createElement('iframe');
+                iframe.src = slideData.path;
+                iframe.style = 'width: 99vw;'
+                iframe.id = slideData.id;
+                iframe.className = 'slideIframe slideContent';
+                slide.appendChild(iframe);
+              };
+
+              // Erstelle Titel von slideElement wenn vorhanden
+              if (slideData.title && slideData.title !== '') {
+                var title = document.createElement('div');
+                title.innerHTML = slideData.title;
+                title.className = 'slideTitle';
+                slide.appendChild(title);
+              };
+
+              slideshowContainer.appendChild(slide);
+            } else {
+              console.log(`Slide "${slideData.id}" ist ausserhalb der angegebenen Zeitspanne und wird nicht angezeigt`)
             };
 
-            // Erstelle Titel von slideElement wenn vorhanden
-            if (slideData.title && slideData.title !== '') {
-              var title = document.createElement('div');
-              title.innerHTML = slideData.title;
-              title.className = 'slideTitle';
-              slide.appendChild(title);
-            };
-
-            slideshowContainer.appendChild(slide);
-          
           };
         };
         showSlides();
