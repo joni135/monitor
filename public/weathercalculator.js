@@ -45,10 +45,10 @@ function displayWeather() {
 function displayHydro() {
   
     if (document.getElementById("hydro_discharge")) {
-      document.getElementById("hydro_discharge").innerHTML = `Durchfluss:<br>${Math.round(hydrodata.discharge)}m&#0178;/sek`;
+      document.getElementById("hydro_discharge").innerHTML = `${Math.round(hydrodata.discharge)}m&#0178;/sek`;
     };
     if (document.getElementById("hydro_watertemp")) {
-      document.getElementById("hydro_watertemp").innerHTML = `Wassertemperatur:<br>${Math.round(hydrodata.waterTemperature)}°c`;
+      document.getElementById("hydro_watertemp").innerHTML = `${Math.round(hydrodata.waterTemperature)}°c`;
     };
   };
 
