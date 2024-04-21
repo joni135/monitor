@@ -26,9 +26,8 @@ function renderSlides(slidesData) {
     slidetableContainer.innerHTML = `
         <tr id="kopfzeile">
             <th>Vorschau</th>
-            <th>Titel</th>
-            <th>Dateipfad</th>
-            <th></th>
+            <th>Informationen</th>
+            <th>Bearbeiten</th>
         </tr>`;
 
     // Einzelne Slides in HTML einbetten
@@ -46,15 +45,16 @@ function renderSlides(slidesData) {
         slidePreview.className = 'slidePreview';
         if (slideData.type === 'img') { // Erstelle Vorschauelement Bild
           var image = document.createElement('img');
-          image.src = slidepath + slideData.path;
+          image.src = slideData.path;
           image.id = slideData.id;
-          image.className = 'slideImage slidePreview';
+          image.className = 'slideImage';
           slidePreview.appendChild(image);
+
         } else if (slideData.type === 'iframe') { // Erstelle Vorschauelement Iframe
           var iframe = document.createElement('iframe');
           iframe.src = slideData.path;
           iframe.id = slideData.id;
-          iframe.className = 'slideIframe slidePreview';
+          iframe.className = 'slideIframe';
           slidePreview.appendChild(iframe);
         };
         slide.appendChild(slidePreview);
@@ -62,17 +62,21 @@ function renderSlides(slidesData) {
         // Erstelle Spalte Beschreibung
         var slideDescription = document.createElement('td');
         slideDescription.className = 'slideTitle';
-        slideDescription.innerHTML = `Titel: ${slideData.title}<br>Pfad: ${slideData.path}<br>Zeitrahmen: ${slideData.starttime} - ${slideData.endtime}`;
+        slideDescription.innerHTML = `
+            Titel: ${slideData.title}<br>
+            Bemerkung: ${slideData.comment}<br>
+            Pfad: <a href="${slideData.path}" target="_blank">${slideData.path}</a><br>
+            Zeitrahmen: ${slideData.starttime} - ${slideData.endtime}`;
         slide.appendChild(slideDescription);
 
         // Erstelle Spalte Buttons
         var slideButtons = document.createElement('td');
         slideButtons.className = 'slideButtons';
         slideButtons.innerHTML = `
-            <button id="buttonUp" onclick="slideUp('${slideData.id}')">&#11205;</button>
-            <button id="buttonDown" onclick="slideDown('${slideData.id}')">&#11206;</button>
-            <button id="buttonEdit" onclick="slideEdit('${slideData.id}')">&#9998;</button>
-            <button id="buttonDelete" onclick="slideDelete('${slideData.id}')">&#128465;</button>
+            <button id="buttonUp" onclick="slideUp('${slideData.id}')"><i class="fa fa-arrow-up"></i></button>
+            <button id="buttonDown" onclick="slideDown('${slideData.id}')"><i class="fa fa-arrow-down"></i></button>
+            <button id="buttonEdit" onclick="openEditPopup('${slideData.id}')"><i class="fa fa-pencil"></i></button>
+            <button id="buttonDelete" onclick="slideDelete('${slideData.id}')"><i class="fa fa-trash"></i></button>
             `;
         slide.appendChild(slideButtons);
         
@@ -88,71 +92,166 @@ function openPopup(PopupId) {
     document.getElementById(PopupId+'Form').reset(); // leert die Inputfelder
     document.getElementById('overlay').style.display = 'block';
     document.getElementById(PopupId).style.display = 'block';
+
+    // setze Default- und Minimum-Wert bei Startdatum der Slides
+    var datetimeNOW = new Date();
+    var adjustedDatetime = new Date(datetimeNOW.getTime() - (datetimeNOW.getTimezoneOffset() * 60000)); // for Timezone
+    var formatedDatetime = adjustedDatetime.toISOString().substring(0,16); // For minute precision
+    var datetimeField = document.getElementById("ImageStarttimeInput");
+        datetimeField.value = formatedDatetime;
+        datetimeField.min = formatedDatetime;
+    var datetimeField = document.getElementById("ImageEndtimeInput");
+        datetimeField.min = formatedDatetime;
+    var datetimeField = document.getElementById("IframeStarttimeInput");
+        datetimeField.value = formatedDatetime;
+        datetimeField.min = formatedDatetime;
+    var datetimeField = document.getElementById("IframeEndtimeInput");
+        datetimeField.min = formatedDatetime;
+    var datetimeField = document.getElementById("SlideStarttimeInput");
+        datetimeField.min = formatedDatetime;
+    var datetimeField = document.getElementById("SlideEndtimeInput");
+        datetimeField.min = formatedDatetime;
   };
 
 
 // Popup-Fenster schliessen
 function closePopup(PopupId) {
     document.getElementById('overlay').style.display = 'none';
+    document.getElementById('confirmationMessage').style.color = 'black';
     document.getElementById(PopupId).style.display = 'none';
   };
 
 
-// Funktion zum Hochladen des Fotos und Speichern der Daten als JSON
-function addImageSlide_v1() {
-    const fileInput = document.getElementById('ImageFileInput');
-    const titleInput = document.getElementById('ImageTitleInput');
-    const endtimeInput = document.getElementById('ImageEndtimeInput');
+// Funktion zum hinzufügen einer Bilder-Slide
+function addImageSlide() {
 
-    const file = fileInput.files[0];
-    const title = titleInput.value;
-    const endtime = endtimeInput.value;
+    // Prüfe ob überhaupt ein Bild angegeben wurde
+    var fileInput = document.getElementById('ImageFileInput');
+    var file = fileInput.files[0];
 
-    if (file && title && endtime) {
-        const formData = new FormData();
-        formData.append('image', file);
+    if (file) {
+        if (file.type.startsWith('image/')) {
 
-        // AJAX-Anfrage, um das Foto hochzuladen
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'upload.php', true); // Hier muss der Pfad zu Ihrem Upload-Skript angegeben werden
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                const imagePath = xhr.responseText;
-                
-                // Daten als JSON speichern
-                const imageData = {
-                    imagePath: imagePath,
-                    title: title,
-                    endtime: endtime
+            // Bild hochladen und antwort behandeln
+            const form = document.getElementById('addImageSlideForm');
+            const formData = new FormData(form);
+
+            fetch(`/uploadimage?slidefolder=${slidepath}`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                return response.text();
+            })
+            .then(data => {
+                const responseJson = JSON.parse(data);
+                //console.log(`${responseJson.title}:\n${responseJson.content}`);
+            
+                document.getElementById('confirmationMessageTitel').innerHTML = responseJson.title;
+                document.getElementById('confirmationMessageText').innerHTML = responseJson.content;
+                if (responseJson.fatal === true) {
+                    document.getElementById('confirmationMessage').style.color = 'red';
+                } else {
+                    renderSlides(responseJson.slidesData)
                 };
-
-                // AJAX-Anfrage, um das JSON zu speichern
-                const jsonXhr = new XMLHttpRequest();
-                jsonXhr.open('POST', 'saveData.php', true); // Hier muss der Pfad zu Ihrem Skript zum Speichern von JSON angegeben werden
-                jsonXhr.setRequestHeader('Content-Type', 'application/json');
-                jsonXhr.onload = function() {
-                    if (jsonXhr.status === 200) {
-                        console.log('Daten erfolgreich gespeichert.');
-                    } else {
-                        console.error('Fehler beim Speichern der Daten.');
-                    };
-                };
-                jsonXhr.send(JSON.stringify(imageData));
-            } else {
-                console.error('Fehler beim Hochladen des Fotos.');
-            };
+            
+                document.getElementById('addImageSlide').style.display = 'none';
+                document.getElementById('confirmationMessage').style.display = 'block';
+            });
+        } else {
+            // Datei ist kein Bild
+            document.getElementById('confirmationMessageTitel').innerHTML = 'Bilder-Slide konnte nicht erstellt werden';
+            document.getElementById('confirmationMessageText').innerHTML = 'Die hochgeladene Datei ist kein Bild.';
+            document.getElementById('confirmationMessage').style.color = 'red';            
+            document.getElementById('addImageSlide').style.display = 'none';
+            document.getElementById('confirmationMessage').style.display = 'block';
         };
-        xhr.send(formData);
     } else {
-        alert('Bitte füllen Sie alle Felder aus und wählen Sie ein Bild aus.');
+        // Keine Datei ausgewählt
+        document.getElementById('confirmationMessageTitel').innerHTML = 'Bilder-Slide konnte nicht erstellt werden';
+        document.getElementById('confirmationMessageText').innerHTML = 'Es ist keine Bild-Datei zum hochladen angegeben.';
+        document.getElementById('confirmationMessage').style.color = 'red';            
+        document.getElementById('addImageSlide').style.display = 'none';
+        document.getElementById('confirmationMessage').style.display = 'block';
     };
   };
 
-function addImageSlide() {
-    const form = document.getElementById('addImageSlideForm');
+
+// Funktion zum hinzufügen einer Iframe-Slide
+function addIframeSlide() {
+
+    // Prüfe ob überhaupt eine URL angegeben wurde
+    var urlInput = document.getElementById('IframeUrlInput');
+
+    if (urlInput.value) {
+        // Iframe-Daten hochladen und antwort behandeln
+        const form = document.getElementById('addIframeSlideForm');
+        const formData = new FormData(form);
+
+        fetch(`/uploadiframe?slidefolder=${slidepath}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            return response.text();
+        })
+        .then(data => {
+            const responseJson = JSON.parse(data);
+            //console.log(`${responseJson.title}:\n${responseJson.content}`);
+        
+            document.getElementById('confirmationMessageTitel').innerHTML = responseJson.title;
+            document.getElementById('confirmationMessageText').innerHTML = responseJson.content;
+            if (responseJson.fatal === true) {
+                document.getElementById('confirmationMessage').style.color = 'red';
+            } else {
+                renderSlides(responseJson.slidesData)
+            };
+        
+            document.getElementById('addIframeSlide').style.display = 'none';
+            document.getElementById('confirmationMessage').style.display = 'block';
+        });
+    } else {
+        // Keine URL angegeben
+        document.getElementById('confirmationMessageTitel').innerHTML = 'Iframe-Slide konnte nicht erstellt werden';
+        document.getElementById('confirmationMessageText').innerHTML = 'Es ist keine URL für das Iframe angegeben.';
+        document.getElementById('confirmationMessage').style.color = 'red';            
+        document.getElementById('addIframeSlide').style.display = 'none';
+        document.getElementById('confirmationMessage').style.display = 'block';
+    };
+  };
+
+
+// Popup-Fenster für das Bearbeiten der Slide öffnen
+function openEditPopup(slideId) {
+    document.getElementById('editSlideTitel').innerHTML = `Slide "${slideId}" bearbeiten`;
+    document.getElementById('slideId').innerHTML = slideId;
+    openPopup('editSlide');
+
+    // setze aktuelle Werte in Formular
+    for (var i = 0; i < slidesData.length; i++) {
+        if (slidesData[i].id === slideId) {
+            var slidePositionId = i;
+        };
+    };
+    var SlideTitleInput = document.getElementById('SlideTitleInput');
+        SlideTitleInput.value = slidesData[slidePositionId].title;
+    var SlideStarttimeInput = document.getElementById('SlideStarttimeInput');
+        SlideStarttimeInput.value = slidesData[slidePositionId].starttime;
+    var SlideEndtimeInput = document.getElementById('SlideEndtimeInput');
+        SlideEndtimeInput.value = slidesData[slidePositionId].endtime;
+    
+  };
+
+
+// Funktion zum bearbeiten einer Slide
+function editSlide() {
+    const slideId = document.getElementById('slideId').innerHTML;
+
+    // Neue Daten hochladen und antwort behandeln
+    const form = document.getElementById('editSlideForm');
     const formData = new FormData(form);
 
-    fetch('/uploadimage?slidefolder=slides_rcb', {
+    fetch(`/editslide?slidefolder=${slidepath}&slideid=${slideId}`, {
         method: 'POST',
         body: formData
     })
@@ -161,59 +260,95 @@ function addImageSlide() {
     })
     .then(data => {
         const responseJson = JSON.parse(data);
-        console.log(responseJson)
-
+        //console.log(`${responseJson.title}:\n${responseJson.content}`);
+    
         document.getElementById('confirmationMessageTitel').innerHTML = responseJson.title;
         document.getElementById('confirmationMessageText').innerHTML = responseJson.content;
         if (responseJson.fatal === true) {
             document.getElementById('confirmationMessage').style.color = 'red';
+        } else {
+            renderSlides(responseJson.slidesData)
         };
-
-        document.getElementById('addImageSlide').style.display = 'none';
+    
+        document.getElementById('editSlide').style.display = 'none';
         document.getElementById('confirmationMessage').style.display = 'block';
-        // Hier kannst du weitere Schritte ausführen, z.B. eine Benachrichtigung anzeigen
     });
+  };
+
+
+// Funktion zum löschen einer Slide
+function slideDelete(slideId) {
+
+    var slidedeleterequest = new XMLHttpRequest();
+    slidedeleterequest.open('GET', `/deleteslide?slidefolder=${slidepath}&slideid=${slideId}`, true);
+    
+    slidedeleterequest.onload = function () {
+
+        if (slidedeleterequest.status == 200) {
+            responseJson = JSON.parse(slidedeleterequest.responseText);
+            renderSlides(responseJson.slidesData);
+        } else {
+            document.getElementById('confirmationMessage').style.color = 'red';
+        };
+        
+        document.getElementById('confirmationMessageTitel').innerHTML = responseJson.title;
+        document.getElementById('confirmationMessageText').innerHTML = responseJson.content;
+
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('confirmationMessage').style.display = 'block';
+    };
+  
+    slidedeleterequest.send();
   };
 
 
 // Slide eine Position nach oben verschieben
 function slideUp(slideId) {
 
-    for (var i = 0; i < slidesData.length; i++) {
-        if (slidesData[i].id === slideId) {
-            var slidePositionId = i;
-        };
-    };
+    var slidechangerequest = new XMLHttpRequest();
+    slidechangerequest.open('GET', `/changeorderslideup?slidefolder=${slidepath}&slideid=${slideId}`, true);
     
-    if (slidePositionId !== 0) {
-        var mySlideData = slidesData[slidePositionId];
-        var preSlideData = slidesData[slidePositionId - 1];
+    slidechangerequest.onload = function () {
 
-        slidesData[slidePositionId - 1] = mySlideData;
-        slidesData[slidePositionId] = preSlideData;
-
-        renderSlides(slidesData)
+        if (slidechangerequest.status == 200) {
+            responseJson = JSON.parse(slidechangerequest.responseText);
+            renderSlides(responseJson.slidesData);
+        } else {
+            document.getElementById('confirmationMessage').style.color = 'red';
+            document.getElementById('confirmationMessageTitel').innerHTML = responseJson.title;
+            document.getElementById('confirmationMessageText').innerHTML = responseJson.content;
+    
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('confirmationMessage').style.display = 'block';
+        };
+    
     };
-
+  
+    slidechangerequest.send();
   };
+
 
 // Slide eine Position nach unten verschieben
 function slideDown(slideId) {
 
-    for (var i = 0; i < slidesData.length; i++) {
-        if (slidesData[i].id === slideId) {
-            var slidePositionId = i;
-        };
-    };
+    var slidechangerequest = new XMLHttpRequest();
+    slidechangerequest.open('GET', `/changeorderslidedown?slidefolder=${slidepath}&slideid=${slideId}`, true);
     
-    if (slidePositionId !== slidesData.length-1) {
-        var mySlideData = slidesData[slidePositionId];
-        var nextSlideData = slidesData[slidePositionId + 1];
+    slidechangerequest.onload = function () {
 
-        slidesData[slidePositionId + 1] = mySlideData;
-        slidesData[slidePositionId] = nextSlideData;
-
-        renderSlides(slidesData)
+        if (slidechangerequest.status == 200) {
+            responseJson = JSON.parse(slidechangerequest.responseText);
+            renderSlides(responseJson.slidesData);
+        } else {
+            document.getElementById('confirmationMessage').style.color = 'red';
+            document.getElementById('confirmationMessageTitel').innerHTML = responseJson.title;
+            document.getElementById('confirmationMessageText').innerHTML = responseJson.content;
+    
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('confirmationMessage').style.display = 'block';
+        };
+    
     };
-
+  
+    slidechangerequest.send();
   };

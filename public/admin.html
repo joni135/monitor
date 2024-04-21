@@ -8,6 +8,7 @@
         <meta name="description" id="description" content="Seite zum Bearbeiten des Monitors">
         <meta name="autor" id="autor" content="Jonathan Kaufmann">
         <link rel="icon" type="image" id="favicon" href="">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="admin.css">
         <script src="index.js"></script>
         <script src="admin.js"></script>
@@ -21,29 +22,40 @@
 
             document.getElementById('titleimage').setAttribute('src', favicon);
             document.getElementById('sitetitle').innerHTML = 'Adminportal '+sitetitle;
+            document.getElementById('monitorpreview').setAttribute('title', sitetitle);
             document.getElementById('copyright').innerHTML = 'Copyright '+new Date().getFullYear()+' by '+siteauthor;
             
             // Funktion zum laden der Seite
             initSite();
-
             loadSlides();
+
+            // Ladescreen entfernen
+            setTimeout(() => {document.getElementById('loadingscreen').style.display = 'none'; }, 500);
         });
+
+        // Link für Monitorvorschau erstellen und in separatem Fenster öffnen
+        function openMonitorpreview() {
+            var currentURL = window.location.href;
+            var previewURL = currentURL.replace(/(\?|&)type=([^&]*)/, '$1type=display');
+            window.open(previewURL, '', 'fullscreen=yes, scrollbars=no,location=yes,resizable=no');
+        };
     </script>
     <body>
+        <!-- Overlay beim Laden der Seite -->
+        <div id="loadingscreen">
+            <i id="loadingspinner" class="fa fa-spin fa-spinner fa-2x"></i>
+        </div>
+
+        <!-- Eigentlicher Inhalt der Seite -->
         <header>
             <img id="titleimage" src="" alt="favicon">
             <h1 id="sitetitle">Adminportal Monitor</h1>
+            <a id="monitorpreview" href="javascript:void(0);" title="" onclick="openMonitorpreview()">Monitorvorschau</a>
         </header>
         <main>
             <button onclick="openPopup('addImageSlide')">Bild-Slide hinzufügen</button>
             <button onclick="openPopup('addIframeSlide')">Iframe-Slide hinzufügen</button>
             <table id="slidetable">
-                <tr id="kopfzeile">
-                    <th>Vorschau</th>
-                    <th>Titel</th>
-                    <th>Dateipfad</th>
-                    <th></th>
-                </tr>
             </table>
         </main>
         <footer>
@@ -53,45 +65,103 @@
         <!-- Overlay bei aktiviertem Popup-Fenster -->
         <div id="overlay"></div>
 
-        <!-- Popup-Fenster für das hinzufügen einer Bilder-Slide -->
+        <!-- Popup-Fenster für das hinzufügen einer Bild-Slide -->
         <div id="addImageSlide" class="Popup">
+            <h3 id="addImageSlideTitel">Bild-Slide hinzufügen</h3>
             <form id="addImageSlideForm" enctype="multipart/form-data">
-                <label for="ImageFileInput">Bilddatei<span style="color: red;">*</span>:</label>
-                <input type="file" name="file" id="ImageFileInput">
-                <label for="ImageTitleInput">Folientitel:</label>
-                <input type="text" id="ImageTitleInput">
-                <label for="ImageEndtimeInput">Enddatum des anzeigens:</label>
-                <input type="datetime-local" id="ImageEndtimeInput">
+                <div class="form-group">
+                    <label for="ImageFileInput" class="mandatory">Bilddatei:</label>
+                    <input type="file" name="file" id="ImageFileInput" title="Bilddatei, die als Slide angezeigt werden soll">
+                </div>
+                <div class="form-group">
+                    <label for="ImageTitleInput">Folientitel:</label>
+                    <input type="text" name="title" id="ImageTitleInput" title="Titel, der auf der Folie angezeigt wird">
+                </div>
+                <div class="form-group">
+                    <label for="ImageCommentInput">Bemerkung:</label>
+                    <input type="text" name="comment" id="ImageCommentInput" title="Bemerkung (wird nicht angezeigt)">
+                </div>
+                <div class="form-group">
+                    <label for="ImageStarttimeInput">Startdatum des Anzeigens:</label>
+                    <input type="datetime-local" name="starttime" id="ImageStarttimeInput" title="Datum/Zeit, ab wann die Folie angezeigt wird">
+                </div>
+                <div class="form-group">
+                    <label for="ImageEndtimeInput">Enddatum des Anzeigens:</label>
+                    <input type="datetime-local" name="endtime" id="ImageEndtimeInput" title="Datum/Zeit, bis wann die Folie angezeigt wird">
+                </div>
             </form>
-            <button onclick="addImageSlide()">Hinzufügen</button>
-            <button onclick="closePopup('addImageSlide')">Abbrechen</button>
+            <div class="button-container">
+                <button onclick="addImageSlide()">Hinzufügen</button>
+                <button onclick="closePopup('addImageSlide')">Abbrechen</button>
+            </div>
         </div>
 
         <!-- Popup-Fenster für das hinzufügen einer Iframe-Slide -->
         <div id="addIframeSlide" class="Popup">
+            <h3 id="addIframeSlideTitel">Iframe-Slide hinzufügen</h3>
             <form id="addIframeSlideForm" enctype="multipart/form-data">
-                <label for="IframeUrlInput">URL<span style="color: red;">*</span>:</label>
-                <input type="url" id="IframeUrlInput">
-                <label for="IframeTitleInput">Folientitel:</label>
-                <input type="text" id="IframeTitleInput">
-                <label for="IframeEndtimeInput">Enddatum des anzeigens:</label>
-                <input type="datetime-local" id="IframeEndtimeInput">
+                <div class="form-group">
+                    <label for="IframeUrlInput" class="mandatory">URL:</label>
+                    <input type="url" name="url" id="IframeUrlInput" title="URL, due als Slide angezeigt werden soll">
+                </div>
+                <div class="form-group">
+                    <label for="IframeTitleInput">Folientitel:</label>
+                    <input type="text" name="title" id="IframeTitleInput" title="Titel, der auf der Folie angezeigt wird">
+                </div>
+                <div class="form-group">
+                    <label for="IframeCommentInput">Bemerkung:</label>
+                    <input type="text" name="comment" id="IframeCommentInput" title="Bemerkung (wird nicht angezeigt)">
+                </div>
+                <div class="form-group">
+                    <label for="IframeStarttimeInput">Startdatum des Anzeigens:</label>
+                    <input type="datetime-local" name="starttime" id="IframeStarttimeInput" title="Datum/Zeit, ab wann die Folie angezeigt wird">
+                </div>
+                <div class="form-group">
+                    <label for="IframeEndtimeInput">Enddatum des Anzeigens:</label>
+                    <input type="datetime-local" name="endtime" id="IframeEndtimeInput" title="Datum/Zeit, bis wann die Folie angezeigt wird">
+                </div>
             </form>
-            <button onclick="addIframeSlide()">Hinzufügen</button>
-            <button onclick="closePopup('addIframeSlide')">Abbrechen</button>
+            <div class="button-container">
+                <button onclick="addIframeSlide()">Hinzufügen</button>
+                <button onclick="closePopup('addIframeSlide')">Abbrechen</button>
+            </div>
         </div>
 
-        <!-- Popup-Fenster für das hinzufügen einer Iframe-Slide -->
+        <!-- Popup-Fenster für das editieren einer Slide -->
         <div id="editSlide" class="Popup">
-            <button onclick="editSlide()">Ändern</button>
-            <button onclick="closePopup('editSlide')">Abbrechen</button>
+            <h3 id="editSlideTitel">Slide bearbeiten</h3>
+            <form id="editSlideForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="SlideTitleInput">Folientitel:</label>
+                    <input type="text" name="title" id="SlideTitleInput" title="Titel, der auf der Folie angezeigt wird">
+                </div>
+                <div class="form-group">
+                    <label for="SlideCommentInput">Bemerkung:</label>
+                    <input type="text" name="comment" id="SlideCommentInput" title="Bemerkung (wird nicht angezeigt)">
+                </div>
+                <div class="form-group">
+                    <label for="SlideStarttimeInput">Startdatum des Anzeigens:</label>
+                    <input type="datetime-local" name="starttime" id="SlideStarttimeInput" title="Datum/Zeit, ab wann die Folie angezeigt wird">
+                </div>
+                <div class="form-group">
+                    <label for="SlideEndtimeInput">Enddatum des Anzeigens:</label>
+                    <input type="datetime-local" name="endtime" id="SlideEndtimeInput" title="Datum/Zeit, bis wann die Folie angezeigt wird">
+                </div>
+                <div id="slideId" class="metadata" style="display: none;"></div>
+            </form>
+            <div class="button-container">
+                <button onclick="editSlide()">Ändern</button>
+                <button onclick="closePopup('editSlide')">Abbrechen</button>
+            </div>
         </div>
 
         <!-- Popup-Fenster für die Bestätigungsmeldungen -->
         <div id="confirmationMessage" class="Popup">
             <h3 id="confirmationMessageTitel"></h3>
             <p id="confirmationMessageText"></p>
-            <button onclick="closePopup('confirmationMessage')">Schliessen</button>
+            <div class="button-container">
+                <button onclick="closePopup('confirmationMessage')">Schliessen</button>
+            </div>
         </div>
 
     </body>
