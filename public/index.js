@@ -15,15 +15,15 @@ function initSite() {
 
     // Falls Prozess gedebugt werden soll, gebe erhaltene Variablen aus
     if (reqparam.debug == 'true') {
-        console.log('URL-Parameter:', reqparam);
-        console.log('aufgekommene Fehler:', errors);
-        console.log('Seitentitel:', sitetitle)
-        console.log('Seitenautor:', siteauthor)
-        console.log('Favicon-Pfad:', favicon);
-        console.log('Slides-Pfad:', slidepath);
-        console.log('Slidedauer:', slideduration);
-        console.log('Wetterdaten:', weatherdata);
-        console.log('Hydrodaten:', hydrodata);
+        console.log('URL-Parameter (reqparam):', reqparam);
+        console.log('aufgekommene Fehler (errors):', errors);
+        console.log('Seitentitel (sitetitle):', sitetitle)
+        console.log('Seitenautor (siteauthor):', siteauthor)
+        console.log('Favicon-Pfad (favicon):', favicon);
+        console.log('Slides-Pfad (slidepath):', slidepath);
+        console.log('Slidedauer (slideduration):', slideduration);
+        console.log('Wetterdaten (weatherdata):', weatherdata);
+        console.log('Hydrodaten (hydrodata):', hydrodata);
     };
 
   };
