@@ -1,24 +1,26 @@
 html {
-    --maincolor: #ff0000;
-    --color-dark: black;
-    --color-light: white;
+    --primary-color: black;
+    --dark-color: black;
+    --light-color: white;
     --titlesize: 40px;
     --textsize: 20px;
+    --textfont: Arial, sans-serif;
 }
 
 body {
     margin: 0;
     padding: 0;
-    height: 100vh; /* 100% der Bildschirmhöhe */
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    font-family: Arial, sans-serif;
+    font-family: var(--textfont);
+    font-size: var(--textsize);
 }
 
 
 /* ALLGEMEINE STYLEDEFINITIONEN */
 .textsizehalf {
-  font-size: calc(var(--textsize) / 2);
+    font-size: calc(var(--textsize) / 2);
 }
 .textsizedouble {
     font-size: calc(var(--textsize) * 2);
@@ -37,21 +39,24 @@ main {
 .fade {
     animation-name: fade;
     animation-duration: 0.5s;
-  }
+}
 
 @keyframes fade {
     from {opacity: 0.5} 
     to {opacity: 1}
-  }
+}
 
 .slideContent {
-    background-color: var(--color-light);
+    background-color: var(--light-color);
     min-width: 100%;
     min-height: 100vh;
     max-width: 100vw;
     max-height: 120vh;
     object-fit: cover;
-  }
+    display: block;
+    margin-top: 50vh;
+    transform: translateY(-50%);
+}
 
 .slideTitle {
     position: absolute;
@@ -60,8 +65,8 @@ main {
     z-index: 2;
     margin: 0;
     font-size: var(--titlesize);
-    color: var(--color-dark);
-  }
+    color: var(--dark-color);
+}
 .slideTitle::after {
     content: "";
     position: absolute;
@@ -69,10 +74,10 @@ main {
     z-index: -1;
     width: 5000px;
     height: 5000px;
-    background-color: var(--color-light);
+    background-color: var(--light-color);
     opacity: 0.8;
     transform: rotate(-8deg) translateX(-3000px);
-  }
+}
 
 
 /* FUSSZEILE */
@@ -81,33 +86,33 @@ footer {
     bottom: 0;
     width: 100%;
     padding-top: 10px;
-    background-color: #ff0000;
-    color: white;
-  }
+    background-color: var(--primary-color);
+    color: var(--light-color);
+}
 
 table {
     width: 100%;
     padding: 10px;
     bottom: 0;
-  }
+}
 
 td {
     vertical-align: top;
     line-height: 150%;
     font-size: var(--textsize);
     min-width: 60px;
-  }
+}
 
 .col-9 {
     right: 0;
     text-align: right;
     max-width: 20vw;
-  }
+}
 
 .weathersymbol img {
     height: calc(var(--textsize) * 3);
-  }
+}
 
 .windarrow img {
     height: calc(var(--textsize) * 1.5);
-  }
+}
