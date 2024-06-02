@@ -61,6 +61,8 @@ function updateClock() {
     var seconds = currentTime.getSeconds();
 
     // Füge führende Nullen hinzu, wenn nötig
+    month = (month < 10 ? "0" : "") + month;
+    day = (day < 10 ? "0" : "") + day;
     hours = (hours < 10 ? "0" : "") + hours;
     minutes = (minutes < 10 ? "0" : "") + minutes;
     seconds = (seconds < 10 ? "0" : "") + seconds;
@@ -77,7 +79,8 @@ function updateClock() {
 
     // Setze Datum und Zeit bei current-date-time
     if (document.getElementById("current-date-time")) {
-      document.getElementById("current-date-time").innerHTML = day + "." + month + "." + year + "<br>" + hours + ":" + minutes;
+      //document.getElementById("current-date-time").innerHTML = day + "." + month + "." + year + "<br>" + hours + ":" + minutes;
+      document.getElementById("current-date-time").innerHTML = `${day}.${month}.${year}<br><span class="textsizedouble">${hours}:${minutes}</span>`;
     };
 
     // warte eine Sekunde und führe Funktion nochmals aus (dauerschleife)

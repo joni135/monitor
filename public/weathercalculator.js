@@ -11,13 +11,13 @@ function displayWeather() {
       document.getElementById("currwther_symbol").innerHTML = `<img src="${weatherdata.current.symbol_code}.svg">`;
     };
     if (document.getElementById("currwther_temperatur")) {
-      document.getElementById("currwther_temperatur").innerHTML = `${Math.round(weatherdata.current.TTT_C)}°c<br>(${Math.round(weatherdata.current.TTTFEEL_C)}°c)`;
+      document.getElementById("currwther_temperatur").innerHTML = `${Math.round(weatherdata.current.TTT_C)}°C<br>(${Math.round(weatherdata.current.TTTFEEL_C)}°C)`;
     };
     if (document.getElementById("currwther_rain")) {
-      document.getElementById("currwther_rain").innerHTML = `${Math.round(weatherdata.current.PROBPCP_PERCENT)}%<br>${weatherdata.current.RRR_MM}mm`;
+      document.getElementById("currwther_rain").innerHTML = `${Math.round(weatherdata.current.PROBPCP_PERCENT)}%<br>${weatherdata.current.RRR_MM} mm`;
     };
     if (document.getElementById("currwther_wind")) {
-      document.getElementById("currwther_wind").innerHTML = `${Math.round(weatherdata.current.FF_KMH)}km/h<br><img style="transform-origin: 50% 50%; transform: rotate(${weatherdata.current.DD_DEG}deg);" src="winddir.svg">`;
+      document.getElementById("currwther_wind").innerHTML = `${Math.round(weatherdata.current.FF_KMH)} km/h<br><img style="transform-origin: 50% 50%; transform: rotate(${weatherdata.current.DD_DEG}deg);" src="winddir.svg">`;
     };
     
     if (document.getElementById("aftnxtwther_text") && reqparam.debug == 'true') {
@@ -30,13 +30,13 @@ function displayWeather() {
       document.getElementById("aftnxtwther_symbol").innerHTML = `<img src="${weatherdata.afternext.symbol_code}.svg">`;
     };
     if (document.getElementById("aftnxtwther_temperatur")) {
-      document.getElementById("aftnxtwther_temperatur").innerHTML = `${Math.round(weatherdata.afternext.TTT_C)}°c<br>(${Math.round(weatherdata.afternext.TTTFEEL_C)}°c)`;
+      document.getElementById("aftnxtwther_temperatur").innerHTML = `${Math.round(weatherdata.afternext.TTT_C)}°C<br>(${Math.round(weatherdata.afternext.TTTFEEL_C)}°C)`;
     };
     if (document.getElementById("aftnxtwther_rain")) {
-      document.getElementById("aftnxtwther_rain").innerHTML = `${Math.round(weatherdata.afternext.PROBPCP_PERCENT)}%<br>${weatherdata.afternext.RRR_MM}mm`;
+      document.getElementById("aftnxtwther_rain").innerHTML = `${Math.round(weatherdata.afternext.PROBPCP_PERCENT)}%<br>${weatherdata.afternext.RRR_MM} mm`;
     };
     if (document.getElementById("aftnxtwther_wind")) {
-      document.getElementById("aftnxtwther_wind").innerHTML = `${Math.round(weatherdata.afternext.FF_KMH)}km/h<br><img style="transform-origin: 50% 50%; transform: rotate(${weatherdata.afternext.DD_DEG}deg);" src="winddir.svg">`;
+      document.getElementById("aftnxtwther_wind").innerHTML = `${Math.round(weatherdata.afternext.FF_KMH)} km/h<br><img style="transform-origin: 50% 50%; transform: rotate(${weatherdata.afternext.DD_DEG}deg);" src="winddir.svg">`;
     };
   };
 
@@ -45,10 +45,10 @@ function displayWeather() {
 function displayHydro() {
   
     if (document.getElementById("hydro_discharge")) {
-      document.getElementById("hydro_discharge").innerHTML = `${Math.round(hydrodata.discharge)}m&#0178;/sek`;
+      document.getElementById("hydro_discharge").innerHTML = `${Math.round(hydrodata.discharge)} m&sup3;/sek`;
     };
     if (document.getElementById("hydro_watertemp")) {
-      document.getElementById("hydro_watertemp").innerHTML = `${Math.round(hydrodata.waterTemperature)}°c`;
+      document.getElementById("hydro_watertemp").innerHTML = `${Math.round(hydrodata.waterTemperature)}°C`;
     };
   };
 
@@ -58,35 +58,26 @@ function checkRuderverbot() {
     statustext = "";
     const symbolcode_badweather = [14, 16, 26, 28, 30]
   
-    if (Math.round(weatherdata.current.FF_KMH) > 25) { // Wind > 25kmh
-      statustext = "Achtung starker Wind";
-    };
-    if (Math.round(weatherdata.afternext.FF_KMH) > 25) { // Wind > 25kmh
-      statustext = "Achtung starker Wind in 2h";
-    };
-    if (Math.round(hydrodata.discharge) > 300) { // Durchfluss > 300m2
-      statustext = "Starke Strömung, nur bis 6er!";
-    };
-    if (weatherdata.afternext.symbol_code < 0) { // in 2h Dunkel
-      statustext = "Es wird Dunkel...";
-    };
-    if (weatherdata.current.symbol_code < 0 && weatherdata.afternext.symbol_code < 0) { // komplett Dunkel
-      statustext = "RUDERVERBOT! (Dunkelheit)";
-    };
-    if (symbolcode_badweather.includes(weatherdata.current.symbol_code)) { // Schlechtwetter (Gewitter)
-      statustext = "RUDERVERBOT! (Gewitter)";
-    };
-    if (symbolcode_badweather.includes(weatherdata.afternext.symbol_code)) { // Schlechtwetter (Gewitter)
-      statustext = "RUDERVERBOT! (Gewitter in 2h)";
-    };
-    if (Math.round(weatherdata.current.FF_KMH) > 46) { // Wind > 46
-      statustext = "RUDERVERBOT! (Starkwindwarnung)";
-    };
-    if (Math.round(weatherdata.afternext.FF_KMH) > 46) { // Wind > 46
-      statustext = "RUDERVERBOT! (Starkwindwarnung in 2h)";
-    };
     if (Math.round(hydrodata.discharge) > 350) { // Durchfluss > 350m2
       statustext = "RUDERVERBOT! (zu viel Strömung)";
+    } else if (Math.round(hydrodata.discharge) > 300) { // Durchfluss > 300m2
+      statustext = "Starke Strömung, nur bis 6er!";
+    } else if (Math.round(weatherdata.current.FF_KMH) > 46) { // Wind > 46
+      statustext = "RUDERVERBOT! (Starkwindwarnung)";
+    } else if (Math.round(weatherdata.afternext.FF_KMH) > 46) { // Wind > 46
+      statustext = "RUDERVERBOT! (Starkwindwarnung in 2h)";
+    } else if (symbolcode_badweather.includes(weatherdata.current.symbol_code)) { // Schlechtwetter (Gewitter)
+      statustext = "RUDERVERBOT! (Gewitter)";
+    } else if (symbolcode_badweather.includes(weatherdata.afternext.symbol_code)) { // Schlechtwetter (Gewitter)
+      statustext = "RUDERVERBOT! (Gewitter in 2h)";
+    } else if (weatherdata.current.symbol_code < 0 && weatherdata.afternext.symbol_code < 0) { // komplett Dunkel
+      statustext = "RUDERVERBOT! (Dunkelheit)";
+    } else if (weatherdata.afternext.symbol_code < 0) { // in 2h Dunkel
+      statustext = "Es wird Dunkel...";
+    } else if (Math.round(weatherdata.current.FF_KMH) > 25) { // Wind > 25kmh
+      statustext = "Achtung starker Wind";
+    } else if (Math.round(weatherdata.afternext.FF_KMH) > 25) { // Wind > 25kmh
+      statustext = "Achtung starker Wind in 2h";
     };
   
     if (statustext != "") {
