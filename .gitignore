@@ -3,10 +3,15 @@
 #index.conf
 weathercalculator
 test*.*
-public/slides_*/
-*.json
-Thumbs.db
 archiv/
+Thumbs.db
+
+*.jpg
+*.JPG
+*.jpeg
+*.JPEG
+*.png
+*.PNG
 
 ## Node.js system
 

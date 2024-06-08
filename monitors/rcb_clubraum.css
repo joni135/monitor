@@ -29,7 +29,7 @@ body {
 
 
 /* BILDERSHOWDARSTELLUNG*/
-main {
+#slideshow {
     flex: 1;
     max-height: 100vh;
     overflow: hidden;
@@ -104,8 +104,34 @@ main {
 }
 
 
+/* INFOLEISTE */
+#infocarousel {
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    white-space: nowrap;
+    background-color: var(--light-color);
+}
+
+.carousel-text {
+    animation: scroll 10s linear infinite;
+    font-weight: bold;
+    line-height: calc(var(--textsize) * 2);
+    color: var(--primary-color);
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+
 /* FUSSZEILE */
-footer {
+#footer {
     bottom: 0;
     width: 100%;
     padding-top: 10px;

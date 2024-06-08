@@ -1,9 +1,83 @@
+// Alle Infos aus Datei auslesen (per API-Request)
+function loadInfos() {  
+
+    // HTML-API-Abfrage auf eigene Node.js-App machen, um alle 
+    var inforequest = new XMLHttpRequest();
+    inforequest.open('GET', `/getinfos?slidefolder=${datapath}`, true);
+
+    inforequest.onload = function () {
+      if (inforequest.status == 200) {
+        infosData = JSON.parse(inforequest.responseText);
+        if (reqparam.debug == 'true') {
+          console.log('Infotexte: ', infosData);
+        };
+
+        renderInfos(infosData);
+      }
+    };
+
+    inforequest.send();
+  };
+
+
+// Alle Infos auflisten
+function renderInfos(infosData) {
+    var infotableContainer = document.getElementById('infotable');
+    infotableContainer.innerHTML = `
+        <tr id="kopfzeile">
+            <th>Text</th>
+            <th>Informationen</th>
+            <th>Bearbeiten</th>
+        </tr>`;
+
+    // Einzelne Infos in HTML einbetten
+    for (var i = 0; i < infosData.length; i++) {
+      if (infosData[i]) {
+        var infoData = infosData[i];
+
+        // Erstelle infoElement (Tabellenzeile)
+        var info = document.createElement('tr');
+        info.id = 'info-' + (i + 1);
+        info.className = `infoElement`;
+        
+        // Erstelle Spalte Text
+        var infoText = document.createElement('td');
+        infoText.className = 'infoText';
+        infoText.innerHTML = '<b>'+infoData.text+'</b>';
+        info.appendChild(infoText);
+
+        // Erstelle Spalte Beschreibung
+        var infoDescription = document.createElement('td');
+        infoDescription.className = 'infoDescription';
+        infoDescription.innerHTML = `
+            Bemerkung: ${infoData.comment}<br>
+            Zeitrahmen: ${infoData.starttime} - ${infoData.endtime}`;
+            info.appendChild(infoDescription);
+
+        // Erstelle Spalte Buttons
+        var infoButtons = document.createElement('td');
+        infoButtons.className = 'infoButtons';
+        infoButtons.innerHTML = `
+            <!-- <button id="buttonUp" onclick="infoUp('${infoData.id}')"><i class="fa fa-arrow-up"></i></button> -->
+            <!-- <button id="buttonDown" onclick="infoDown('${infoData.id}')"><i class="fa fa-arrow-down"></i></button> -->
+            <button id="buttonEdit" onclick="openInfoEditPopup('${infoData.id}')"><i class="fa fa-pencil"></i></button>
+            <button id="buttonDelete" onclick="infoDelete('${infoData.id}')"><i class="fa fa-trash"></i></button>
+            `;
+        info.appendChild(infoButtons);
+        
+        infotableContainer.appendChild(info);
+      
+      };
+    };
+  };
+
+
 // Alle Slides aus Datei auslesen (per API-Request)
 function loadSlides() {  
 
     // HTML-API-Abfrage auf eigene Node.js-App machen, um alle 
     var sliderequest = new XMLHttpRequest();
-    sliderequest.open('GET', `/getslides?slidefolder=${slidepath}`, true);
+    sliderequest.open('GET', `/getslides?slidefolder=${datapath}`, true);
 
     sliderequest.onload = function () {
       if (sliderequest.status == 200) {
@@ -75,7 +149,7 @@ function renderSlides(slidesData) {
         slideButtons.innerHTML = `
             <button id="buttonUp" onclick="slideUp('${slideData.id}')"><i class="fa fa-arrow-up"></i></button>
             <button id="buttonDown" onclick="slideDown('${slideData.id}')"><i class="fa fa-arrow-down"></i></button>
-            <button id="buttonEdit" onclick="openEditPopup('${slideData.id}')"><i class="fa fa-pencil"></i></button>
+            <button id="buttonEdit" onclick="openSlideEditPopup('${slideData.id}')"><i class="fa fa-pencil"></i></button>
             <button id="buttonDelete" onclick="slideDelete('${slideData.id}')"><i class="fa fa-trash"></i></button>
             `;
         slide.appendChild(slideButtons);
@@ -97,16 +171,30 @@ function openPopup(PopupId) {
     var datetimeNOW = new Date();
     var adjustedDatetime = new Date(datetimeNOW.getTime() - (datetimeNOW.getTimezoneOffset() * 60000)); // for Timezone
     var formatedDatetime = adjustedDatetime.toISOString().substring(0,16); // For minute precision
+
+    var datetimeField = document.getElementById("InfoStarttimeInput");
+        datetimeField.value = formatedDatetime;
+        datetimeField.min = formatedDatetime;
+    var datetimeField = document.getElementById("InfoEndtimeInput");
+        datetimeField.min = formatedDatetime;
+
+    var datetimeField = document.getElementById("EditInfoStarttimeInput");
+        datetimeField.min = formatedDatetime;
+    var datetimeField = document.getElementById("EditInfoEndtimeInput");
+        datetimeField.min = formatedDatetime;
+
     var datetimeField = document.getElementById("ImageStarttimeInput");
         datetimeField.value = formatedDatetime;
         datetimeField.min = formatedDatetime;
     var datetimeField = document.getElementById("ImageEndtimeInput");
         datetimeField.min = formatedDatetime;
+
     var datetimeField = document.getElementById("IframeStarttimeInput");
         datetimeField.value = formatedDatetime;
         datetimeField.min = formatedDatetime;
     var datetimeField = document.getElementById("IframeEndtimeInput");
         datetimeField.min = formatedDatetime;
+
     var datetimeField = document.getElementById("SlideStarttimeInput");
         datetimeField.min = formatedDatetime;
     var datetimeField = document.getElementById("SlideEndtimeInput");
@@ -119,6 +207,131 @@ function closePopup(PopupId) {
     document.getElementById('overlay').style.display = 'none';
     document.getElementById('confirmationMessage').style.color = 'black';
     document.getElementById(PopupId).style.display = 'none';
+  };
+
+
+// Funktion zum hinzufügen eines Info-Textes
+function addInfo() {
+
+    // Prüfe ob überhaupt ein Text angegeben wurde
+    var textInput = document.getElementById('InfoTextInput');
+
+    if (textInput.value) {
+        // Info-Daten hochladen und antwort behandeln
+        const form = document.getElementById('addInfoForm');
+        const formData = new FormData(form);
+
+        fetch(`/uploadinfo?slidefolder=${datapath}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            return response.text();
+        })
+        .then(data => {
+            const responseJson = JSON.parse(data);
+        
+            document.getElementById('confirmationMessageTitel').innerHTML = responseJson.title;
+            document.getElementById('confirmationMessageText').innerHTML = responseJson.content;
+            if (responseJson.fatal === true) {
+                document.getElementById('confirmationMessage').style.color = 'red';
+            } else {
+                renderInfos(responseJson.infosData)
+            };
+        
+            document.getElementById('addInfo').style.display = 'none';
+            document.getElementById('confirmationMessage').style.display = 'block';
+        });
+    } else {
+        // Keine URL angegeben
+        document.getElementById('confirmationMessageTitel').innerHTML = 'Info-Text konnte nicht erstellt werden';
+        document.getElementById('confirmationMessageText').innerHTML = 'Es ist kein Text für die Info angegeben.';
+        document.getElementById('confirmationMessage').style.color = 'red';            
+        document.getElementById('addIframeSlide').style.display = 'none';
+        document.getElementById('confirmationMessage').style.display = 'block';
+    };
+  };
+
+
+// Popup-Fenster für das Bearbeiten der Info öffnen
+function openInfoEditPopup(infoId) {
+    document.getElementById('editInfoTitel').innerHTML = `Info "${infoId}" bearbeiten`;
+    document.getElementById('infoId').innerHTML = infoId;
+    openPopup('editInfo');
+
+    // setze aktuelle Werte in Formular
+    for (var i = 0; i < infosData.length; i++) {
+        if (infosData[i].id === infoId) {
+            var infoPositionId = i;
+        };
+    };
+    var EditInfoTextInput = document.getElementById('EditInfoTextInput');
+        EditInfoTextInput.value = infosData[infoPositionId].text;
+    var EditInfoCommentInput = document.getElementById('EditInfoCommentInput');
+        EditInfoCommentInput.value = infosData[infoPositionId].comment;
+    var EditInfoStarttimeInput = document.getElementById('EditInfoStarttimeInput');
+        EditInfoStarttimeInput.value = infosData[infoPositionId].starttime;
+    var EditInfoEndtimeInput = document.getElementById('EditInfoEndtimeInput');
+        EditInfoEndtimeInput.value = infosData[infoPositionId].endtime;
+    
+  };
+
+
+// Funktion zum bearbeiten einer Info
+function editInfo() {
+    const infoId = document.getElementById('infoId').innerHTML;
+
+    // Neue Daten hochladen und antwort behandeln
+    const form = document.getElementById('editInfoForm');
+    const formData = new FormData(form);
+
+    fetch(`/editinfo?slidefolder=${datapath}&infoid=${infoId}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        return response.text();
+    })
+    .then(data => {
+        const responseJson = JSON.parse(data);
+    
+        document.getElementById('confirmationMessageTitel').innerHTML = responseJson.title;
+        document.getElementById('confirmationMessageText').innerHTML = responseJson.content;
+        if (responseJson.fatal === true) {
+            document.getElementById('confirmationMessage').style.color = 'red';
+        } else {
+            renderInfos(responseJson.infosData)
+        };
+    
+        document.getElementById('editInfo').style.display = 'none';
+        document.getElementById('confirmationMessage').style.display = 'block';
+    });
+  };
+
+
+// Funktion zum löschen einer Info
+function infoDelete(infoId) {
+
+    var infodeleterequest = new XMLHttpRequest();
+    infodeleterequest.open('GET', `/deleteinfo?slidefolder=${datapath}&infoid=${infoId}`, true);
+    
+    infodeleterequest.onload = function () {
+
+        if (infodeleterequest.status == 200) {
+            responseJson = JSON.parse(infodeleterequest.responseText);
+            renderInfos(responseJson.infosData);
+        } else {
+            document.getElementById('confirmationMessage').style.color = 'red';
+        };
+        
+        document.getElementById('confirmationMessageTitel').innerHTML = responseJson.title;
+        document.getElementById('confirmationMessageText').innerHTML = responseJson.content;
+
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('confirmationMessage').style.display = 'block';
+    };
+  
+    infodeleterequest.send();
   };
 
 
@@ -136,7 +349,7 @@ function addImageSlide() {
             const form = document.getElementById('addImageSlideForm');
             const formData = new FormData(form);
 
-            fetch(`/uploadimage?slidefolder=${slidepath}`, {
+            fetch(`/uploadimage?slidefolder=${datapath}`, {
                 method: 'POST',
                 body: formData
             })
@@ -188,7 +401,7 @@ function addIframeSlide() {
         const form = document.getElementById('addIframeSlideForm');
         const formData = new FormData(form);
 
-        fetch(`/uploadiframe?slidefolder=${slidepath}`, {
+        fetch(`/uploadiframe?slidefolder=${datapath}`, {
             method: 'POST',
             body: formData
         })
@@ -222,7 +435,7 @@ function addIframeSlide() {
 
 
 // Popup-Fenster für das Bearbeiten der Slide öffnen
-function openEditPopup(slideId) {
+function openSlideEditPopup(slideId) {
     document.getElementById('editSlideTitel').innerHTML = `Slide "${slideId}" bearbeiten`;
     document.getElementById('slideId').innerHTML = slideId;
     openPopup('editSlide');
@@ -235,6 +448,8 @@ function openEditPopup(slideId) {
     };
     var SlideTitleInput = document.getElementById('SlideTitleInput');
         SlideTitleInput.value = slidesData[slidePositionId].title;
+    var SlideCommentInput = document.getElementById('SlideCommentInput');
+        SlideCommentInput.value = slidesData[slidePositionId].comment;
     var SlideStarttimeInput = document.getElementById('SlideStarttimeInput');
         SlideStarttimeInput.value = slidesData[slidePositionId].starttime;
     var SlideEndtimeInput = document.getElementById('SlideEndtimeInput');
@@ -251,7 +466,7 @@ function editSlide() {
     const form = document.getElementById('editSlideForm');
     const formData = new FormData(form);
 
-    fetch(`/editslide?slidefolder=${slidepath}&slideid=${slideId}`, {
+    fetch(`/editslide?slidefolder=${datapath}&slideid=${slideId}`, {
         method: 'POST',
         body: formData
     })
@@ -280,7 +495,7 @@ function editSlide() {
 function slideDelete(slideId) {
 
     var slidedeleterequest = new XMLHttpRequest();
-    slidedeleterequest.open('GET', `/deleteslide?slidefolder=${slidepath}&slideid=${slideId}`, true);
+    slidedeleterequest.open('GET', `/deleteslide?slidefolder=${datapath}&slideid=${slideId}`, true);
     
     slidedeleterequest.onload = function () {
 
@@ -306,7 +521,7 @@ function slideDelete(slideId) {
 function slideUp(slideId) {
 
     var slidechangerequest = new XMLHttpRequest();
-    slidechangerequest.open('GET', `/changeorderslideup?slidefolder=${slidepath}&slideid=${slideId}`, true);
+    slidechangerequest.open('GET', `/changeorderslideup?slidefolder=${datapath}&slideid=${slideId}`, true);
     
     slidechangerequest.onload = function () {
 
@@ -332,7 +547,7 @@ function slideUp(slideId) {
 function slideDown(slideId) {
 
     var slidechangerequest = new XMLHttpRequest();
-    slidechangerequest.open('GET', `/changeorderslidedown?slidefolder=${slidepath}&slideid=${slideId}`, true);
+    slidechangerequest.open('GET', `/changeorderslidedown?slidefolder=${datapath}&slideid=${slideId}`, true);
     
     slidechangerequest.onload = function () {
 

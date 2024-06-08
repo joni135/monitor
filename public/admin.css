@@ -75,7 +75,7 @@ a:hover {
 }
 
 
-/* SLIDETABELLE */
+/* MAIN CONTENT */
 main {
     margin: auto;
 }
@@ -106,6 +106,12 @@ button:active {
     transform: translateY(1px);
 }
 
+/* INFO-ADMIN */
+.infoText {
+    width: 30vw;
+}
+
+/* SLIDESHOW-ADMIN */
 .slidePreview {
     width: 20vw;
     height: 12vw;

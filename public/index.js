@@ -20,7 +20,7 @@ function initSite() {
         console.log('Seitentitel (sitetitle):', sitetitle)
         console.log('Seitenautor (siteauthor):', siteauthor)
         console.log('Favicon-Pfad (favicon):', favicon);
-        console.log('Slides-Pfad (slidepath):', slidepath);
+        console.log('Slides- und Datenpfad (datapath):', datapath);
         console.log('Slidedauer (slideduration):', slideduration);
         console.log('Wetterdaten (weatherdata):', weatherdata);
         console.log('Hydrodaten (hydrodata):', hydrodata);

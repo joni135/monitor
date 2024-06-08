@@ -1,0 +1,54 @@
+{
+    "slideduration": 3,
+    "weatherdata": {
+        "weather": "weather_neuenhof.json",
+        "hydro": "hydrodata_baden_limmat.json"
+    },
+    "infos": [
+        {
+            "id": "euch allne en schöne Suntig :)",
+            "text": "euch allne en schöne Suntig",
+            "comment": "",
+            "starttime": "2024-06-08T22:02",
+            "endtime": "2024-06-09T10:00"
+        }
+    ],
+    "slides": [
+        {
+            "id": "CAM_7522.JPG",
+            "type": "img",
+            "path": "./rcb_clubraum//CAM_7522.JPG",
+            "title": "Lehrgang 2024",
+            "comment": "",
+            "starttime": "2024-06-01T19:51",
+            "endtime": ""
+        },
+        {
+            "id": "CAM_6668.JPG",
+            "type": "img",
+            "path": "./rcb_clubraum//CAM_6668.JPG",
+            "title": "Lauerz 2024 - kalt und nass",
+            "comment": "",
+            "starttime": "2024-06-01T19:47",
+            "endtime": ""
+        },
+        {
+            "id": "CAM_8098.JPG",
+            "type": "img",
+            "path": "./rcb_clubraum//CAM_8098.JPG",
+            "title": "",
+            "comment": "",
+            "starttime": "2024-06-01T19:50",
+            "endtime": ""
+        },
+        {
+            "id": "20221211_085227.jpg",
+            "type": "img",
+            "path": "rcb_clubraum/20221211_085227.jpg",
+            "title": "",
+            "comment": "te",
+            "starttime": "",
+            "endtime": ""
+        }
+    ]
+}

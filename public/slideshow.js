@@ -5,7 +5,7 @@ function loadSlides() {
 
     // HTML-API-Abfrage auf eigene Node.js-App machen, um alle Slides abzurufen
     var sliderequest = new XMLHttpRequest();
-    sliderequest.open('GET', `/getslides?slidefolder=${slidepath}`, true);
+    sliderequest.open('GET', `/getslides?slidefolder=${datapath}`, true);
 
     sliderequest.onload = function () {
       if (sliderequest.status == 200) {
@@ -83,16 +83,22 @@ function loadSlides() {
 var slideIndex = 0;
 
 function showSlides() {
-    var slides = document.getElementsByClassName("slideContainer");
-    for (var i = 0; i < slides.length; i++) {
-        slides[i].classList.remove('active');
-        slides[i].style.display = "none";  
+    try {
+
+      var slides = document.getElementsByClassName("slideContainer");
+      for (var i = 0; i < slides.length; i++) {
+          slides[i].classList.remove('active');
+          slides[i].style.display = "none";  
+      };
+      slideIndex++;
+      if (slideIndex > slides.length) {
+          slideIndex = 1;
+      };
+      slides[slideIndex - 1].classList.add('active');
+      slides[slideIndex-1].style.display = "block"; 
+      setTimeout(showSlides, slideduration*1000);
+    
+    } catch(err) {
+      console.error(`Fehler beim anzeigen der Slides: ${err}`)
     };
-    slideIndex++;
-    if (slideIndex > slides.length) {
-        slideIndex = 1;
-    };
-    slides[slideIndex - 1].classList.add('active');
-    slides[slideIndex-1].style.display = "block"; 
-    setTimeout(showSlides, slideduration*1000);
   };

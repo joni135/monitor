@@ -27,6 +27,7 @@
             
             // Funktion zum laden der Seite
             initSite();
+            loadInfos();
             loadSlides();
 
             // Ladescreen entfernen
@@ -53,10 +54,16 @@
             <a id="monitorpreview" href="javascript:void(0);" title="" onclick="openMonitorpreview()">Monitorvorschau</a>
         </header>
         <main>
-            <button onclick="openPopup('addImageSlide')">Bild-Slide hinzufügen</button>
-            <button onclick="openPopup('addIframeSlide')">Iframe-Slide hinzufügen</button>
-            <table id="slidetable">
-            </table>
+            <div id="info-admin" class="container">
+                <button onclick="openPopup('addInfo')">Info-Text hinzufügen</button>
+                <table id="infotable"></table>
+            </div>
+            <div class="placeholder" style="height: 20px;"></div>
+            <div id="slideshow-admin" class="container">
+                <button onclick="openPopup('addImageSlide')">Bild-Slide hinzufügen</button>
+                <button onclick="openPopup('addIframeSlide')">Iframe-Slide hinzufügen</button>
+                <table id="slidetable"></table>
+            </div>
         </main>
         <footer>
             <p id="copyright">Copyright by Jonathan Kaufmann</p>
@@ -64,6 +71,61 @@
 
         <!-- Overlay bei aktiviertem Popup-Fenster -->
         <div id="overlay"></div>
+
+        <!-- Popup-Fenster für das hinzufügen einer Info -->
+        <div id="addInfo" class="Popup">
+            <h3 id="addInfoTitel">Info-Text hinzufügen</h3>
+            <form id="addInfoForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="InfoTextInput" class="mandatory">Text:</label>
+                    <input type="text" name="text" id="InfoTextInput" title="Text, der auf dem Monitor angezeigt wird">
+                </div>
+                <div class="form-group">
+                    <label for="InfoCommentInput">Bemerkung:</label>
+                    <input type="text" name="comment" id="InfoCommentInput" title="Bemerkung (wird nicht angezeigt)">
+                </div>
+                <div class="form-group">
+                    <label for="InfoStarttimeInput">Startdatum des Anzeigens:</label>
+                    <input type="datetime-local" name="starttime" id="InfoStarttimeInput" title="Datum/Zeit, ab wann die Info angezeigt wird">
+                </div>
+                <div class="form-group">
+                    <label for="InfoEndtimeInput">Enddatum des Anzeigens:</label>
+                    <input type="datetime-local" name="endtime" id="InfoEndtimeInput" title="Datum/Zeit, bis wann die Info angezeigt wird">
+                </div>
+            </form>
+            <div class="button-container">
+                <button onclick="addInfo()">Hinzufügen</button>
+                <button onclick="closePopup('addInfo')">Abbrechen</button>
+            </div>
+        </div>
+
+        <!-- Popup-Fenster für das editieren einer Info -->
+        <div id="editInfo" class="Popup">
+            <h3 id="editInfoTitel">Info bearbeiten</h3>
+            <form id="editInfoForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="EditInfoTextInput">Text:</label>
+                    <input type="text" name="text" id="EditInfoTextInput" title="Text, der auf dem Monitor angezeigt wird">
+                </div>
+                <div class="form-group">
+                    <label for="EditInfoCommentInput">Bemerkung:</label>
+                    <input type="text" name="comment" id="EditInfoCommentInput" title="Bemerkung (wird nicht angezeigt)">
+                </div>
+                <div class="form-group">
+                    <label for="EditInfoStarttimeInput">Startdatum des Anzeigens:</label>
+                    <input type="datetime-local" name="starttime" id="EditInfoStarttimeInput" title="Datum/Zeit, ab wann die Info angezeigt wird">
+                </div>
+                <div class="form-group">
+                    <label for="EditInfoEndtimeInput">Enddatum des Anzeigens:</label>
+                    <input type="datetime-local" name="endtime" id="EditInfoEndtimeInput" title="Datum/Zeit, bis wann die Info angezeigt wird">
+                </div>
+                <div id="infoId" class="metadata" style="display: none;"></div>
+            </form>
+            <div class="button-container">
+                <button onclick="editInfo()">Ändern</button>
+                <button onclick="closePopup('editInfo')">Abbrechen</button>
+            </div>
+        </div>
 
         <!-- Popup-Fenster für das hinzufügen einer Bild-Slide -->
         <div id="addImageSlide" class="Popup">

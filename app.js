@@ -15,6 +15,7 @@ const config = JSON.parse(configFile);
 const app = express();
 const port = 8080;
 app.use(express.static(path.join(__dirname, config.maininfos.system.publicfolder)));
+app.use(express.static(path.join(__dirname, config.maininfos.system.monitorsfolder)));
 
 
 
@@ -98,10 +99,24 @@ app.get('/', (req, res) => {
     };
 
 
+    // Lese Monitorspezifische Konfigurationen
+    try {
+        monitorconfigFile = fs.readFileSync(path.join(__dirname, config.maininfos.system.monitorsfolder, monitorparams.datapath, config.maininfos.monitorconfigfile));
+        monitorconfig = JSON.parse(monitorconfigFile);
+    } catch(err) {
+        Errors.push ({
+            'title': `Monitorspezifische Konfigurationen konnten nicht gelesen werden`,
+            'content': `Die Dateien für die Monitorspezifischen Konfigurationen konnten nicht gelesen werden!\n${err.message}`,
+            'fatal': true
+        });
+        monitorconfig = {}
+    }
+
+
     // Ergänze Wetterdaten wenn benötigt
     try {
-        if (monitorparams.weatherdata.weather) {
-            weatherdata = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorparams.weatherdata.weather);
+        if (monitorconfig.weatherdata.weather) {
+            weatherdata = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorconfig.weatherdata.weather);
             app.use(express.static(path.join(__dirname, config.maininfos.weathercalculator.symbolpath)));
         } else {
             weatherdata = JSON.stringify({});
@@ -118,8 +133,8 @@ app.get('/', (req, res) => {
 
     // Ergänze Hydrodaten wenn benötigt
     try {
-        if (monitorparams.weatherdata.hydro) {
-            hydrodata = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorparams.weatherdata.hydro);
+        if (monitorconfig.weatherdata.hydro) {
+            hydrodata = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorconfig.weatherdata.hydro);
         } else {
             hydrodata = JSON.stringify({});
         };
@@ -153,8 +168,8 @@ app.get('/', (req, res) => {
             const sitetitle = "${config.maininfos.sitetitleprefix+monitorparams.name}";
             const siteauthor = "${config.maininfos.siteauthor}";
             const favicon = "${monitorparams.favicon}";
-            const slidepath = "${monitorparams.slides}";
-            const slideduration = "${monitorparams.slideduration}";
+            const datapath = "${monitorparams.datapath}";
+            const slideduration = "${monitorconfig.slideduration}";
             const weatherdata = ${weatherdata};
             const hydrodata = ${hydrodata};
         </script>`;
@@ -174,7 +189,7 @@ app.get('/', (req, res) => {
         if (reqparam.type === 'admin') {
             htmlFilePath = path.join(__dirname, config.maininfos.system.publicfolder, `admin.html`);
         } else {
-            htmlFilePath = path.join(__dirname, config.maininfos.system.publicfolder, `${monitorparams.file}`);
+            htmlFilePath = path.join(__dirname, config.maininfos.system.monitorsfolder, `${monitorparams.htmlfile}`);
         };
     } else {
         htmlFilePath = path.join(__dirname, config.maininfos.system.publicfolder, `error.html`);
@@ -204,15 +219,294 @@ app.get('/', (req, res) => {
 
 
 
+// Liste alle Infos aus Konfigurationsdatei aus
+app.get('/getinfos', (req, res) => {
+    const parsedUrl = url.parse(req.url, true);
+    const queryParameters = parsedUrl.query;
+    var monitorconfigPath = '';
+    
+
+    if (queryParameters.slidefolder) {
+        monitorconfigPath = path.join(__dirname, config.maininfos.system.monitorsfolder, queryParameters.slidefolder, config.maininfos.monitorconfigfile);
+    } else {
+        res.status(500).send({
+            'title': `Infos konnten nicht gelistet werden`,
+            'content': `Der URL-Parameter SLIDEFOLDER ist nicht angegeben! Dieser ist pflicht...`,
+            'fatal': true
+        });
+    };
+
+    try {
+        const monitorconfigFile = fs.readFileSync(monitorconfigPath);
+        const monitorconfig = JSON.parse(monitorconfigFile);
+        res.status(200).send(monitorconfig.infos);
+    } catch(err) {
+        res.status(500).send({
+            'title': `Infoskonfigurationen konnten nicht geladen werden`,
+            'content': err,
+            'fatal': true
+        });
+    };
+});
+
+
+// POST-Anfrage für das Hochladen einer Info-Nachricht
+app.post('/uploadinfo', (req, res) => {
+    const parsedUrl = url.parse(req.url, true);
+    const queryParameters = parsedUrl.query;
+    var uploadDirectory = '';
+    
+    if (queryParameters.slidefolder) {
+        uploadDirectory = path.join(__dirname, config.maininfos.system.monitorsfolder, queryParameters.slidefolder);
+    } else {
+        res.status(500).send({
+            'title': `Fehler beim erstellen der Info`,
+            'content': `Der URL-Parameter SLIDEFOLDER ist nicht angegeben! Dieser ist pflicht...`,
+            'fatal': true
+        });
+    };
+
+    // Formular parsen und Daten verarbeiten
+    const form = new formidable.IncomingForm();
+
+    form.parse(req, (err, fields) => {
+        if (err) {
+            res.status(500).send({
+                'title': `Fehler beim parsen des HTML-Formulars`,
+                'content': err,
+                'fatal': true
+            });
+        };
+        
+        // Informationen in Infos ergänzen
+        try {
+            // Daten in JSON abspeichern
+            const newInfo = {
+                "id": fields.text[0],
+                "text": fields.text[0],
+                "comment": fields.comment[0],
+                "starttime": fields.starttime[0],
+                "endtime": fields.endtime[0]
+            };
+
+            // bestehende Info-Informationen lesen
+            monitorconfigPath = path.join(uploadDirectory, config.maininfos.monitorconfigfile);
+            const monitorconfigFile = fs.readFileSync(monitorconfigPath);
+            var monitorconfig = JSON.parse(monitorconfigFile);
+
+            // neue Info anhängen und Datei speichern
+            var infosData = monitorconfig.infos
+            //infosData.unshift(newInfo);  // -> fügt Slide am Anfang ein
+            infosData.push(newInfo);
+            monitorconfig.infos = infosData
+            let jsontext = JSON.stringify(monitorconfig, null, 4);
+            fs.writeFile(monitorconfigPath, jsontext, (err) => {
+                if (err) {
+                    res.status(500).send({
+                        'title': `Fehler beim abspeichern der Info-Nachricht`,
+                        'content': err,
+                        'fatal': true
+                    });
+                } else {
+
+                    // Finale Bestätigungsmeldung
+                    res.status(200).send({
+                        'title': `Info-Nachricht erstellt`,
+                        'content': `Info "${fields.text[0]}" erfolgreich erstellt`,
+                        'fatal': false,
+                        'infosData': infosData
+                    });
+                };
+            });
+
+        } catch (err) {
+            res.status(500).send({
+                'title': `Fehler beim abspeichern der Info-Nachrichten`,
+                'content': err,
+                'fatal': true
+            });
+        };
+        
+    });
+    
+});
+
+
+// POST-Anfrage für das bearbeiten einer Info
+app.post('/editinfo', (req, res) => {
+    const parsedUrl = url.parse(req.url, true);
+    const queryParameters = parsedUrl.query;
+    var uploadDirectory = '';
+    
+    if (queryParameters.slidefolder) {
+        uploadDirectory = path.join(__dirname, config.maininfos.system.monitorsfolder, queryParameters.slidefolder);
+    } else {
+        res.status(500).send({
+            'title': `Fehler beim bearbeiten der Info`,
+            'content': `Der URL-Parameter SLIDEFOLDER ist nicht angegeben! Dieser ist pflicht...`,
+            'fatal': true
+        });
+    };
+    if (queryParameters.infoid) {
+        infoId = queryParameters.infoid;
+    } else {
+        res.status(500).send({
+            'title': `Fehler beim bearbeiten der Info`,
+            'content': `Der URL-Parameter INFOID ist nicht angegeben! Dieser ist pflicht...`,
+            'fatal': true
+        });
+    };
+
+    // Formular parsen und Daten verarbeiten
+    const form = new formidable.IncomingForm();
+
+    form.parse(req, (err, fields) => {
+        if (err) {
+            res.status(500).send({
+                'title': `Fehler beim parsen des HTML-Formulars`,
+                'content': err,
+                'fatal': true
+            });
+        };
+        
+        // Informationen in Infosdaten ergänzen
+        try {
+            // bestehende Infos-Informationen lesen
+            monitorconfigPath = path.join(uploadDirectory, config.maininfos.monitorconfigfile);
+            const monitorconfigFile = fs.readFileSync(monitorconfigPath);
+            var monitorconfig = JSON.parse(monitorconfigFile);
+
+            // Info-Index extrahieren
+            var infosData = monitorconfig.infos
+            for (var i = 0; i < infosData.length; i++) {
+                if (infosData[i].id === infoId) {
+                    var infoPositionId = i;
+                };
+            };
+
+            // Infodaten aktualisieren und Datei speichern
+            infosData[infoPositionId].text = fields.text[0];
+            infosData[infoPositionId].comment = fields.comment[0];
+            infosData[infoPositionId].starttime = fields.starttime[0];
+            infosData[infoPositionId].endtime = fields.endtime[0];
+            monitorconfig.infos = infosData
+            let jsontext = JSON.stringify(monitorconfig, null, 4);
+            fs.writeFile(monitorconfigPath, jsontext, (err) => {
+                if (err) {
+                    res.status(500).send({
+                        'title': `Fehler beim abspeichern der Info-Nachricht`,
+                        'content': err,
+                        'fatal': true
+                    });
+                } else {
+
+                    // Finale Bestätigungsmeldung
+                    res.status(200).send({
+                        'title': `Info aktualisiert`,
+                        'content': `Info "${queryParameters.infoid}" erfolgreich aktualisiert`,
+                        'fatal': false,
+                        'infosData': infosData
+                    });
+                };
+            });
+
+        } catch (err) {
+            console.log(err)
+            res.status(500).send({
+                'title': `Fehler beim aktualisieren der Info-Nachrichten`,
+                'content': err,
+                'fatal': true
+            });
+        };
+        
+    });
+    
+});
+
+
+// GET-Anfrage für das löschen einer Info
+app.get('/deleteinfo', (req, res) => {
+    const parsedUrl = url.parse(req.url, true);
+    const queryParameters = parsedUrl.query;
+    var uploadDirectory = '';
+    
+    if (queryParameters.slidefolder) {
+        uploadDirectory = path.join(__dirname, config.maininfos.system.monitorsfolder, queryParameters.slidefolder);
+    } else {
+        res.status(500).send({
+            'title': `Fehler beim löschen der Info`,
+            'content': `Der URL-Parameter SLIDEFOLDER ist nicht angegeben! Dieser ist pflicht...`,
+            'fatal': true
+        });
+    };
+    if (queryParameters.infoid) {
+        infoId = queryParameters.infoid;
+    } else {
+        res.status(500).send({
+            'title': `Fehler beim löschen der Info`,
+            'content': `Der URL-Parameter INFOID ist nicht angegeben! Dieser ist pflicht...`,
+            'fatal': true
+        });
+    };
+
+    try {
+        // bestehende Infos-Informationen lesen
+        monitorconfigPath = path.join(uploadDirectory, config.maininfos.monitorconfigfile);
+        const monitorconfigFile = fs.readFileSync(monitorconfigPath);
+        var monitorconfig = JSON.parse(monitorconfigFile);
+
+        // Info-Index extrahieren
+        var infosData = monitorconfig.infos
+        for (var i = 0; i < infosData.length; i++) {
+            if (infosData[i].id === infoId) {
+                var infoPositionId = i;
+            };
+        };
+
+        // Infodaten löschen und Datei speichern
+        infosData.splice(infoPositionId, 1);
+        monitorconfig.infos = infosData
+        let jsontext = JSON.stringify(monitorconfig, null, 4);
+        fs.writeFile(monitorconfigPath, jsontext, (err) => {
+            if (err) {
+                res.status(500).send({
+                    'title': `Fehler beim löschen der Info-Nachricht`,
+                    'content': err,
+                    'fatal': true
+                });
+            } else {
+
+                // Finale Bestätigungsmeldung
+                res.status(200).send({
+                    'title': `Info gelöscht`,
+                    'content': `Info "${queryParameters.infoid}" erfolgreich gelöscht`,
+                    'fatal': false,
+                    'infosData': infosData
+                });
+            };
+        });
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).send({
+            'title': `Fehler beim löschen der Info-Nachrichten`,
+            'content': err,
+            'fatal': true
+        });
+    };
+    
+});
+
+
 // Liste alle Slides aus Konfigurationsdatei aus
 app.get('/getslides', (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const queryParameters = parsedUrl.query;
-    var slidesConfigPath = '';
+    var monitorconfigPath = '';
     
 
     if (queryParameters.slidefolder) {
-        slidesConfigPath = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder, config.maininfos.slidesconfig);
+        monitorconfigPath = path.join(__dirname, config.maininfos.system.monitorsfolder, queryParameters.slidefolder, config.maininfos.monitorconfigfile);
     } else {
         res.status(500).send({
             'title': `Slides konnten nicht gelistet werden`,
@@ -222,9 +516,9 @@ app.get('/getslides', (req, res) => {
     };
 
     try {
-        const slidesConfigFile = fs.readFileSync(slidesConfigPath);
-        const slides = JSON.parse(slidesConfigFile);
-        res.status(200).send(slides);
+        const monitorconfigFile = fs.readFileSync(monitorconfigPath);
+        const monitorconfig = JSON.parse(monitorconfigFile);
+        res.status(200).send(monitorconfig.slides);
     } catch(err) {
         res.status(500).send({
             'title': `Slideskonfigurationen konnten nicht geladen werden`,
@@ -242,7 +536,7 @@ app.post('/uploadimage', (req, res) => {
     var uploadDirectory = '';
     
     if (queryParameters.slidefolder) {
-        uploadDirectory = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder);
+        uploadDirectory = path.join(__dirname, config.maininfos.system.monitorsfolder, queryParameters.slidefolder);
     } else {
         res.status(500).send({
             'title': `Fehler beim erstellen der Slide`,
@@ -266,7 +560,7 @@ app.post('/uploadimage', (req, res) => {
         // Hochgeladenes Bild ablegen
         const imageData = files.file[0];
         const oldPath = imageData.filepath;
-        const newPath = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder, imageData.originalFilename);
+        const newPath = path.join(uploadDirectory, imageData.originalFilename);
         fs.copyFile(oldPath, newPath, (err) => {
             if (err) {
                 res.status(500).send({
@@ -297,14 +591,17 @@ app.post('/uploadimage', (req, res) => {
             };
 
             // bestehende Slides-Informationen lesen
-            slidesConfigPath = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder, config.maininfos.slidesconfig);
-            const slidesConfigFile = fs.readFileSync(slidesConfigPath);
-            var slidesData = JSON.parse(slidesConfigFile);
+            monitorconfigPath = path.join(uploadDirectory, config.maininfos.monitorconfigfile);
+            const monitorconfigFile = fs.readFileSync(monitorconfigPath);
+            var monitorconfig = JSON.parse(monitorconfigFile);
 
             // neue Slide anhängen und Datei speichern
-            slidesData.unshift(newSlide);
-            let jsontext = JSON.stringify(slidesData, null, 4);
-            fs.writeFile(slidesConfigPath, jsontext, (err) => {
+            var slidesData = monitorconfig.slides
+            //slidesData.unshift(newSlide);  // -> fügt Slide am Anfang ein
+            slidesData.push(newSlide);
+            monitorconfig.slides = slidesData
+            let jsontext = JSON.stringify(monitorconfig, null, 4);
+            fs.writeFile(monitorconfigPath, jsontext, (err) => {
                 if (err) {
                     res.status(500).send({
                         'title': `Fehler beim abspeichern der Informationen zu dem hochgeladenen Bild`,
@@ -343,7 +640,7 @@ app.post('/uploadiframe', (req, res) => {
     var uploadDirectory = '';
     
     if (queryParameters.slidefolder) {
-        uploadDirectory = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder);
+        uploadDirectory = path.join(__dirname, config.maininfos.system.monitorsfolder, queryParameters.slidefolder);
     } else {
         res.status(500).send({
             'title': `Fehler beim erstellen der Slide`,
@@ -378,14 +675,17 @@ app.post('/uploadiframe', (req, res) => {
             };
 
             // bestehende Slides-Informationen lesen
-            slidesConfigPath = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder, config.maininfos.slidesconfig);
-            const slidesConfigFile = fs.readFileSync(slidesConfigPath);
-            var slidesData = JSON.parse(slidesConfigFile);
+            monitorconfigPath = path.join(uploadDirectory, config.maininfos.monitorconfigfile);
+            const monitorconfigFile = fs.readFileSync(monitorconfigPath);
+            var monitorconfig = JSON.parse(monitorconfigFile);
 
             // neue Slide anhängen und Datei speichern
-            slidesData.unshift(newSlide);
-            let jsontext = JSON.stringify(slidesData, null, 4);
-            fs.writeFile(slidesConfigPath, jsontext, (err) => {
+            var slidesData = monitorconfig.slides
+            //slidesData.unshift(newSlide);  // -> fügt Slide am Anfang ein
+            slidesData.push(newSlide);
+            monitorconfig.slides = slidesData
+            let jsontext = JSON.stringify(monitorconfig, null, 4);
+            fs.writeFile(monitorconfigPath, jsontext, (err) => {
                 if (err) {
                     res.status(500).send({
                         'title': `Fehler beim abspeichern der Slide-Informationen`,
@@ -424,7 +724,7 @@ app.post('/editslide', (req, res) => {
     var uploadDirectory = '';
     
     if (queryParameters.slidefolder) {
-        uploadDirectory = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder);
+        uploadDirectory = path.join(__dirname, config.maininfos.system.monitorsfolder, queryParameters.slidefolder);
     } else {
         res.status(500).send({
             'title': `Fehler beim bearbeiten der Slide`,
@@ -457,11 +757,12 @@ app.post('/editslide', (req, res) => {
         // Informationen in Slidesdaten ergänzen
         try {
             // bestehende Slides-Informationen lesen
-            slidesConfigPath = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder, config.maininfos.slidesconfig);
-            const slidesConfigFile = fs.readFileSync(slidesConfigPath);
-            var slidesData = JSON.parse(slidesConfigFile);
+            monitorconfigPath = path.join(uploadDirectory, config.maininfos.monitorconfigfile);
+            const monitorconfigFile = fs.readFileSync(monitorconfigPath);
+            var monitorconfig = JSON.parse(monitorconfigFile);
 
             // Slide-Index extrahieren
+            var slidesData = monitorconfig.slides
             for (var i = 0; i < slidesData.length; i++) {
                 if (slidesData[i].id === slideId) {
                     var slidePositionId = i;
@@ -473,8 +774,9 @@ app.post('/editslide', (req, res) => {
             slidesData[slidePositionId].comment = fields.comment[0];
             slidesData[slidePositionId].starttime = fields.starttime[0];
             slidesData[slidePositionId].endtime = fields.endtime[0];
-            let jsontext = JSON.stringify(slidesData, null, 4);
-            fs.writeFile(slidesConfigPath, jsontext, (err) => {
+            monitorconfig.slides = slidesData
+            let jsontext = JSON.stringify(monitorconfig, null, 4);
+            fs.writeFile(monitorconfigPath, jsontext, (err) => {
                 if (err) {
                     res.status(500).send({
                         'title': `Fehler beim abspeichern der Slide-Informationen`,
@@ -514,7 +816,7 @@ app.get('/deleteslide', (req, res) => {
     var uploadDirectory = '';
     
     if (queryParameters.slidefolder) {
-        uploadDirectory = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder);
+        uploadDirectory = path.join(__dirname, config.maininfos.system.monitorsfolder, queryParameters.slidefolder);
     } else {
         res.status(500).send({
             'title': `Fehler beim löschen der Slide`,
@@ -534,11 +836,12 @@ app.get('/deleteslide', (req, res) => {
 
     try {
         // bestehende Slides-Informationen lesen
-        slidesConfigPath = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder, config.maininfos.slidesconfig);
-        const slidesConfigFile = fs.readFileSync(slidesConfigPath);
-        var slidesData = JSON.parse(slidesConfigFile);
+        monitorconfigPath = path.join(uploadDirectory, config.maininfos.monitorconfigfile);
+        const monitorconfigFile = fs.readFileSync(monitorconfigPath);
+        var monitorconfig = JSON.parse(monitorconfigFile);
 
         // Slide-Index extrahieren
+        var slidesData = monitorconfig.slides
         for (var i = 0; i < slidesData.length; i++) {
             if (slidesData[i].id === slideId) {
                 var slidePositionId = i;
@@ -547,7 +850,7 @@ app.get('/deleteslide', (req, res) => {
 
         // Falls Slide ein Bild ist, Datei löschen
         if (slidesData[slidePositionId].type === 'img') {
-            slideImagePath = path.join(__dirname, config.maininfos.system.publicfolder, slidesData[slidePositionId].path);
+            slideImagePath = path.join(__dirname, config.maininfos.system.monitorsfolder, slidesData[slidePositionId].path);
             fs.unlink(slideImagePath, (err) => {
                 if (err) {
                     res.status(500).send({
@@ -561,8 +864,9 @@ app.get('/deleteslide', (req, res) => {
 
         // Slidedaten löschen und Datei speichern
         slidesData.splice(slidePositionId, 1);
-        let jsontext = JSON.stringify(slidesData, null, 4);
-        fs.writeFile(slidesConfigPath, jsontext, (err) => {
+        monitorconfig.slides = slidesData
+        let jsontext = JSON.stringify(monitorconfig, null, 4);
+        fs.writeFile(monitorconfigPath, jsontext, (err) => {
             if (err) {
                 res.status(500).send({
                     'title': `Fehler beim löschen der Slide-Informationen`,
@@ -600,7 +904,7 @@ app.get('/changeorderslideup', (req, res) => {
     var uploadDirectory = '';
     
     if (queryParameters.slidefolder) {
-        uploadDirectory = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder);
+        uploadDirectory = path.join(__dirname, config.maininfos.system.monitorsfolder, queryParameters.slidefolder);
     } else {
         res.status(500).send({
             'title': `Fehler beim anpassen der Slide-Reihenfolge`,
@@ -620,11 +924,12 @@ app.get('/changeorderslideup', (req, res) => {
     
     try {
         // bestehende Slides-Informationen lesen
-        slidesConfigPath = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder, config.maininfos.slidesconfig);
-        const slidesConfigFile = fs.readFileSync(slidesConfigPath);
-        var slidesData = JSON.parse(slidesConfigFile);
+        monitorconfigPath = path.join(uploadDirectory, config.maininfos.monitorconfigfile);
+        const monitorconfigFile = fs.readFileSync(monitorconfigPath);
+        var monitorconfig = JSON.parse(monitorconfigFile);
 
         // Slide-Index extrahieren
+        var slidesData = monitorconfig.slides
         for (var i = 0; i < slidesData.length; i++) {
             if (slidesData[i].id === slideId) {
                 var slidePositionId = i;
@@ -639,8 +944,9 @@ app.get('/changeorderslideup', (req, res) => {
             slidesData[slidePositionId - 1] = mySlideData;
             slidesData[slidePositionId] = preSlideData;
 
-            let jsontext = JSON.stringify(slidesData, null, 4);
-            fs.writeFile(slidesConfigPath, jsontext, (err) => {
+            monitorconfig.slides = slidesData
+            let jsontext = JSON.stringify(monitorconfig, null, 4);
+            fs.writeFile(monitorconfigPath, jsontext, (err) => {
                 if (err) {
                     res.status(500).send({
                         'title': `Fehler beim anpassen der Slide-Reihenfolge`,
@@ -688,7 +994,7 @@ app.get('/changeorderslidedown', (req, res) => {
     var uploadDirectory = '';
     
     if (queryParameters.slidefolder) {
-        uploadDirectory = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder);
+        uploadDirectory = path.join(__dirname, config.maininfos.system.monitorsfolder, queryParameters.slidefolder);
     } else {
         res.status(500).send({
             'title': `Fehler beim anpassen der Slide-Reihenfolge`,
@@ -708,11 +1014,12 @@ app.get('/changeorderslidedown', (req, res) => {
     
     try {
         // bestehende Slides-Informationen lesen
-        slidesConfigPath = path.join(__dirname, config.maininfos.system.publicfolder, queryParameters.slidefolder, config.maininfos.slidesconfig);
-        const slidesConfigFile = fs.readFileSync(slidesConfigPath);
-        var slidesData = JSON.parse(slidesConfigFile);
+        monitorconfigPath = path.join(uploadDirectory, config.maininfos.monitorconfigfile);
+        const monitorconfigFile = fs.readFileSync(monitorconfigPath);
+        var monitorconfig = JSON.parse(monitorconfigFile);
 
         // Slide-Index extrahieren
+        var slidesData = monitorconfig.slides
         for (var i = 0; i < slidesData.length; i++) {
             if (slidesData[i].id === slideId) {
                 var slidePositionId = i;
@@ -727,8 +1034,9 @@ app.get('/changeorderslidedown', (req, res) => {
             slidesData[slidePositionId + 1] = mySlideData;
             slidesData[slidePositionId] = nextSlideData;
 
-            let jsontext = JSON.stringify(slidesData, null, 4);
-            fs.writeFile(slidesConfigPath, jsontext, (err) => {
+            monitorconfig.slides = slidesData
+            let jsontext = JSON.stringify(monitorconfig, null, 4);
+            fs.writeFile(monitorconfigPath, jsontext, (err) => {
                 if (err) {
                     res.status(500).send({
                         'title': `Fehler beim anpassen der Slide-Reihenfolge`,

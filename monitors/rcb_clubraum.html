@@ -13,6 +13,7 @@
         <script src="index.js"></script>
         <script src="weathercalculator.js"></script>
         <script src="slideshow.js"></script>
+        <script src="infocarousel.js"></script>
     </head>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -30,13 +31,26 @@
 
             checkRuderverbot();
 
+            loadInfos();
             loadSlides();
         });
     </script>
     <body>
         <div class="container">
-            <main id="slideshow" class="main"></main>
-            <footer class="footer">
+            <div id="slideshow" class="main"></div>
+            <div id="infocarousel">
+                <div class="carousel-text"></div>
+                <div class="carousel-text"></div>
+                <div class="carousel-text"></div>
+                <div class="carousel-text"></div>
+                <div class="carousel-text"></div>
+                <div class="carousel-text"></div>
+                <div class="carousel-text"></div>
+                <div class="carousel-text"></div>
+                <div class="carousel-text"></div>
+                <div class="carousel-text"></div>
+            </div>
+            <div id="footer" class="footer">
                 <table>
                     <tr>
                         <td id="description_text" class="textsizehalf row-0 col-1"></td>
@@ -68,7 +82,7 @@
                         <td id="current-date-time" class="row-2 col-9">date time</td>
                     </tr>
                 </table>
-            </footer>
+            </divs>
         </div>
     </body>
 </html>
