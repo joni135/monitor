@@ -24,36 +24,49 @@ function loadSlides() {
             var currentDate = new Date();
             if ((starttimeDate < currentDate | slideData.starttime === "") && (endtimeDate > currentDate | slideData.endtime === "")) {
 
-              // Erstelle slideElement (div)
-              var slide = document.createElement('div');
-              slide.id = 'slide-' + (i + 1);
-              slide.className = `slideElement fade ${slideData.type}`;
+              // Erstelle slideContainer (div)
+              var slideContainer = document.createElement('div');
+              slideContainer.id = 'slide-' + (i + 1);
+              slideContainer.className = `slideContainer fade ${slideData.type}`;
 
-              if (slideData.type === 'img') { // Erstelle Bildelement
-                var image = document.createElement('img');
-                image.src = slideData.path;
-                image.alt = slideData.id;
-                image.id = slideData.id;
-                image.className = 'slideImage slideContent';
-                slide.appendChild(image);
-              } else if (slideData.type === 'iframe') { // Erstelle Iframeelement
-                var iframe = document.createElement('iframe');
-                iframe.src = slideData.path;
-                iframe.style = 'width: 99vw;'
-                iframe.id = slideData.id;
-                iframe.className = 'slideIframe slideContent';
-                slide.appendChild(iframe);
+              // Erstelle Inhalt von slideContainer wenn vorhanden
+              if (slideData.type && slideData.type !== '') {
+                var content = document.createElement('div');
+                content.className = 'slideContent';
+
+                if (slideData.type === 'img') { // Erstelle Bildelement
+                  var image = document.createElement('img');
+                  image.src = slideData.path;
+                  image.alt = slideData.id;
+                  image.id = slideData.id;
+                  image.className = 'slideImage';
+                  content.appendChild(image);
+                  var bgimage = document.createElement('div');
+                  bgimage.style = `background-image: url(${slideData.path});`
+                  bgimage.id = 'bg-' + slideData.id;
+                  bgimage.className = 'slideBackground';
+                  content.appendChild(bgimage);
+                } else if (slideData.type === 'iframe') { // Erstelle Iframeelement
+                  var iframe = document.createElement('iframe');
+                  iframe.src = slideData.path;
+                  iframe.style = 'width: 99vw;'
+                  iframe.id = slideData.id;
+                  iframe.className = 'slideIframe';
+                  content.appendChild(iframe);
+                };
+                
+                slideContainer.appendChild(content);
               };
 
-              // Erstelle Titel von slideElement wenn vorhanden
+              // Erstelle Titel von slideContainer wenn vorhanden
               if (slideData.title && slideData.title !== '') {
                 var title = document.createElement('div');
                 title.innerHTML = slideData.title;
                 title.className = 'slideTitle';
-                slide.appendChild(title);
+                slideContainer.appendChild(title);
               };
 
-              slideshowContainer.appendChild(slide);
+              slideshowContainer.appendChild(slideContainer);
             } else {
               console.log(`Slide "${slideData.id}" ist ausserhalb der angegebenen Zeitspanne und wird nicht angezeigt`)
             };
@@ -70,7 +83,7 @@ function loadSlides() {
 var slideIndex = 0;
 
 function showSlides() {
-    var slides = document.getElementsByClassName("slideElement");
+    var slides = document.getElementsByClassName("slideContainer");
     for (var i = 0; i < slides.length; i++) {
         slides[i].classList.remove('active');
         slides[i].style.display = "none";  

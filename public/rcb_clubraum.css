@@ -12,6 +12,7 @@ body {
     padding: 0;
     height: 100vh;
     display: flex;
+    justify-content: flex-end;
     flex-direction: column;
     font-family: var(--textfont);
     font-size: var(--textsize);
@@ -36,6 +37,11 @@ main {
     margin: auto;
 }
 
+.slideContainer {
+    flex: 1;
+    display: flex;
+}
+
 .fade {
     animation-name: fade;
     animation-duration: 0.5s;
@@ -47,18 +53,36 @@ main {
 }
 
 .slideContent {
-    background-color: var(--light-color);
-    min-width: 100%;
-    min-height: 100vh;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slideImage {
+    min-width: 100vw;
+    min-height: 100%;
     max-width: 100vw;
-    max-height: 120vh;
-    object-fit: cover;
-    display: block;
-    margin-top: 50vh;
-    transform: translateY(-50%);
+    max-height: 100vh;
+    object-fit: contain;
+    object-position: center;
+    margin: auto;
+}
+
+.slideBackground {
+    z-index: -1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    filter: blur(5px);
 }
 
 .slideTitle {
+    display: block;
     position: absolute;
     top: 20px;
     left: 30px;
@@ -82,7 +106,6 @@ main {
 
 /* FUSSZEILE */
 footer {
-    position: fixed;
     bottom: 0;
     width: 100%;
     padding-top: 10px;
