@@ -28,8 +28,7 @@
             updateClock();
             displayWeather();
             displayHydro();
-
-            checkRuderverbot();
+            displayRuderverbot();
 
             loadInfos();
             loadSlides();
@@ -63,23 +62,23 @@
                         <!-- <td id="welcometext" class="row-0 col-9" rowspan="2">Willkommen im<br><span class="textsizedouble">Ruderclub Baden</span></td> -->
                     </tr>
                     <tr>
-                        <td id="currwther_text" class="currentweather row-1 col-1">jetzt:</td>
-                        <td id="currwther_symbol" class="currentweather row-1 col-2 weathersymbol">symbol_code</td>
-                        <td id="currwther_temperatur" class="currentweather row-1 col-3">TTT_C</td>
-                        <td id="currwther_rain" class="currentweather row-1 col-4">PROBPCP_PERCENT</td>
-                        <td id="currwther_wind" class="currentweather row-1 col-5 windarrow">FF_KMH DD_DEG</td>
-                        <td id="hydro_discharge" class="hydrodata row-1 col-7">discharge</td>
-                        <td id="hydro_watertemp" class="hydrodata row-1 col-8">waterTemperature</td>
+                        <td id="weather0_text" class="currentweather row-1 col-1">jetzt:</td>
+                        <td id="weather0_symbol" class="currentweather row-1 col-2 weathersymbol">ERR</td>
+                        <td id="weather0_temperatur" class="currentweather row-1 col-3">ERR</td>
+                        <td id="weather0_rain" class="currentweather row-1 col-4">ERR</td>
+                        <td id="weather0_wind" class="currentweather row-1 col-5 windarrow">ERR ERR</td>
+                        <td id="hydro_discharge" class="hydrodata row-1 col-7">ERR</td>
+                        <td id="hydro_watertemp" class="hydrodata row-1 col-8">ERR</td>
                         <td id="welcometext" class="row-1 col-9">Willkommen im<br><span class="textsizedouble">Ruderclub Baden</span></td>
                     </tr>
                     <tr>
-                        <td id="aftnxtwther_text" class="afternextweather row-2 col-1">in 2h:</td>
-                        <td id="aftnxtwther_symbol" class="afternextweather row-2 col-2 weathersymbol">symbol_code</td>
-                        <td id="aftnxtwther_temperatur" class="afternextweather row-2 col-3">TTT_C</td>
-                        <td id="aftnxtwther_rain" class="afternextweather row-2 col-4">PROBPCP_PERCENT</td>
-                        <td id="aftnxtwther_wind" class="afternextweather row-2 col-5 windarrow">FF_KMH DD_DEG</td>
+                        <td id="weather2_text" class="in2hweather row-2 col-1">in 2h:</td>
+                        <td id="weather2_symbol" class="in2hweather row-2 col-2 weathersymbol">ERR</td>
+                        <td id="weather2_temperatur" class="in2hweather row-2 col-3">ERR</td>
+                        <td id="weather2_rain" class="in2hweather row-2 col-4">ERR</td>
+                        <td id="weather2_wind" class="in2hweather row-2 col-5 windarrow">ERR ERR</td>
                         <td id="statusRuderverbot" class="row-2 col-7 col-8 textsizedouble" colspan="2"></td>
-                        <td id="current-date-time" class="row-2 col-9">date time</td>
+                        <td id="current-date-time" class="row-2 col-9">ERR:ERR</td>
                     </tr>
                 </table>
             </divs>

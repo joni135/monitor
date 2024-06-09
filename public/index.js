@@ -24,6 +24,7 @@ function initSite() {
         console.log('Slidedauer (slideduration):', slideduration);
         console.log('Wetterdaten (weatherdata):', weatherdata);
         console.log('Hydrodaten (hydrodata):', hydrodata);
+        console.log('Wettersymbole (weathersymboltype):', weathersymboltype);
     };
 
   };

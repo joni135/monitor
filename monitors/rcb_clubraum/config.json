@@ -1,15 +1,19 @@
 {
     "slideduration": 3,
     "weatherdata": {
-        "weather": "weather_neuenhof.json",
-        "hydro": "hydrodata_baden_limmat.json"
+        "json_weather": "weather_neuenhof.json",
+        "json_hydro": "hydrodata_baden_limmat.json",
+        "weathersymboltype": "svg_light"
+    },
+    "stylevariables": {
+        "--primary-color": "#c9001e"
     },
     "infos": [
         {
             "id": "euch allne en schöne Suntig :)",
             "text": "euch allne en schöne Suntig",
-            "comment": "",
-            "starttime": "2024-06-08T22:02",
+            "comment": "Testinfo",
+            "starttime": "2024-06-08T21:02",
             "endtime": "2024-06-09T10:00"
         }
     ],
@@ -39,15 +43,6 @@
             "title": "",
             "comment": "",
             "starttime": "2024-06-01T19:50",
-            "endtime": ""
-        },
-        {
-            "id": "20221211_085227.jpg",
-            "type": "img",
-            "path": "rcb_clubraum/20221211_085227.jpg",
-            "title": "",
-            "comment": "te",
-            "starttime": "",
             "endtime": ""
         }
     ]

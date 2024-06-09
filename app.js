@@ -115,11 +115,13 @@ app.get('/', (req, res) => {
 
     // Ergänze Wetterdaten wenn benötigt
     try {
-        if (monitorconfig.weatherdata.weather) {
-            weatherdata = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorconfig.weatherdata.weather);
+        if (monitorconfig.weatherdata.json_weather) {
+            weatherdata = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorconfig.weatherdata.json_weather);
             app.use(express.static(path.join(__dirname, config.maininfos.weathercalculator.symbolpath)));
+            weathersymboltype = monitorconfig.weatherdata.weathersymboltype;
         } else {
             weatherdata = JSON.stringify({});
+            weathersymboltype = '';
         };
     } catch(err) {
         Errors.push ({
@@ -133,8 +135,8 @@ app.get('/', (req, res) => {
 
     // Ergänze Hydrodaten wenn benötigt
     try {
-        if (monitorconfig.weatherdata.hydro) {
-            hydrodata = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorconfig.weatherdata.hydro);
+        if (monitorconfig.weatherdata.json_hydro) {
+            hydrodata = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorconfig.weatherdata.json_hydro);
         } else {
             hydrodata = JSON.stringify({});
         };
@@ -150,10 +152,10 @@ app.get('/', (req, res) => {
 
     // Erstelle Abfragenspezifisches CSS, dass dem Client im HTML gesendet wird
     var CSSAtributes = ''
-    if (monitorparams.stylevariables) {
-        for (const key in monitorparams.stylevariables) {
-            if (monitorparams.stylevariables.hasOwnProperty(key)) {
-                CSSAtributes += `--${key}: ${monitorparams.stylevariables[key]} !important;`;
+    if (monitorconfig.stylevariables) {
+        for (const key in monitorconfig.stylevariables) {
+            if (monitorconfig.stylevariables.hasOwnProperty(key)) {
+                CSSAtributes += `${key}: ${monitorconfig.stylevariables[key]} !important;`;
             };
         };
     };
@@ -171,6 +173,7 @@ app.get('/', (req, res) => {
             const datapath = "${monitorparams.datapath}";
             const slideduration = "${monitorconfig.slideduration}";
             const weatherdata = ${weatherdata};
+            const weathersymboltype = "${weathersymboltype}";
             const hydrodata = ${hydrodata};
         </script>`;
     

@@ -1,5 +1,5 @@
 // Alle Infos aus Datei auslesen (per API-Request) und in HTML ergänzen
-function loadInfos() {  
+function loadInfos(additionalText) {  
     var infocarouselTextElements = document.querySelectorAll('.carousel-text');
     var finalInfoText = ''
 
@@ -8,40 +8,50 @@ function loadInfos() {
     inforequest.open('GET', `/getinfos?slidefolder=${datapath}`, true);
 
     inforequest.onload = function () {
-      if (inforequest.status == 200) {
-        infosData = JSON.parse(inforequest.responseText);
-        if (reqparam.debug == 'true') {
-          console.log('Infotexte: ', infosData);
-        };
-
-        if (infosData.length > 0) {
-            for (var i = 0; i < infosData.length; i++) {
-              if (infosData[i]) {
-                var infoData = infosData[i];
-
-                var starttimeDate = new Date(infoData.starttime);
-                var endtimeDate = new Date(infoData.endtime);
-                var currentDate = new Date();
-                if ((starttimeDate < currentDate | infoData.starttime === "") && (endtimeDate > currentDate | infoData.endtime === "")) {
-
-                    finalInfoText += ' + '+infoData.text
-
-                    //slideshowContainer.appendChild(slideContainer);
-
-                } else {
-                  console.log(`Info "${infoData.id}" ist ausserhalb der angegebenen Zeitspanne und wird nicht angezeigt`)
-                };
-
-              };
+        if (inforequest.status == 200) {
+            infosData = JSON.parse(inforequest.responseText);
+            if (reqparam.debug == 'true') {
+                console.log('Infotexte: ', infosData);
             };
 
-            infocarouselTextElements.forEach(element => {
-                element.textContent = finalInfoText+' + ';
-            });
-        };
+            for (var i = 0; i < infosData.length; i++) {
+                if (infosData[i]) {
+                    var infoData = infosData[i];
 
-      };
+                    var starttimeDate = new Date(infoData.starttime);
+                    var endtimeDate = new Date(infoData.endtime);
+                    var currentDate = new Date();
+                    if ((starttimeDate < currentDate | infoData.starttime === "") && (endtimeDate > currentDate | infoData.endtime === "")) {
+
+                        finalInfoText += ' > '+infoData.text
+
+                        //slideshowContainer.appendChild(slideContainer);
+
+                    } else {
+                        console.log(`Info "${infoData.id}" ist ausserhalb der angegebenen Zeitspanne und wird nicht angezeigt`)
+                    };
+
+                };
+            };
+
+            const statusRuderverbot = checkRuderverbot();
+            if (statusRuderverbot != undefined && statusRuderverbot.urgency > 1) {
+                finalInfoText += ' > '+statusRuderverbot.text;
+            };
+
+            if (additionalText != "" && additionalText != undefined) {
+                finalInfoText += ' > '+additionalText;
+            };
+
+
+            if (finalInfoText != "") {
+                infocarouselTextElements.forEach(element => {
+                    element.textContent = finalInfoText+' > ';
+                });
+            };
+
+        };
     };
 
     inforequest.send();
-  };
+};
