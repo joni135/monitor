@@ -120,8 +120,8 @@ app.get('/', (req, res) => {
             // Ergänze Wetterdaten wenn benötigt
             try {
                 if (monitorconfig.weatherandhydrodata.json_weather) {
-                    weatherdata = fs.readFileSync(config.maininfos.weatherandhydrodata.datapath+monitorconfig.weatherandhydrodata.json_weather);
-                    app.use(express.static(path.join(__dirname, config.maininfos.weatherandhydrodata.symbolpath)));
+                    weatherdata = fs.readFileSync(config.plugins.weatherandhydrodata.datapath+monitorconfig.weatherandhydrodata.json_weather);
+                    app.use(express.static(path.join(__dirname, config.plugins.weatherandhydrodata.symbolpath)));
                     weathersymboltype = monitorconfig.weatherandhydrodata.weathersymboltype;
                 };
             } catch(err) {
@@ -135,7 +135,7 @@ app.get('/', (req, res) => {
             // Ergänze Hydrodaten wenn benötigt
             try {
                 if (monitorconfig.weatherandhydrodata.json_hydro) {
-                    hydrodata = fs.readFileSync(config.maininfos.weatherandhydrodata.datapath+monitorconfig.weatherandhydrodata.json_hydro);
+                    hydrodata = fs.readFileSync(config.plugins.weatherandhydrodata.datapath+monitorconfig.weatherandhydrodata.json_hydro);
                 };
             } catch(err) {
                 Errors.push ({
