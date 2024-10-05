@@ -1,0 +1,167 @@
+html {
+    --primary-color: black;
+    --dark-color: black;
+    --light-color: white;
+    --titlesize: 40px;
+    --textsize: 20px;
+    --textfont: Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    font-family: var(--textfont);
+    font-size: var(--textsize);
+}
+
+
+/* ALLGEMEINE STYLEDEFINITIONEN */
+.textsizehalf {
+    font-size: calc(var(--textsize) / 2);
+}
+.textsizedouble {
+    font-size: calc(var(--textsize) * 2);
+}
+
+
+/* BILDERSHOWDARSTELLUNG*/
+#slideshow {
+    flex: 1;
+    max-height: 100vh;
+    overflow: hidden;
+    position: relative;
+    margin: auto;
+}
+
+.slideContainer {
+    flex: 1;
+    display: flex;
+}
+
+.fade {
+    animation-name: fade;
+    animation-duration: 0.5s;
+}
+
+@keyframes fade {
+    from {opacity: 0.5} 
+    to {opacity: 1}
+}
+
+.slideContent {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slideImage {
+    min-width: 100vw;
+    min-height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
+    object-fit: contain;
+    object-position: center;
+    margin: auto;
+}
+
+.slideBackground {
+    z-index: -1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    filter: blur(5px);
+}
+
+.slideTitle {
+    display: block;
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    z-index: 2;
+    margin: 0;
+    font-size: var(--titlesize);
+    color: var(--dark-color);
+}
+.slideTitle::after {
+    content: "";
+    position: absolute;
+    top: -5300px;
+    z-index: -1;
+    width: 5000px;
+    height: 5000px;
+    background-color: var(--light-color);
+    opacity: 0.8;
+    transform: rotate(-8deg) translateX(-3000px);
+}
+
+
+/* INFOLEISTE */
+#infocarousel {
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    white-space: nowrap;
+    background-color: var(--light-color);
+}
+
+.carousel-text {
+    animation: scroll 10s linear infinite;
+    font-weight: bold;
+    line-height: calc(var(--textsize) * 2);
+    color: var(--primary-color);
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+
+/* FUSSZEILE */
+#footer {
+    bottom: 0;
+    width: 100%;
+    padding-top: 10px;
+    background-color: var(--primary-color);
+    color: var(--light-color);
+}
+
+table {
+    width: 100%;
+    padding: 10px;
+    bottom: 0;
+}
+
+td {
+    vertical-align: top;
+    line-height: 150%;
+    font-size: var(--textsize);
+    min-width: 60px;
+}
+
+.col-9 {
+    right: 0;
+    text-align: right;
+    max-width: 20vw;
+}
+
+.weathersymbol img {
+    height: calc(var(--textsize) * 3);
+}
+
+.windarrow img {
+    height: calc(var(--textsize) * 1.5);
+}

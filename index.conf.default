@@ -1,0 +1,30 @@
+{
+    "maininfos": {
+        "siteauthor": "Jonathan Kaufmann",
+        "sitetitleprefix": "Monitorshow - ",
+        "system": {
+            "publicfolder": "./public/",
+            "monitorsfolder": "./monitors/"
+        },
+        "monitorconfigfile": "config.json"
+    },
+    "plugins": {
+        "weatherandhydrodata": {
+            "processpath": "./weathercalculator/",
+            "datapath": "./weathercalculator/data/",
+            "symbolpath": "./weathercalculator/data/weather_svgs/"
+        }
+    },
+
+    "monitors": [
+        {
+            "id": "example",
+            "name": "Example Monitor",
+            "available": true,
+            "htmlfile": "example.html",
+            "datapath": "./example/",
+            "favicon": "./example.jpg",
+            "plugins": ["infocarousel", "slideshow", "weatherandhydrodata"]
+        }
+    ]
+}

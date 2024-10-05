@@ -114,55 +114,57 @@ app.get('/', (req, res) => {
 
 
     // Starte Backend-Skript für Plugin "weatherandhydrodata"
-    if (monitorparams.plugins.includes("weatherandhydrodata")) {
+    try {
+        if (monitorparams.plugins.includes("weatherandhydrodata")) {
 
-        // Ergänze Wetterdaten wenn benötigt
-        try {
-            if (monitorconfig.weatherandhydrodata.json_weather) {
-                weatherdata = fs.readFileSync(config.maininfos.weatherandhydrodata.datapath+monitorconfig.weatherandhydrodata.json_weather);
-                app.use(express.static(path.join(__dirname, config.maininfos.weatherandhydrodata.symbolpath)));
-                weathersymboltype = monitorconfig.weatherandhydrodata.weathersymboltype;
-            } else {
-                weatherdata = JSON.stringify({});
-                weathersymboltype = '';
+            // Ergänze Wetterdaten wenn benötigt
+            try {
+                if (monitorconfig.weatherandhydrodata.json_weather) {
+                    weatherdata = fs.readFileSync(config.maininfos.weatherandhydrodata.datapath+monitorconfig.weatherandhydrodata.json_weather);
+                    app.use(express.static(path.join(__dirname, config.maininfos.weatherandhydrodata.symbolpath)));
+                    weathersymboltype = monitorconfig.weatherandhydrodata.weathersymboltype;
+                };
+            } catch(err) {
+                Errors.push ({
+                    'title': `Wetterdaten konnte nicht gelesen werden`,
+                    'content': `Die Dateien für die Wetterdaten konnten nicht gelesen werden!\n${err.message}`,
+                    'fatal': false
+                });
             };
-        } catch(err) {
-            Errors.push ({
-                'title': `Wetterdaten konnte nicht gelesen werden`,
-                'content': `Die Dateien für die Wetterdaten konnten nicht gelesen werden!\n${err.message}`,
-                'fatal': false
-            });
-            weatherdata = JSON.stringify({});
-            weathersymboltype = '';
-        };
 
-        // Ergänze Hydrodaten wenn benötigt
-        try {
-            if (monitorconfig.weatherandhydrodata.json_hydro) {
-                hydrodata = fs.readFileSync(config.maininfos.weatherandhydrodata.datapath+monitorconfig.weatherandhydrodata.json_hydro);
-            } else {
-                hydrodata = JSON.stringify({});
+            // Ergänze Hydrodaten wenn benötigt
+            try {
+                if (monitorconfig.weatherandhydrodata.json_hydro) {
+                    hydrodata = fs.readFileSync(config.maininfos.weatherandhydrodata.datapath+monitorconfig.weatherandhydrodata.json_hydro);
+                };
+            } catch(err) {
+                Errors.push ({
+                    'title': `Hydrodaten konnte nicht gelesen werden`,
+                    'content': `Die Dateien für die Hydrodaten konnten nicht gelesen werden!\n${err.message}`,
+                    'fatal': false
+                });
             };
-        } catch(err) {
-            Errors.push ({
-                'title': `Hydrodaten konnte nicht gelesen werden`,
-                'content': `Die Dateien für die Hydrodaten konnten nicht gelesen werden!\n${err.message}`,
-                'fatal': false
-            });
-            hydrodata = JSON.stringify({});
         };
-    } else {
-        weatherdata = JSON.stringify({});
-        weathersymboltype = '';
-        hydrodata = JSON.stringify({});
+    } catch(err) {
+        Errors.push ({
+            'title': `Wetter- und Hydrodaten konnte nicht gelesen werden`,
+            'content': `Es gab ein unbekannter Fehler beim Lesen der Konfigurationen bzw. Daten oder im Plugin`,
+            'fatal': true
+        });
     };
+
+    try {weatherdata} catch(err) {weatherdata = JSON.stringify({})};
+    try {weathersymboltype} catch(err) {weathersymboltype = ''};
+    try {hydrodata} catch(err) {hydrodata = JSON.stringify({})};
 
 
     // Laden der Plugins, die dem Client im HTML gesendet werden
     customPlugins = '';
-    for (var i=0; i<monitorparams.plugins.length; i++) {
-        customPlugins += `<script src=plugins/${monitorparams.plugins[i]}.js></script>`;
-    };
+    try {
+        for (var i=0; i<monitorparams.plugins.length; i++) {
+            customPlugins += `<script src=plugins/${monitorparams.plugins[i]}.js></script>`;
+        };
+    } catch(err) {};
 
 
     // Erstelle Abfragenspezifisches Skript, dass dem Client im HTML gesendet wird

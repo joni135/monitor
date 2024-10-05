@@ -1,0 +1,58 @@
+{
+    "slideduration": 30,
+    "weatherandhydrodata": {
+        "json_weather": "weather_neuenhof.json",
+        "json_hydro": "hydrodata_baden_limmat.json",
+        "weathersymboltype": "svg_light"
+    },
+    "stylevariables": {
+        "--primary-color": "blue"
+    },
+    "infos": [
+        {
+            "id": "Beispielinfo",
+            "text": "Hier ist eine Beispielinfo!",
+            "comment": "",
+            "starttime": "2024-07-21T11:48",
+            "endtime": ""
+        }
+    ],
+    "slides": [
+        {
+            "id": "IMG_0567.JPG",
+            "type": "img",
+            "path": "./example//IMG_0567.JPG",
+            "title": "",
+            "comment": "",
+            "starttime": "2024-06-30T18:13",
+            "endtime": ""
+        },
+        {
+            "id": "IMG_0616.JPG",
+            "type": "img",
+            "path": "./example//IMG_0616.JPG",
+            "title": "",
+            "comment": "",
+            "starttime": "2024-06-30T18:15",
+            "endtime": ""
+        },
+        {
+            "id": "IMG_0698.JPG",
+            "type": "img",
+            "path": "./example//IMG_0698.JPG",
+            "title": "",
+            "comment": "",
+            "starttime": "2024-06-30T18:16",
+            "endtime": ""
+        },
+        {
+            "id": "IMG_0908.JPG",
+            "type": "img",
+            "path": "./example//IMG_0908.JPG",
+            "title": "",
+            "comment": "",
+            "starttime": "2024-06-30T18:17",
+            "endtime": ""
+        }
+    ]
+}

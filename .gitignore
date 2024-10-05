@@ -1,17 +1,20 @@
 ## directoryspecific
 
-#index.conf
+index.conf
+monitors/*
+!monitors/example*
+
 weathercalculator
 test*.*
 archiv/
-Thumbs.db
 
-*.jpg
-*.JPG
-*.jpeg
-*.JPEG
-*.png
-*.PNG
+Thumbs.db
+# *.jpg
+# *.JPG
+# *.jpeg
+# *.JPEG
+# *.png
+# *.PNG
 
 ## Node.js system
 
