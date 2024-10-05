@@ -10,10 +10,10 @@
     },
     "infos": [
         {
-            "id": "Beispielinfo",
-            "text": "Hier ist eine Beispielinfo!",
+            "id": "HieristeinBeispieltext",
+            "text": "Hier ist ein Beispieltext!",
             "comment": "",
-            "starttime": "2024-07-21T11:48",
+            "starttime": "2024-10-05T14:23",
             "endtime": ""
         }
     ],

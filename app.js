@@ -300,9 +300,18 @@ app.post('/uploadinfo', (req, res) => {
         
         // Informationen in Infos ergänzen
         try {
+            // ID generieren
+            var specialChars = "!@#$^'&%*()+=-_[]\\{}|;:<>?,./";
+            var infoid = fields.text[0];
+            for (var i=0; i < specialChars.length; i++) {
+                infoid = infoid.replaceAll(specialChars[i], "");
+            };
+            infoid = infoid.replaceAll('"', "");
+            infoid = infoid.replaceAll(" ", "");
+
             // Daten in JSON abspeichern
             const newInfo = {
-                "id": fields.text[0],
+                "id": infoid.toLowerCase(),
                 "text": fields.text[0],
                 "comment": fields.comment[0],
                 "starttime": fields.starttime[0],

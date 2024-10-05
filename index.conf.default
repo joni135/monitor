@@ -23,7 +23,7 @@
             "available": true,
             "htmlfile": "example.html",
             "datapath": "./example/",
-            "favicon": "./example.jpg",
+            "favicon": "./example.png",
             "plugins": ["infocarousel", "slideshow", "weatherandhydrodata"]
         }
     ]
