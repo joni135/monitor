@@ -113,53 +113,56 @@ app.get('/', (req, res) => {
     }
 
 
-    // Ergänze Wetterdaten wenn benötigt
-    try {
-        if (monitorconfig.weatherdata.json_weather) {
-            weatherdata = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorconfig.weatherdata.json_weather);
-            app.use(express.static(path.join(__dirname, config.maininfos.weathercalculator.symbolpath)));
-            weathersymboltype = monitorconfig.weatherdata.weathersymboltype;
-        } else {
+    // Starte Backend-Skript für Plugin "weatherandhydrodata"
+    if (monitorparams.plugins.includes("weatherandhydrodata")) {
+
+        // Ergänze Wetterdaten wenn benötigt
+        try {
+            if (monitorconfig.weatherandhydrodata.json_weather) {
+                weatherdata = fs.readFileSync(config.maininfos.weatherandhydrodata.datapath+monitorconfig.weatherandhydrodata.json_weather);
+                app.use(express.static(path.join(__dirname, config.maininfos.weatherandhydrodata.symbolpath)));
+                weathersymboltype = monitorconfig.weatherandhydrodata.weathersymboltype;
+            } else {
+                weatherdata = JSON.stringify({});
+                weathersymboltype = '';
+            };
+        } catch(err) {
+            Errors.push ({
+                'title': `Wetterdaten konnte nicht gelesen werden`,
+                'content': `Die Dateien für die Wetterdaten konnten nicht gelesen werden!\n${err.message}`,
+                'fatal': false
+            });
             weatherdata = JSON.stringify({});
             weathersymboltype = '';
         };
-    } catch(err) {
-        Errors.push ({
-            'title': `Wetterdaten konnte nicht gelesen werden`,
-            'content': `Die Dateien für die Wetterdaten konnten nicht gelesen werden!\n${err.message}`,
-            'fatal': false
-        });
-        weatherdata = JSON.stringify({});
-    };
 
-
-    // Ergänze Hydrodaten wenn benötigt
-    try {
-        if (monitorconfig.weatherdata.json_hydro) {
-            hydrodata = fs.readFileSync(config.maininfos.weathercalculator.datapath+monitorconfig.weatherdata.json_hydro);
-        } else {
+        // Ergänze Hydrodaten wenn benötigt
+        try {
+            if (monitorconfig.weatherandhydrodata.json_hydro) {
+                hydrodata = fs.readFileSync(config.maininfos.weatherandhydrodata.datapath+monitorconfig.weatherandhydrodata.json_hydro);
+            } else {
+                hydrodata = JSON.stringify({});
+            };
+        } catch(err) {
+            Errors.push ({
+                'title': `Hydrodaten konnte nicht gelesen werden`,
+                'content': `Die Dateien für die Hydrodaten konnten nicht gelesen werden!\n${err.message}`,
+                'fatal': false
+            });
             hydrodata = JSON.stringify({});
         };
-    } catch(err) {
-        Errors.push ({
-            'title': `Hydrodaten konnte nicht gelesen werden`,
-            'content': `Die Dateien für die Hydrodaten konnten nicht gelesen werden!\n${err.message}`,
-            'fatal': false
-        });
+    } else {
+        weatherdata = JSON.stringify({});
+        weathersymboltype = '';
         hydrodata = JSON.stringify({});
     };
 
 
-    // Erstelle Abfragenspezifisches CSS, dass dem Client im HTML gesendet wird
-    var CSSAtributes = ''
-    if (monitorconfig.stylevariables) {
-        for (const key in monitorconfig.stylevariables) {
-            if (monitorconfig.stylevariables.hasOwnProperty(key)) {
-                CSSAtributes += `${key}: ${monitorconfig.stylevariables[key]} !important;`;
-            };
-        };
+    // Laden der Plugins, die dem Client im HTML gesendet werden
+    customPlugins = '';
+    for (var i=0; i<monitorparams.plugins.length; i++) {
+        customPlugins += `<script src=plugins/${monitorparams.plugins[i]}.js></script>`;
     };
-    customCSS = `<style>html {${CSSAtributes}}</style>`;
 
 
     // Erstelle Abfragenspezifisches Skript, dass dem Client im HTML gesendet wird
@@ -176,6 +179,18 @@ app.get('/', (req, res) => {
             const weathersymboltype = "${weathersymboltype}";
             const hydrodata = ${hydrodata};
         </script>`;
+    
+
+    // Erstelle Abfragenspezifisches CSS, dass dem Client im HTML gesendet wird
+    var CSSAtributes = ''
+    if (monitorconfig.stylevariables) {
+        for (const key in monitorconfig.stylevariables) {
+            if (monitorconfig.stylevariables.hasOwnProperty(key)) {
+                CSSAtributes += `${key}: ${monitorconfig.stylevariables[key]} !important;`;
+            };
+        };
+    };
+    customCSS = `<style>html {${CSSAtributes}}</style>`;
     
 
     // Prüfe Prozess auf fatale Fehler
@@ -210,8 +225,8 @@ app.get('/', (req, res) => {
             });
         };
 
-        // Gelesenem HTML Skript mit Parameter hinzufügen
-        data = data.replace('</head>', `${customScript}${customCSS}</head>`);
+        // Gelesenem HTML Skript mit Plugins und Parameter und CSS hinzufügen
+        data = data.replace('</head>', `${customPlugins}${customScript}${customCSS}</head>`);
 
         // Sende die HTML-Datei als Antwort
         res.writeHead(200, {'Content-Type': 'text/html'});
