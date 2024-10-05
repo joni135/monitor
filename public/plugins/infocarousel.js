@@ -34,14 +34,14 @@ function loadInfos(additionalText) {
                 };
             };
 
-            const statusRuderverbot = checkRuderverbot();
-            if (statusRuderverbot != undefined && statusRuderverbot.urgency > 1) {
-                finalInfoText += ' > '+statusRuderverbot.text;
-            };
+            // const statusRuderverbot = checkRuderverbot();
+            // if (statusRuderverbot != undefined && statusRuderverbot.urgency > 1) {
+            //     finalInfoText += ' > '+statusRuderverbot.text;
+            // };
 
-            if (additionalText != "" && additionalText != undefined) {
-                finalInfoText += ' > '+additionalText;
-            };
+            // if (additionalText != "" && additionalText != undefined) {
+            //     finalInfoText += ' > '+additionalText;
+            // };
 
 
             if (finalInfoText != "") {

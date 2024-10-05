@@ -1,5 +1,5 @@
 // Alle Infos aus Datei auslesen (per API-Request)
-function loadInfos() {  
+function loadInfosAdmin() {  
 
     // HTML-API-Abfrage auf eigene Node.js-App machen, um alle 
     var inforequest = new XMLHttpRequest();
@@ -12,7 +12,7 @@ function loadInfos() {
           console.log('Infotexte: ', infosData);
         };
 
-        renderInfos(infosData);
+        renderInfosAdmin(infosData);
       }
     };
 
@@ -21,7 +21,7 @@ function loadInfos() {
 
 
 // Alle Infos auflisten
-function renderInfos(infosData) {
+function renderInfosAdmin(infosData) {
     var infotableContainer = document.getElementById('infotable');
     infotableContainer.innerHTML = `
         <tr id="kopfzeile">
@@ -73,7 +73,7 @@ function renderInfos(infosData) {
 
 
 // Alle Slides aus Datei auslesen (per API-Request)
-function loadSlides() {  
+function loadSlidesAdmin() {  
 
     // HTML-API-Abfrage auf eigene Node.js-App machen, um alle 
     var sliderequest = new XMLHttpRequest();
@@ -86,7 +86,7 @@ function loadSlides() {
           console.log('Slidedaten: ', slidesData);
         };
 
-        renderSlides(slidesData);
+        renderSlidesAdmin(slidesData);
       }
     };
 
@@ -95,7 +95,7 @@ function loadSlides() {
 
 
 // Alle Slides auflisten
-function renderSlides(slidesData) {
+function renderSlidesAdmin(slidesData) {
     var slidetableContainer = document.getElementById('slidetable');
     slidetableContainer.innerHTML = `
         <tr id="kopfzeile">
@@ -236,7 +236,7 @@ function addInfo() {
             if (responseJson.fatal === true) {
                 document.getElementById('confirmationMessage').style.color = 'red';
             } else {
-                renderInfos(responseJson.infosData)
+                renderInfosAdmin(responseJson.infosData)
             };
         
             document.getElementById('addInfo').style.display = 'none';
@@ -300,7 +300,7 @@ function editInfo() {
         if (responseJson.fatal === true) {
             document.getElementById('confirmationMessage').style.color = 'red';
         } else {
-            renderInfos(responseJson.infosData)
+            renderInfosAdmin(responseJson.infosData)
         };
     
         document.getElementById('editInfo').style.display = 'none';
@@ -319,7 +319,7 @@ function infoDelete(infoId) {
 
         if (infodeleterequest.status == 200) {
             responseJson = JSON.parse(infodeleterequest.responseText);
-            renderInfos(responseJson.infosData);
+            renderInfosAdmin(responseJson.infosData);
         } else {
             document.getElementById('confirmationMessage').style.color = 'red';
         };
@@ -365,7 +365,7 @@ function addImageSlide() {
                 if (responseJson.fatal === true) {
                     document.getElementById('confirmationMessage').style.color = 'red';
                 } else {
-                    renderSlides(responseJson.slidesData)
+                    renderSlidesAdmin(responseJson.slidesData)
                 };
             
                 document.getElementById('addImageSlide').style.display = 'none';
@@ -417,7 +417,7 @@ function addIframeSlide() {
             if (responseJson.fatal === true) {
                 document.getElementById('confirmationMessage').style.color = 'red';
             } else {
-                renderSlides(responseJson.slidesData)
+                renderSlidesAdmin(responseJson.slidesData)
             };
         
             document.getElementById('addIframeSlide').style.display = 'none';
@@ -482,7 +482,7 @@ function editSlide() {
         if (responseJson.fatal === true) {
             document.getElementById('confirmationMessage').style.color = 'red';
         } else {
-            renderSlides(responseJson.slidesData)
+            renderSlidesAdmin(responseJson.slidesData)
         };
     
         document.getElementById('editSlide').style.display = 'none';
@@ -501,7 +501,7 @@ function slideDelete(slideId) {
 
         if (slidedeleterequest.status == 200) {
             responseJson = JSON.parse(slidedeleterequest.responseText);
-            renderSlides(responseJson.slidesData);
+            renderSlidesAdmin(responseJson.slidesData);
         } else {
             document.getElementById('confirmationMessage').style.color = 'red';
         };
@@ -527,7 +527,7 @@ function slideUp(slideId) {
 
         if (slidechangerequest.status == 200) {
             responseJson = JSON.parse(slidechangerequest.responseText);
-            renderSlides(responseJson.slidesData);
+            renderSlidesAdmin(responseJson.slidesData);
         } else {
             document.getElementById('confirmationMessage').style.color = 'red';
             document.getElementById('confirmationMessageTitel').innerHTML = responseJson.title;
@@ -553,7 +553,7 @@ function slideDown(slideId) {
 
         if (slidechangerequest.status == 200) {
             responseJson = JSON.parse(slidechangerequest.responseText);
-            renderSlides(responseJson.slidesData);
+            renderSlidesAdmin(responseJson.slidesData);
         } else {
             document.getElementById('confirmationMessage').style.color = 'red';
             document.getElementById('confirmationMessageTitel').innerHTML = responseJson.title;
