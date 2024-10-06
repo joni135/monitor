@@ -1,5 +1,8 @@
 // Setze Wetterdaten in HTML ein
-function displayWeather() {
+function displayWeather(customweathersymboltype) {
+    if (customweathersymboltype === undefined) {
+        customweathersymboltype = weathersymboltype;
+    };
     try {
 
         if (document.getElementById("weather0_text") && reqparam.debug == 'true') {
@@ -9,7 +12,7 @@ function displayWeather() {
             document.getElementById("weather0_text").innerHTML += `<br><span class="textsizehalf">(${weather0_hours.toString().padStart(2, '0')}:${weather0_minutes.toString().padStart(2, '0')})</span>`;
         };
         if (document.getElementById("weather0_symbol")) {
-            document.getElementById("weather0_symbol").innerHTML = `<img src="${weathersymboltype+'/'+weatherdata.current.symbol_code}.svg">`;
+            document.getElementById("weather0_symbol").innerHTML = `<img src="${customweathersymboltype+'/'+weatherdata.current.symbol_code}.svg">`;
         };
         if (document.getElementById("weather0_temperatur")) {
             document.getElementById("weather0_temperatur").innerHTML = `${Math.round(weatherdata.current.TTT_C)}°C<br>(${Math.round(weatherdata.current.TTTFEEL_C)}°C)`;
@@ -18,7 +21,7 @@ function displayWeather() {
             document.getElementById("weather0_rain").innerHTML = `${Math.round(weatherdata.current.PROBPCP_PERCENT)}%<br>${weatherdata.current.RRR_MM} mm`;
         };
         if (document.getElementById("weather0_wind")) {
-            document.getElementById("weather0_wind").innerHTML = `${Math.round(weatherdata.current.FF_KMH)} km/h<br><img style="transform-origin: 50% 50%; transform: rotate(${weatherdata.current.DD_DEG}deg);" src="${weathersymboltype}/winddir.svg">`;
+            document.getElementById("weather0_wind").innerHTML = `${Math.round(weatherdata.current.FF_KMH)} km/h<br><img style="transform-origin: 50% 50%; transform: rotate(${weatherdata.current.DD_DEG}deg);" src="${customweathersymboltype}/winddir.svg">`;
         };
 
         if (document.getElementById("weather2_text") && reqparam.debug == 'true') {
@@ -28,7 +31,7 @@ function displayWeather() {
             document.getElementById("weather2_text").innerHTML += `<br><span class="textsizehalf">(${weather2_hours.toString().padStart(2, '0')}:${weather2_minutes.toString().padStart(2, '0')})</span>`;
         };
         if (document.getElementById("weather2_symbol")) {
-            document.getElementById("weather2_symbol").innerHTML = `<img src="${weathersymboltype+'/'+weatherdata.in2h.symbol_code}.svg">`;
+            document.getElementById("weather2_symbol").innerHTML = `<img src="${customweathersymboltype+'/'+weatherdata.in2h.symbol_code}.svg">`;
         };
         if (document.getElementById("weather2_temperatur")) {
             document.getElementById("weather2_temperatur").innerHTML = `${Math.round(weatherdata.in2h.TTT_C)}°C<br>(${Math.round(weatherdata.in2h.TTTFEEL_C)}°C)`;
@@ -37,7 +40,7 @@ function displayWeather() {
             document.getElementById("weather2_rain").innerHTML = `${Math.round(weatherdata.in2h.PROBPCP_PERCENT)}%<br>${weatherdata.in2h.RRR_MM} mm`;
         };
         if (document.getElementById("weather2_wind")) {
-            document.getElementById("weather2_wind").innerHTML = `${Math.round(weatherdata.in2h.FF_KMH)} km/h<br><img style="transform-origin: 50% 50%; transform: rotate(${weatherdata.in2h.DD_DEG}deg);" src="${weathersymboltype}/winddir.svg">`;
+            document.getElementById("weather2_wind").innerHTML = `${Math.round(weatherdata.in2h.FF_KMH)} km/h<br><img style="transform-origin: 50% 50%; transform: rotate(${weatherdata.in2h.DD_DEG}deg);" src="${customweathersymboltype}/winddir.svg">`;
         };
 
     } catch(err) {
@@ -68,7 +71,7 @@ function displayRuderverbot() {
     const statusRuderverbot = checkRuderverbot();
 
     if (statusRuderverbot.urgency > 0) {
-        document.getElementById("welcometext").innerHTML = "";
+        try {document.getElementById("welcometext").innerHTML = "";} catch(err) {};
         document.getElementById("statusRuderverbot").innerHTML = statusRuderverbot.text; //`<b>${statustext}</b>`;
     };
 
