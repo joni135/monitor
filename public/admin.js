@@ -246,7 +246,7 @@ function addInfo() {
         // Keine URL angegeben
         document.getElementById('confirmationMessageTitel').innerHTML = 'Info-Text konnte nicht erstellt werden';
         document.getElementById('confirmationMessageText').innerHTML = 'Es ist kein Text für die Info angegeben.';
-        document.getElementById('confirmationMessage').style.color = 'red';            
+        document.getElementById('confirmationMessage').style.color = 'red';
         document.getElementById('addIframeSlide').style.display = 'none';
         document.getElementById('confirmationMessage').style.display = 'block';
     };
@@ -375,7 +375,7 @@ function addImageSlide() {
             // Datei ist kein Bild
             document.getElementById('confirmationMessageTitel').innerHTML = 'Bilder-Slide konnte nicht erstellt werden';
             document.getElementById('confirmationMessageText').innerHTML = 'Die hochgeladene Datei ist kein Bild.';
-            document.getElementById('confirmationMessage').style.color = 'red';            
+            document.getElementById('confirmationMessage').style.color = 'red';
             document.getElementById('addImageSlide').style.display = 'none';
             document.getElementById('confirmationMessage').style.display = 'block';
         };
@@ -383,7 +383,7 @@ function addImageSlide() {
         // Keine Datei ausgewählt
         document.getElementById('confirmationMessageTitel').innerHTML = 'Bilder-Slide konnte nicht erstellt werden';
         document.getElementById('confirmationMessageText').innerHTML = 'Es ist keine Bild-Datei zum hochladen angegeben.';
-        document.getElementById('confirmationMessage').style.color = 'red';            
+        document.getElementById('confirmationMessage').style.color = 'red';
         document.getElementById('addImageSlide').style.display = 'none';
         document.getElementById('confirmationMessage').style.display = 'block';
     };
@@ -427,7 +427,7 @@ function addIframeSlide() {
         // Keine URL angegeben
         document.getElementById('confirmationMessageTitel').innerHTML = 'Iframe-Slide konnte nicht erstellt werden';
         document.getElementById('confirmationMessageText').innerHTML = 'Es ist keine URL für das Iframe angegeben.';
-        document.getElementById('confirmationMessage').style.color = 'red';            
+        document.getElementById('confirmationMessage').style.color = 'red';
         document.getElementById('addIframeSlide').style.display = 'none';
         document.getElementById('confirmationMessage').style.display = 'block';
     };

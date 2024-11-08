@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="admin.css">
         <script src="index.js"></script>
         <script src="admin.js"></script>
+        <script src="plugins/admin-draganddrop.js"></script>
     </head>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -125,6 +126,11 @@
                 <button onclick="editInfo()">Ändern</button>
                 <button onclick="closePopup('editInfo')">Abbrechen</button>
             </div>
+        </div>
+
+        <!-- Info-Fenster für das hinzufügen einer Datei via Drag and drop -->
+        <div id="dropHint" class="Popup">
+            <h3 id="dropHintTitle">Datei hierhin ziehen, um hochzuladen</h3>
         </div>
 
         <!-- Popup-Fenster für das hinzufügen einer Bild-Slide -->
