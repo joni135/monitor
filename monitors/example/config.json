@@ -1,5 +1,5 @@
 {
-    "slideduration": 30,
+    "slideduration": 10,
     "weatherandhydrodata": {
         "json_weather": "weather_neuenhof.json",
         "json_hydro": "hydrodata_baden_limmat.json",
@@ -19,39 +19,30 @@
     ],
     "slides": [
         {
+            "id": "DJI_0176.JPG",
+            "type": "img",
+            "path": "./example//DJI_0176.JPG",
+            "title": "",
+            "comment": "Testfolie BILD",
+            "starttime": "2024-10-12T13:09",
+            "endtime": ""
+        },
+        {
+            "id": "https://www.rcbaden.ch/",
+            "type": "iframe",
+            "path": "https://www.rcbaden.ch/",
+            "title": "",
+            "comment": "Testfolie IFRAME",
+            "starttime": "",
+            "endtime": ""
+        },
+        {
             "id": "IMG_0567.JPG",
             "type": "img",
             "path": "./example//IMG_0567.JPG",
-            "title": "",
-            "comment": "",
+            "title": "Test Folientitel",
+            "comment": "Testfolie FOLIENTITEL",
             "starttime": "2024-06-30T18:13",
-            "endtime": ""
-        },
-        {
-            "id": "IMG_0616.JPG",
-            "type": "img",
-            "path": "./example//IMG_0616.JPG",
-            "title": "",
-            "comment": "",
-            "starttime": "2024-06-30T18:15",
-            "endtime": ""
-        },
-        {
-            "id": "IMG_0698.JPG",
-            "type": "img",
-            "path": "./example//IMG_0698.JPG",
-            "title": "",
-            "comment": "",
-            "starttime": "2024-06-30T18:16",
-            "endtime": ""
-        },
-        {
-            "id": "IMG_0908.JPG",
-            "type": "img",
-            "path": "./example//IMG_0908.JPG",
-            "title": "",
-            "comment": "",
-            "starttime": "2024-06-30T18:17",
             "endtime": ""
         }
     ]
