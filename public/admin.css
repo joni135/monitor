@@ -198,3 +198,10 @@ input {
     content: "*";
     color: red;
 }
+
+
+/* FOOTER */
+#github {
+    text-decoration: underline;
+    color: var(--dark-color);
+}
