@@ -618,6 +618,7 @@ app.post('/uploadimage', (req, res) => {
             const newSlide = {
                 "id": uuid_v4,
                 "type": "img",
+                "originalfilename": imageData.originalFilename,
                 "path": `${queryParameters.slidefolder}/${newFilename}`,
                 "title": fields.title[0],
                 "comment": fields.comment[0],
