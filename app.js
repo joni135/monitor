@@ -4,6 +4,7 @@ const path = require('path');
 const formidable = require('formidable');
 const fs = require('fs');
 const url = require('url');
+const { v4: uuidv4 } = require('uuid');
 
 
 // Lesen der Konfigurationsdatei
@@ -16,7 +17,6 @@ const app = express();
 const port = 8080;
 app.use(express.static(path.join(__dirname, config.maininfos.system.publicfolder)));
 app.use(express.static(path.join(__dirname, config.maininfos.system.monitorsfolder)));
-
 
 
 // Erstelle Webcontent auf Abfrage
@@ -272,6 +272,8 @@ app.get('/getinfos', (req, res) => {
 
 // POST-Anfrage für das Hochladen einer Info-Nachricht
 app.post('/uploadinfo', (req, res) => {
+    const uuid_v4 = uuidv4();
+
     const parsedUrl = url.parse(req.url, true);
     const queryParameters = parsedUrl.query;
     var uploadDirectory = '';
@@ -300,18 +302,18 @@ app.post('/uploadinfo', (req, res) => {
         
         // Informationen in Infos ergänzen
         try {
-            // ID generieren
-            var specialChars = "!@#$^'&%*()+=-_[]\\{}|;:<>?,./";
-            var infoid = fields.text[0];
-            for (var i=0; i < specialChars.length; i++) {
-                infoid = infoid.replaceAll(specialChars[i], "");
-            };
-            infoid = infoid.replaceAll('"', "");
-            infoid = infoid.replaceAll(" ", "");
+            // ID generieren -> neu wird die UUID verwendet
+            //var specialChars = "!@#$^'&%*()+=-_[]\\{}|;:<>?,./";
+            //var infoid = fields.text[0];
+            //for (var i=0; i < specialChars.length; i++) {
+            //    infoid = infoid.replaceAll(specialChars[i], "");
+            //};
+            //infoid = infoid.replaceAll('"', "");
+            //infoid = infoid.replaceAll(" ", "");
 
             // Daten in JSON abspeichern
             const newInfo = {
-                "id": infoid.toLowerCase(),
+                "id": uuid_v4, //infoid.toLowerCase(),
                 "text": fields.text[0],
                 "comment": fields.comment[0],
                 "starttime": fields.starttime[0],
@@ -560,6 +562,8 @@ app.get('/getslides', (req, res) => {
 
 // POST-Anfrage für das Hochladen einer Bilder-Slide
 app.post('/uploadimage', (req, res) => {
+    const uuid_v4 = uuidv4();
+
     const parsedUrl = url.parse(req.url, true);
     const queryParameters = parsedUrl.query;
     var uploadDirectory = '';
@@ -589,7 +593,9 @@ app.post('/uploadimage', (req, res) => {
         // Hochgeladenes Bild ablegen
         const imageData = files.file[0];
         const oldPath = imageData.filepath;
-        const newPath = path.join(uploadDirectory, imageData.originalFilename);
+
+        const newFilename = uuid_v4+path.extname(imageData.originalFilename)
+        const newPath = path.join(uploadDirectory, newFilename);
         fs.copyFile(oldPath, newPath, (err) => {
             if (err) {
                 res.status(500).send({
@@ -610,9 +616,9 @@ app.post('/uploadimage', (req, res) => {
         try {
             // Daten in JSON abspeichern
             const newSlide = {
-                "id": imageData.originalFilename,
+                "id": uuid_v4,
                 "type": "img",
-                "path": `${queryParameters.slidefolder}/${imageData.originalFilename}`,
+                "path": `${queryParameters.slidefolder}/${newFilename}`,
                 "title": fields.title[0],
                 "comment": fields.comment[0],
                 "starttime": fields.starttime[0],
@@ -664,6 +670,8 @@ app.post('/uploadimage', (req, res) => {
 
 // POST-Anfrage für das Hochladen einer Iframe-Slide
 app.post('/uploadiframe', (req, res) => {
+    const uuid_v4 = uuidv4();
+
     const parsedUrl = url.parse(req.url, true);
     const queryParameters = parsedUrl.query;
     var uploadDirectory = '';
@@ -694,7 +702,7 @@ app.post('/uploadiframe', (req, res) => {
         try {
             // Daten in JSON abspeichern
             const newSlide = {
-                "id": fields.url[0],
+                "id": uuid_v4,
                 "type": "iframe",
                 "path": fields.url[0],
                 "title": fields.title[0],
