@@ -622,6 +622,7 @@ app.post('/uploadimage', (req, res) => {
                 "path": `${queryParameters.slidefolder}/${newFilename}`,
                 "title": fields.title[0],
                 "comment": fields.comment[0],
+                "displayduration": fields.displayduration[0],
                 "starttime": fields.starttime[0],
                 "endtime": fields.endtime[0]
             };
@@ -708,6 +709,7 @@ app.post('/uploadiframe', (req, res) => {
                 "path": fields.url[0],
                 "title": fields.title[0],
                 "comment": fields.comment[0],
+                "displayduration": fields.displayduration[0],
                 "starttime": fields.starttime[0],
                 "endtime": fields.endtime[0]
             };
@@ -810,6 +812,7 @@ app.post('/editslide', (req, res) => {
             // Slidedaten aktualisieren und Datei speichern
             slidesData[slidePositionId].title = fields.title[0];
             slidesData[slidePositionId].comment = fields.comment[0];
+            slidesData[slidePositionId].displayduration = fields.displayduration[0],
             slidesData[slidePositionId].starttime = fields.starttime[0];
             slidesData[slidePositionId].endtime = fields.endtime[0];
             monitorconfig.slides = slidesData

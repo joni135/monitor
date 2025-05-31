@@ -1,5 +1,5 @@
 {
-    "slideduration": 10,
+    "slideduration": 5,
     "weatherandhydrodata": {
         "json_weather": "weather_neuenhof.json",
         "json_hydro": "hydrodata_baden_limmat.json",
@@ -43,6 +43,17 @@
             "title": "Test Folientitel",
             "comment": "Testfolie FOLIENTITEL",
             "starttime": "2024-06-30T18:13",
+            "endtime": ""
+        },
+        {
+            "id": "c2917fdb-1e2f-45ed-98f3-30b4ea32285b",
+            "type": "img",
+            "originalfilename": "DJI_0363.JPG",
+            "path": "./example//c2917fdb-1e2f-45ed-98f3-30b4ea32285b.JPG",
+            "title": "",
+            "comment": "Testfolie ANZEIGEDAUER",
+            "displayduration": "1",
+            "starttime": "2025-05-31T18:32",
             "endtime": ""
         }
     ]

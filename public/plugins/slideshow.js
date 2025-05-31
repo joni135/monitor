@@ -22,12 +22,15 @@ function loadSlides() {
             var starttimeDate = new Date(slideData.starttime);
             var endtimeDate = new Date(slideData.endtime);
             var currentDate = new Date();
-            if ((starttimeDate < currentDate | slideData.starttime === "") && (endtimeDate > currentDate | slideData.endtime === "")) {
+            if ((starttimeDate < currentDate | slideData.starttime === '') && (endtimeDate > currentDate | slideData.endtime === '')) {
 
               // Erstelle slideContainer (div)
               var slideContainer = document.createElement('div');
-              slideContainer.id = 'slide-' + (i + 1);
+              slideContainer.id = 'slide-' + (i);
               slideContainer.className = `slideContainer fade ${slideData.type}`;
+              if (slideData.displayduration) {
+                slideContainer.dataset.slidedisplayduration = slideData.displayduration;
+              };
 
               // Erstelle Inhalt von slideContainer wenn vorhanden
               if (slideData.type && slideData.type !== '') {
@@ -80,25 +83,46 @@ function loadSlides() {
     sliderequest.send();
   };
 
+
 var slideIndex = 0;
 
 function showSlides() {
     try {
 
-      var slides = document.getElementsByClassName("slideContainer");
+      // Alle Slides auf inaktiv setzen
+      var slides = document.getElementsByClassName('slideContainer');
       for (var i = 0; i < slides.length; i++) {
           slides[i].classList.remove('active');
-          slides[i].style.display = "none";  
+          slides[i].classList.remove('next');
+          slides[i].style.display = 'none';
       };
+
+      // Aktuelle Slide als aktiv setzen
+      slides[slideIndex].classList.add('active');
+      slides[slideIndex].style.display = 'block';
+
+      // Spezifische Anzeigedauer setzen oder Standardwert nehmen
+      var currentslide = document.getElementById('slide-'+slideIndex);
+      if (currentslide.dataset.slidedisplayduration) {
+        var specificslideduration = currentslide.dataset.slidedisplayduration
+        //console.log(`Slide "slide-${slideIndex}" hat Anzeigedauer angegeben: ${specificslideduration}s`);
+      } else {
+        var specificslideduration = slideduration
+        //console.log(`Slide "slide-${slideIndex}" hat keine spezifische Anzeigedauer (Standardwert ${slideduration}s wird verwendet)`);
+      };
+
+      // Nächste Slide-ID berechnen und Slide kennzeichnen
       slideIndex++;
-      if (slideIndex > slides.length) {
-          slideIndex = 1;
+      if (slideIndex >= slides.length) {
+          slideIndex = 0;
       };
-      slides[slideIndex - 1].classList.add('active');
-      slides[slideIndex-1].style.display = "block"; 
-      setTimeout(showSlides, slideduration*1000);
+      slides[slideIndex].classList.add('next');
+
+      setTimeout(showSlides, specificslideduration*1000);
     
     } catch(err) {
-      console.error(`Fehler beim anzeigen der Slides: ${err}`)
+      console.error(`Fehler beim anzeigen der Slide "slide-${slideIndex}": ${err}`)
+      slideIndex = 0;
+      showSlides();
     };
   };

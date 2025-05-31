@@ -133,6 +133,13 @@ function renderSlidesAdmin(slidesData) {
         };
         slide.appendChild(slidePreview);
 
+        // Bearbeite Daten für Spalte Beschreibung
+        if (!slideData.displayduration || slideData.displayduration === 0 || slideData.displayduration === '') {
+            slideData.displayduration_text = `Standard (${slideduration}s)`
+        } else {
+            slideData.displayduration_text = slideData.displayduration+' Sekunden'
+        };
+
         // Erstelle Spalte Beschreibung
         var slideDescription = document.createElement('td');
         slideDescription.className = 'slideTitle';
@@ -140,6 +147,7 @@ function renderSlidesAdmin(slidesData) {
             Titel: ${slideData.title}<br>
             Bemerkung: ${slideData.comment}<br>
             Pfad: <a href="${slideData.path}" target="_blank">${slideData.path}</a><br>
+            Anzeigedauer: ${slideData.displayduration_text}<br>
             Zeitrahmen: ${slideData.starttime} - ${slideData.endtime}`;
         slide.appendChild(slideDescription);
 
@@ -450,6 +458,8 @@ function openSlideEditPopup(slideId) {
         SlideTitleInput.value = slidesData[slidePositionId].title;
     var SlideCommentInput = document.getElementById('SlideCommentInput');
         SlideCommentInput.value = slidesData[slidePositionId].comment;
+    var SlideDisplaydurationInput = document.getElementById('SlideDisplaydurationInput');
+        SlideDisplaydurationInput.value = slidesData[slidePositionId].displayduration;
     var SlideStarttimeInput = document.getElementById('SlideStarttimeInput');
         SlideStarttimeInput.value = slidesData[slidePositionId].starttime;
     var SlideEndtimeInput = document.getElementById('SlideEndtimeInput');
