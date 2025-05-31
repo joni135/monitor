@@ -229,8 +229,19 @@
             <h3 id="confirmationMessageTitel"></h3>
             <p id="confirmationMessageText"></p>
             <div class="button-container">
-                <button onclick="closePopup('confirmationMessage')">Schliessen</button>
+                <button id="closePopup-confirmationMessage" onclick="closePopup('confirmationMessage')">Schliessen</button>
             </div>
+            <script>
+                // Schliesse Popup mit Enter
+                document.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        const popup = document.getElementById('confirmationMessage');
+                        if (popup && window.getComputedStyle(popup).display !== 'none') {
+                            document.getElementById('closePopup-confirmationMessage').click();
+                        }
+                    }
+                });
+            </script>
         </div>
 
     </body>
