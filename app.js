@@ -1120,5 +1120,6 @@ app.get('/changeorderslidedown', (req, res) => {
 
 // debug listen port
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`Monitor läuft auf Port ${port}`);
+    console.log(`Die Prozess-ID dieser Node.js-App ist ${process.pid}`);
 });
