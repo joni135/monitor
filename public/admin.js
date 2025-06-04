@@ -1,3 +1,6 @@
+let infosData = {}
+let slidesData = {}
+
 // Alle Infos aus Datei auslesen (per API-Request)
 function loadInfosAdmin() {  
 
@@ -171,7 +174,6 @@ function renderSlidesAdmin(slidesData) {
 
 // Popup-Fenster öffnen
 function openPopup(PopupId) {
-    document.getElementById(PopupId+'Form').reset(); // leert die Inputfelder
     document.getElementById('overlay').style.display = 'block';
     document.getElementById(PopupId).style.display = 'block';
 
@@ -212,6 +214,10 @@ function openPopup(PopupId) {
 
 // Popup-Fenster schliessen
 function closePopup(PopupId) {
+    if (document.getElementById(PopupId+'Form')) {
+        document.getElementById(PopupId+'Form').reset();
+    };
+
     document.getElementById('overlay').style.display = 'none';
     document.getElementById('confirmationMessage').style.color = 'black';
     document.getElementById(PopupId).style.display = 'none';
@@ -244,6 +250,7 @@ function addInfo() {
             if (responseJson.fatal === true) {
                 document.getElementById('confirmationMessage').style.color = 'red';
             } else {
+                infosData = responseJson.infosData
                 renderInfosAdmin(responseJson.infosData)
             };
         
@@ -263,10 +270,14 @@ function addInfo() {
 
 // Popup-Fenster für das Bearbeiten der Info öffnen
 function openInfoEditPopup(infoId) {
+    if (reqparam.debug == 'true') {
+        console.log(`Öffne InfoEdit-Popup der Slide ${infoId}`);
+    };
+
+    document.getElementById('editInfoForm').reset();
     document.getElementById('editInfoTitel').innerHTML = `Info "${infoId}" bearbeiten`;
     document.getElementById('infoId').innerHTML = infoId;
-    openPopup('editInfo');
-
+    
     // setze aktuelle Werte in Formular
     for (var i = 0; i < infosData.length; i++) {
         if (infosData[i].id === infoId) {
@@ -281,7 +292,8 @@ function openInfoEditPopup(infoId) {
         EditInfoStarttimeInput.value = infosData[infoPositionId].starttime;
     var EditInfoEndtimeInput = document.getElementById('EditInfoEndtimeInput');
         EditInfoEndtimeInput.value = infosData[infoPositionId].endtime;
-    
+
+    openPopup('editInfo');
   };
 
 
@@ -444,9 +456,14 @@ function addIframeSlide() {
 
 // Popup-Fenster für das Bearbeiten der Slide öffnen
 function openSlideEditPopup(slideId) {
+    if (reqparam.debug == 'true') {
+        console.log(`Öffne SlideEdit-Popup der Slide ${slideId}`);
+    };
+
+    document.getElementById('editSlideForm').reset();
     document.getElementById('editSlideTitel').innerHTML = `Slide "${slideId}" bearbeiten`;
     document.getElementById('slideId').innerHTML = slideId;
-    openPopup('editSlide');
+    
 
     // setze aktuelle Werte in Formular
     for (var i = 0; i < slidesData.length; i++) {
@@ -465,6 +482,7 @@ function openSlideEditPopup(slideId) {
     var SlideEndtimeInput = document.getElementById('SlideEndtimeInput');
         SlideEndtimeInput.value = slidesData[slidePositionId].endtime;
     
+    openPopup('editSlide');
   };
 
 
