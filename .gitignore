@@ -5,6 +5,7 @@ monitors/*
 !monitors/example*
 
 weathercalculator
+calendar
 test*.*
 archiv/
 

@@ -104,6 +104,20 @@ body {
 }
 
 
+/* Kallender */
+#calendar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    display: flex;
+    white-space: nowrap;
+    background-color: var(--light-color);
+}
+
+
 /* INFOLEISTE */
 #infocarousel {
     width: 100vw;

@@ -158,6 +158,35 @@ app.get('/', (req, res) => {
     try {hydrodata} catch(err) {hydrodata = JSON.stringify({})};
 
 
+    // Starte Backend-Skript für Plugin "calendar"
+    try {
+        if (monitorparams.plugins.includes("calendar")) {
+
+            // Ergänze Kallenderdaten
+            try {
+                if (monitorconfig.calendar.json_events) {
+                    calendardata = fs.readFileSync(config.plugins.calendar.datapath+monitorconfig.calendar.json_events);
+                    app.use(express.static(path.join(__dirname, config.plugins.calendar.symbolpath)));
+                };
+            } catch(err) {
+                Errors.push ({
+                    'title': `Kallenderdaten konnte nicht gelesen werden`,
+                    'content': `Die Dateien für die Kallenderdaten konnten nicht gelesen werden!\n${err.message}`,
+                    'fatal': false
+                });
+            };
+        };
+    } catch(err) {
+        Errors.push ({
+            'title': `Kallenderdaten konnte nicht gelesen werden`,
+            'content': `Es gab ein unbekannter Fehler beim Lesen der Konfigurationen bzw. Daten oder im Plugin`,
+            'fatal': true
+        });
+    };
+
+    try {calendardata} catch(err) {calendardata = JSON.stringify({})};
+
+
     // Laden der Plugins, die dem Client im HTML gesendet werden
     customPlugins = '';
     try {
@@ -180,6 +209,7 @@ app.get('/', (req, res) => {
             const weatherdata = ${weatherdata};
             const weathersymboltype = "${weathersymboltype}";
             const hydrodata = ${hydrodata};
+            const calendardata = ${calendardata};
         </script>`;
     
 

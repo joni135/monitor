@@ -5,6 +5,9 @@
         "json_hydro": "hydrodata_baden_limmat.json",
         "weathersymboltype": "svg_light"
     },
+    "calendar": {
+        "json_events": "rcb_clubdesk.json"
+    },
     "stylevariables": {
         "--primary-color": "blue"
     },
