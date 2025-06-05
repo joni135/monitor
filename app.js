@@ -167,6 +167,8 @@ app.get('/', (req, res) => {
                 if (monitorconfig.calendar.json_events) {
                     calendardata = fs.readFileSync(config.plugins.calendar.datapath+monitorconfig.calendar.json_events);
                     app.use(express.static(path.join(__dirname, config.plugins.calendar.symbolpath)));
+                    calendar_max_entries = monitorconfig.calendar.max_entries;
+                    calendar_maxhour_future = monitorconfig.calendar.maxhour_future;
                 };
             } catch(err) {
                 Errors.push ({
@@ -185,6 +187,8 @@ app.get('/', (req, res) => {
     };
 
     try {calendardata} catch(err) {calendardata = JSON.stringify({})};
+    try {calendar_max_entries} catch(err) {calendar_max_entries = 0};
+    try {calendar_maxhour_future} catch(err) {calendar_maxhour_future = 0};
 
 
     // Laden der Plugins, die dem Client im HTML gesendet werden
@@ -210,6 +214,8 @@ app.get('/', (req, res) => {
             const weathersymboltype = "${weathersymboltype}";
             const hydrodata = ${hydrodata};
             const calendardata = ${calendardata};
+            const calendar_max_entries = ${calendar_max_entries};
+            const calendar_maxhour_future = ${calendar_maxhour_future};
         </script>`;
     
 

@@ -112,7 +112,6 @@ body {
     width: auto;
     height: auto;
     overflow: hidden;
-    display: flex;
     white-space: nowrap;
     background-color: var(--light-color);
 }

@@ -6,7 +6,9 @@
         "weathersymboltype": "svg_light"
     },
     "calendar": {
-        "json_events": "rcb_clubdesk.json"
+        "json_events": "rcb_clubdesk.json",
+        "max_entries": 3,
+        "maxhour_future": 200
     },
     "stylevariables": {
         "--primary-color": "blue"

@@ -15,6 +15,7 @@ function initSite() {
 
     // Falls Prozess gedebugt werden soll, gebe erhaltene Variablen aus
     if (reqparam.debug == 'true') {
+      try {
         console.log('URL-Parameter (reqparam):', reqparam);
         console.log('aufgekommene Fehler (errors):', errors);
         console.log('Seitentitel (sitetitle):', sitetitle)
@@ -26,6 +27,11 @@ function initSite() {
         console.log('Hydrodaten (hydrodata):', hydrodata);
         console.log('Wettersymbole (weathersymboltype):', weathersymboltype);
         console.log('Kallenderdaten (calendardata):', calendardata);
+        console.log('Maximale Anzahl Events (calendardata):', calendar_max_entries);
+        console.log('Maximale Vorauszeit eines Events (calendardata):', calendar_maxhour_future);
+      } catch (err) {
+        console.error('Konnte Parameter nicht anzeigen: ', err);
+      };
     };
 
   };
