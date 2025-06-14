@@ -26,12 +26,23 @@
             calendar_init();
             loadInfos();
             loadSlides();
+
+            // Footerhöhe auslesen
+            var footerHeight = document.getElementById('footer').offsetHeight;
+            const style = document.createElement('style');
+            style.innerHTML = `html {--footerheight: ${footerHeight}px; !important}`;
+            document.documentElement.appendChild(style);
         });
     </script>
     <body>
-        <div class="container">
+        <div id="main" class="main">
             <div id="slideshow" class="main"></div>
-            <ul id="calendar"></ul>
+            <div id="calendar">
+                <h3 id="calendarTitle" class="calendarTitle">Clubdesk Kallender</h3>
+                <ul id="calendarList" class="calendarList"></ul>
+            </div>
+        </div>
+        <div id="footer" class="footer">
             <div id="infocarousel">
                 <div class="carousel-text"></div>
                 <div class="carousel-text"></div>
@@ -44,38 +55,36 @@
                 <div class="carousel-text"></div>
                 <div class="carousel-text"></div>
             </div>
-            <div id="footer" class="footer">
-                <table>
-                    <tr>
-                        <td id="description_text" class="textsizehalf row-0 col-1"></td>
-                        <td id="description_symbol" class="textsizehalf row-0 col-2"></td>
-                        <td id="description_temperatur" class="textsizehalf row-0 col-3">Temperatur<br>(gefühlt)</td>
-                        <td id="description_rain" class="textsizehalf row-0 col-4">Regenwahrsch.<br>Niederschlag</td>
-                        <td id="description_wind" class="textsizehalf row-0 col-5">Wind</td>
-                        <td id="description_discharge" class="textsizehalf row-0 col-7">Durchfluss</td>
-                        <td id="description_watertemp" class="textsizehalf row-0 col-8">Wassertemperatur</td>
-                    </tr>
-                    <tr>
-                        <td id="weather0_text" class="currentweather row-1 col-1">jetzt:</td>
-                        <td id="weather0_symbol" class="currentweather row-1 col-2 weathersymbol">ERR</td>
-                        <td id="weather0_temperatur" class="currentweather row-1 col-3">ERR</td>
-                        <td id="weather0_rain" class="currentweather row-1 col-4">ERR</td>
-                        <td id="weather0_wind" class="currentweather row-1 col-5 windarrow">ERR ERR</td>
-                        <td id="hydro_discharge" class="hydrodata row-1 col-7">ERR</td>
-                        <td id="hydro_watertemp" class="hydrodata row-1 col-8">ERR</td>
-                        <td id="welcometext" class="row-1 col-9">Willkommen im<br><span class="textsizedouble">Beispiel</span></td>
-                    </tr>
-                    <tr>
-                        <td id="weather2_text" class="in2hweather row-2 col-1">in 2h:</td>
-                        <td id="weather2_symbol" class="in2hweather row-2 col-2 weathersymbol">ERR</td>
-                        <td id="weather2_temperatur" class="in2hweather row-2 col-3">ERR</td>
-                        <td id="weather2_rain" class="in2hweather row-2 col-4">ERR</td>
-                        <td id="weather2_wind" class="in2hweather row-2 col-5 windarrow">ERR ERR</td>
-                        <td id="statusRuderverbot" class="row-2 col-7 col-8 textsizedouble" colspan="2"></td>
-                        <td id="current-date-time" class="row-2 col-9">ERR:ERR</td>
-                    </tr>
-                </table>
-            </divs>
+            <table id="weatherandhydrodata">
+                <tr>
+                    <td id="description_text" class="textsizehalf row-0 col-1"></td>
+                    <td id="description_symbol" class="textsizehalf row-0 col-2"></td>
+                    <td id="description_temperatur" class="textsizehalf row-0 col-3">Temperatur<br>(gefühlt)</td>
+                    <td id="description_rain" class="textsizehalf row-0 col-4">Regenwahrsch.<br>Niederschlag</td>
+                    <td id="description_wind" class="textsizehalf row-0 col-5">Wind</td>
+                    <td id="description_discharge" class="textsizehalf row-0 col-7">Durchfluss</td>
+                    <td id="description_watertemp" class="textsizehalf row-0 col-8">Wassertemperatur</td>
+                </tr>
+                <tr>
+                    <td id="weather0_text" class="currentweather row-1 col-1">jetzt:</td>
+                    <td id="weather0_symbol" class="currentweather row-1 col-2 weathersymbol">ERR</td>
+                    <td id="weather0_temperatur" class="currentweather row-1 col-3">ERR</td>
+                    <td id="weather0_rain" class="currentweather row-1 col-4">ERR</td>
+                    <td id="weather0_wind" class="currentweather row-1 col-5 windarrow">ERR ERR</td>
+                    <td id="hydro_discharge" class="hydrodata row-1 col-7">ERR</td>
+                    <td id="hydro_watertemp" class="hydrodata row-1 col-8">ERR</td>
+                    <td id="welcometext" class="row-1 col-9">Willkommen im<br><span class="textsizedouble">Beispiel</span></td>
+                </tr>
+                <tr>
+                    <td id="weather2_text" class="in2hweather row-2 col-1">in 2h:</td>
+                    <td id="weather2_symbol" class="in2hweather row-2 col-2 weathersymbol">ERR</td>
+                    <td id="weather2_temperatur" class="in2hweather row-2 col-3">ERR</td>
+                    <td id="weather2_rain" class="in2hweather row-2 col-4">ERR</td>
+                    <td id="weather2_wind" class="in2hweather row-2 col-5 windarrow">ERR ERR</td>
+                    <td id="statusRuderverbot" class="row-2 col-7 col-8 textsizedouble" colspan="2"></td>
+                    <td id="current-date-time" class="row-2 col-9">ERR:ERR</td>
+                </tr>
+            </table>
         </div>
     </body>
 </html>

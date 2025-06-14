@@ -2,9 +2,10 @@ html {
     --primary-color: black;
     --dark-color: black;
     --light-color: white;
-    --titlesize: 40px;
+    --titlesize: 30px;
     --textsize: 20px;
     --textfont: Arial, sans-serif;
+    --footerheight: 0;
 }
 
 body {
@@ -12,14 +13,13 @@ body {
     padding: 0;
     height: 100vh;
     display: flex;
-    justify-content: flex-end;
     flex-direction: column;
+    justify-content: flex-end;
     font-family: var(--textfont);
     font-size: var(--textsize);
+    overflow: hidden;
 }
 
-
-/* ALLGEMEINE STYLEDEFINITIONEN */
 .textsizehalf {
     font-size: calc(var(--textsize) / 2);
 }
@@ -28,47 +28,56 @@ body {
 }
 
 
-/* BILDERSHOWDARSTELLUNG*/
+/* Hauptlayout */
+#main {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#footer {
+    flex-shrink: 0;
+    width: 100%;
+    background-color: var(--primary-color);
+    color: var(--light-color);
+}
+
+
+/* Slideshow */
 #slideshow {
-    flex: 1;
+    flex: 1 1 auto;
+    min-height: 0;
     max-height: 100vh;
-    overflow: hidden;
-    position: relative;
-    margin: auto;
 }
 
 .slideContainer {
     flex: 1;
     display: flex;
-}
-
-.fade {
-    animation-name: fade;
-    animation-duration: 0.5s;
-}
-
-@keyframes fade {
-    from {opacity: 0.5} 
-    to {opacity: 1}
+    flex-direction: column;
+    height: 100%;
+    width: auto;
 }
 
 .slideContent {
     flex: 1;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    max-height: calc(100vh - var(--footerheight)) !important;
 }
 
 .slideImage {
-    min-width: 100vw;
-    min-height: 100%;
-    max-width: 100vw;
-    max-height: 100vh;
+    display: block;
+    max-width: 100%;
+    width: auto;
+    height: 100%;
     object-fit: contain;
     object-position: center;
-    margin: auto;
+    margin: 0 auto;
 }
-
 .slideBackground {
     z-index: -1;
     position: absolute;
@@ -103,21 +112,75 @@ body {
     transform: rotate(-8deg) translateX(-3000px);
 }
 
+.fade {
+    animation-name: fade;
+    animation-duration: 0.5s;
+}
 
-/* Kallender */
-#calendar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: auto;
-    height: auto;
-    overflow: hidden;
-    white-space: nowrap;
-    background-color: var(--light-color);
+@keyframes fade {
+    from { opacity: 0.5; }
+    to { opacity: 1; }
 }
 
 
-/* INFOLEISTE */
+/* Kalender */
+#calendar {
+    position: absolute;
+    bottom: calc(var(--footerheight) + 50px);
+    right: 10px;
+    background: var(--light-color);
+    opacity: 0.8;
+    border-radius: 5px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    padding: 18px 22px 12px 22px;
+    z-index: 20;
+}
+
+#calendarTitle {
+    margin: 0 0 10px 0;
+    font-size: var(--titlesize);
+    color: var(--primary-color);
+}
+.calendarList {
+    list-style: none;
+    padding-left: 10px;
+}
+
+.CalendarEvent {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--dark-color);
+}
+.CalendarEvent:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.EventDetails {
+    margin: 0;
+    font-size: var(--textsize);
+}
+.EventTitle {
+    font-weight: bold;
+}
+.EventLocation::before {
+    content: "📍";
+}
+.EventCategroies {
+    font-style: italic;
+}
+
+@media (max-width: 700px) {
+    #calendar {
+        min-width: 180px;
+        max-width: 95vw;
+        right: 5vw;
+        padding: 10px 8px 8px 8px;
+    }
+}
+
+/* Infocarousel */
 #infocarousel {
     width: 100vw;
     overflow: hidden;
@@ -134,47 +197,32 @@ body {
 }
 
 @keyframes scroll {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-100%);
-    }
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
 }
 
 
-/* FUSSZEILE */
-#footer {
-    bottom: 0;
-    width: 100%;
+/* Wetter- und Hydrodaten */
+#weatherandhydrodata {
     padding-top: 10px;
-    background-color: var(--primary-color);
-    color: var(--light-color);
 }
-
 table {
     width: 100%;
     padding: 10px;
-    bottom: 0;
 }
-
 td {
     vertical-align: top;
     line-height: 150%;
     font-size: var(--textsize);
     min-width: 60px;
 }
-
 .col-9 {
-    right: 0;
     text-align: right;
     max-width: 20vw;
 }
-
 .weathersymbol img {
     height: calc(var(--textsize) * 3);
 }
-
 .windarrow img {
     height: calc(var(--textsize) * 1.5);
 }

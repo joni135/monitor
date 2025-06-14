@@ -1,11 +1,27 @@
+function calendar_init() {
+    if (document.getElementById('calendarList') && calendardata && calendardata.length > 0) {
+        if (calendar_max_entries === undefined || calendar_max_entries === null || calendar_max_entries < 1) {
+            calendar_max_entries = 5; // Standardwert, wenn nicht gesetzt
+        }
+        if (calendar_maxhour_future === undefined || calendar_maxhour_future === null || calendar_maxhour_future < 1) {
+            calendar_maxhour_future = 24; // Standardwert, wenn nicht gesetzt
+        }
+        loadCalendar(calendar_max_entries, calendar_maxhour_future);
+    } else {
+        console.warn('Fehler: Kalender-Element nicht gefunden oder keine Kalendereinträge vorhanden.');
+        document.getElementById('calendar').style.display = 'none';
+    }
+}
+
 // Setze Kallenderdaten in HTML ein
-function loadCalendar(max_entries=calendar_max_entries, maxhour_future=calendar_maxhour_future) {
-    var calendarContainer = document.getElementById('calendar');
+function loadCalendar(max_entries, maxhour_future) {
+    var calendarContainer = document.getElementById('calendarList');
 
     var currentDate = new Date();
     var tomorowDate = new Date(currentDate.getTime() + maxhour_future * 60 * 60 * 1000);
 
-    for (var i = 0; i < max_entries && i < calendardata.length; i++) {
+    var entrie_count = 0
+    for (var i = 0; entrie_count < max_entries && i < calendardata.length; i++) {
         if (calendardata[i]) {
             var event = calendardata[i];
             var starttimeDate = new Date(event.start);
@@ -20,16 +36,16 @@ function loadCalendar(max_entries=calendar_max_entries, maxhour_future=calendar_
                     CalendarEvent.className = `CalendarEvent`;
 
                     // Titel des Events
-                    var title = document.createElement('h3');
+                    var title = document.createElement('h6');
                     title.id = `EventTitle-${i}`;
-                    title.className = `EventTitle CalendarEvent-${i}`;
+                    title.className = `EventTitle EventDetails CalendarEvent-${i}`;
                     title.innerHTML = event.title;
                     CalendarEvent.appendChild(title);
 
                     // Dauer des Events
                     var datetime = document.createElement('p');
                     datetime.id = `EventDateTime-${i}`;
-                    datetime.className = `EventDateTime CalendarEvent-${i}`;
+                    datetime.className = `EventDateTime EventDetails CalendarEvent-${i}`;
                     if (event.fullday === true) {
                         endtimeDate = new Date(endtimeDate-(3 * 60 * 60 * 1000)); // setze Datum einen Tag zurück, um Verwirrungen zu vermeiden
                         if (starttimeDate.getDate() === endtimeDate.getDate()) {
@@ -50,7 +66,7 @@ function loadCalendar(max_entries=calendar_max_entries, maxhour_future=calendar_
                     if (event.location !== 'None') {
                         var location = document.createElement('p');
                         location.id = `EventLocation-${i}`;
-                        location.className = `EventLocation CalendarEvent-${i}`;
+                        location.className = `EventLocation EventDetails CalendarEvent-${i}`;
                         location.innerHTML = event.location;
                         CalendarEvent.appendChild(location);
                     };
@@ -59,7 +75,7 @@ function loadCalendar(max_entries=calendar_max_entries, maxhour_future=calendar_
                     if (event.categories.length > 0) {
                         var categories = document.createElement('p');
                         categories.id = `EventCategroies-${i}`;
-                        categories.className = `EventCategroies CalendarEvent-${i}`;
+                        categories.className = `EventCategroies EventDetails CalendarEvent-${i}`;
                         categories.innerHTML = event.categories.join();
                         CalendarEvent.appendChild(categories);
                     };
@@ -68,12 +84,13 @@ function loadCalendar(max_entries=calendar_max_entries, maxhour_future=calendar_
                     if (event.description !== 'None') {
                         var description = document.createElement('p');
                         description.id = `EventDescription-${i}`;
-                        description.className = `EventDescription CalendarEvent-${i}`;
+                        description.className = `EventDescription EventDetails CalendarEvent-${i}`;
                         description.innerHTML = event.description;
                         CalendarEvent.appendChild(description);
                     };
                     
                     calendarContainer.appendChild(CalendarEvent);
+                    entrie_count = entrie_count+1
 
                 } else {
                     console.log(`Event "${event.title}" (Startzeit: ${event.start}) liegt ausserhalb der maximalen Zeitspanne und wird nicht mehr angezeigt`)
@@ -81,7 +98,6 @@ function loadCalendar(max_entries=calendar_max_entries, maxhour_future=calendar_
                 }
             } else {
                 console.log(`Event "${event.title}" (Endzeit: ${event.end}) ist vergangen und wird nicht angezeigt`)
-                i = i-1
             };
         };
     };
