@@ -639,18 +639,15 @@ app.post('/uploadimage', (req, res) => {
                     'content': err,
                     'fatal': true
                 });
-            /*} else {
-                res.status(200).send({
-                    'title': `Datei hochgeladen`,
-                    'content': `Datei "${imageData.originalFilename}" erfolgreich hochgeladen`,
-                    'fatal': false
-                });*/
             };
         });
 
         // Informationen in Slidesdaten ergänzen
         try {
             // Daten in JSON abspeichern
+            if (fields.displayduration[0] <= 1) {
+                fields.displayduration[0] = ''
+            };
             const newSlide = {
                 "id": uuid_v4,
                 "type": "img",

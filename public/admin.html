@@ -13,6 +13,7 @@
         <script src="index.js"></script>
         <script src="admin.js"></script>
         <script src="plugins/admin-draganddrop.js"></script>
+        <script src="plugins/admin-slide-info.js"></script>
     </head>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -152,7 +153,7 @@
                 </div>
                 <div class="form-group">
                     <label for="ImageDisplaydurationInput">Anzeigedauer (Sekunden):</label>
-                    <input type="number" name="displayduration" id="ImageDisplaydurationInput" title="Anzeigedauer der Slide in Sekunden">
+                    <input type="number" name="displayduration" id="ImageDisplaydurationInput" min="1" title="Anzeigedauer der Slide in Sekunden">
                 </div>
                 <div class="form-group">
                     <label for="ImageStarttimeInput">Startdatum des Anzeigens:</label>
@@ -187,7 +188,7 @@
                 </div>
                 <div class="form-group">
                     <label for="IframeDisplaydurationInput">Anzeigedauer (Sekunden):</label>
-                    <input type="number" name="displayduration" id="IframeDisplaydurationInput" title="Anzeigedauer der Slide in Sekunden">
+                    <input type="number" name="displayduration" id="IframeDisplaydurationInput" min="1" title="Anzeigedauer der Slide in Sekunden">
                 </div>
                 <div class="form-group">
                     <label for="IframeStarttimeInput">Startdatum des Anzeigens:</label>
@@ -218,7 +219,7 @@
                 </div>
                 <div class="form-group">
                     <label for="SlideDisplaydurationInput">Anzeigedauer (Sekunden):</label>
-                    <input type="number" name="displayduration" id="SlideDisplaydurationInput" title="Anzeigedauer der Slide in Sekunden">
+                    <input type="number" name="displayduration" id="SlideDisplaydurationInput" min="1" title="Anzeigedauer der Slide in Sekunden">
                 </div>
                 <div class="form-group">
                     <label for="SlideStarttimeInput">Startdatum des Anzeigens:</label>
@@ -241,7 +242,7 @@
             <h3 id="confirmationMessageTitel"></h3>
             <p id="confirmationMessageText"></p>
             <div class="button-container">
-                <button id="closePopup-confirmationMessage" onclick="closePopup('confirmationMessage')">Schliessen</button>
+                <button id="closeConfirmationMessage" onclick="closeConfirmationMessage()">Schliessen</button>
             </div>
             <script>
                 // Schliesse Popup mit Enter
@@ -249,7 +250,7 @@
                     if (event.key === 'Enter') {
                         const popup = document.getElementById('confirmationMessage');
                         if (popup && window.getComputedStyle(popup).display !== 'none') {
-                            document.getElementById('closePopup-confirmationMessage').click();
+                            document.getElementById('closeConfirmationMessage').click();
                         }
                     }
                 });
