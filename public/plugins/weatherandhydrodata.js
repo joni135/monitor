@@ -1,5 +1,5 @@
 function weatherandhydrodata_init() {
-    if (weatherdata && weatherdata.length > 0) {
+    if (weatherdata && typeof weatherdata === 'object' && Object.keys(weatherdata).length > 0) {
         if (customweathersymboltype && customweathersymboltype !== null && customweathersymboltype !== '') {
             usedweathersymboltype = customweathersymboltype; // überschreibe Standardwert, wenn gesetzt
         } else {
@@ -10,13 +10,14 @@ function weatherandhydrodata_init() {
         console.warn('Fehler: Keine Wetterdaten vorhanden. Es werden keine Wetterdaten angezeigt.');
     }
 
-    if (hydrodata && hydrodata.length > 0) {
+    if (hydrodata && typeof hydrodata === 'object' && Object.keys(hydrodata).length > 0) {
+
         displayHydro();
     } else {
         console.warn('Fehler: Keine Hydrodaten vorhanden. Es werden keine Hydrodaten angezeigt.');
     }
 
-    if (document.getElementById("statusRuderverbot") && (hydrodata && hydrodata.length > 0) && (weatherdata && weatherdata.length > 0)) {
+    if (document.getElementById("statusRuderverbot") && (hydrodata) && (weatherdata)) {
         displayRuderverbot();
     } else {
         console.warn('Fehler: statusRuderverbot-Element nicht gefunden oder keine Wetter- bzw. Hydrodaten vorhanden. Es wird kein Ruderverbot-Status angezeigt.');

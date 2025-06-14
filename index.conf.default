@@ -13,6 +13,11 @@
             "processpath": "./weathercalculator/",
             "datapath": "./weathercalculator/data/",
             "symbolpath": "./weathercalculator/data/weather_svgs/"
+        },
+        "calendar": {
+            "processpath": "./calendar/",
+            "datapath": "./calendar/data/",
+            "symbolpath": "./calendar/data/symbols/"
         }
     },
 
@@ -24,7 +29,7 @@
             "htmlfile": "example.html",
             "datapath": "./example/",
             "favicon": "./example.png",
-            "plugins": ["infocarousel", "slideshow", "weatherandhydrodata"]
+            "plugins": ["infocarousel", "slideshow", "weatherandhydrodata", "calendar"]
         }
     ]
 }
