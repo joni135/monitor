@@ -1,8 +1,30 @@
+function weatherandhydrodata_init() {
+    if (weatherdata && weatherdata.length > 0) {
+        if (customweathersymboltype && customweathersymboltype !== null && customweathersymboltype !== '') {
+            usedweathersymboltype = customweathersymboltype; // überschreibe Standardwert, wenn gesetzt
+        } else {
+            usedweathersymboltype = weathersymboltype; // Standardwert
+        }
+        displayWeather(usedweathersymboltype);
+    } else {
+        console.warn('Fehler: Keine Wetterdaten vorhanden. Es werden keine Wetterdaten angezeigt.');
+    }
+
+    if (hydrodata && hydrodata.length > 0) {
+        displayHydro();
+    } else {
+        console.warn('Fehler: Keine Hydrodaten vorhanden. Es werden keine Hydrodaten angezeigt.');
+    }
+
+    if (document.getElementById("statusRuderverbot") && (hydrodata && hydrodata.length > 0) && (weatherdata && weatherdata.length > 0)) {
+        displayRuderverbot();
+    } else {
+        console.warn('Fehler: statusRuderverbot-Element nicht gefunden oder keine Wetter- bzw. Hydrodaten vorhanden. Es wird kein Ruderverbot-Status angezeigt.');
+    }
+}
+
 // Setze Wetterdaten in HTML ein
-function displayWeather(customweathersymboltype) {
-    if (customweathersymboltype === undefined) {
-        customweathersymboltype = weathersymboltype;
-    };
+function displayWeather(usedweathersymboltype) {
     try {
 
         if (document.getElementById("weather0_text") && reqparam.debug == 'true') {
@@ -12,7 +34,7 @@ function displayWeather(customweathersymboltype) {
             document.getElementById("weather0_text").innerHTML += `<br><span class="textsizehalf">(${weather0_hours.toString().padStart(2, '0')}:${weather0_minutes.toString().padStart(2, '0')})</span>`;
         };
         if (document.getElementById("weather0_symbol")) {
-            document.getElementById("weather0_symbol").innerHTML = `<img src="${customweathersymboltype+'/'+weatherdata.current.symbol_code}.svg">`;
+            document.getElementById("weather0_symbol").innerHTML = `<img src="${usedweathersymboltype+'/'+weatherdata.current.symbol_code}.svg">`;
         };
         if (document.getElementById("weather0_temperatur")) {
             document.getElementById("weather0_temperatur").innerHTML = `${Math.round(weatherdata.current.TTT_C)}°C<br>(${Math.round(weatherdata.current.TTTFEEL_C)}°C)`;
@@ -21,7 +43,7 @@ function displayWeather(customweathersymboltype) {
             document.getElementById("weather0_rain").innerHTML = `${Math.round(weatherdata.current.PROBPCP_PERCENT)}%<br>${weatherdata.current.RRR_MM} mm`;
         };
         if (document.getElementById("weather0_wind")) {
-            document.getElementById("weather0_wind").innerHTML = `${Math.round(weatherdata.current.FF_KMH)} km/h<br><img style="transform-origin: 50% 50%; transform: rotate(${weatherdata.current.DD_DEG}deg);" src="${customweathersymboltype}/winddir.svg">`;
+            document.getElementById("weather0_wind").innerHTML = `${Math.round(weatherdata.current.FF_KMH)} km/h<br><img style="transform-origin: 50% 50%; transform: rotate(${weatherdata.current.DD_DEG}deg);" src="${usedweathersymboltype}/winddir.svg">`;
         };
 
         if (document.getElementById("weather2_text") && reqparam.debug == 'true') {
@@ -31,7 +53,7 @@ function displayWeather(customweathersymboltype) {
             document.getElementById("weather2_text").innerHTML += `<br><span class="textsizehalf">(${weather2_hours.toString().padStart(2, '0')}:${weather2_minutes.toString().padStart(2, '0')})</span>`;
         };
         if (document.getElementById("weather2_symbol")) {
-            document.getElementById("weather2_symbol").innerHTML = `<img src="${customweathersymboltype+'/'+weatherdata.in2h.symbol_code}.svg">`;
+            document.getElementById("weather2_symbol").innerHTML = `<img src="${usedweathersymboltype+'/'+weatherdata.in2h.symbol_code}.svg">`;
         };
         if (document.getElementById("weather2_temperatur")) {
             document.getElementById("weather2_temperatur").innerHTML = `${Math.round(weatherdata.in2h.TTT_C)}°C<br>(${Math.round(weatherdata.in2h.TTTFEEL_C)}°C)`;
@@ -40,7 +62,7 @@ function displayWeather(customweathersymboltype) {
             document.getElementById("weather2_rain").innerHTML = `${Math.round(weatherdata.in2h.PROBPCP_PERCENT)}%<br>${weatherdata.in2h.RRR_MM} mm`;
         };
         if (document.getElementById("weather2_wind")) {
-            document.getElementById("weather2_wind").innerHTML = `${Math.round(weatherdata.in2h.FF_KMH)} km/h<br><img style="transform-origin: 50% 50%; transform: rotate(${weatherdata.in2h.DD_DEG}deg);" src="${customweathersymboltype}/winddir.svg">`;
+            document.getElementById("weather2_wind").innerHTML = `${Math.round(weatherdata.in2h.FF_KMH)} km/h<br><img style="transform-origin: 50% 50%; transform: rotate(${weatherdata.in2h.DD_DEG}deg);" src="${usedweathersymboltype}/winddir.svg">`;
         };
 
     } catch(err) {
@@ -76,7 +98,6 @@ function displayRuderverbot() {
     };
 
 };
-
 
 // Checke ob Ruderverbot besteht und blende Text ein
 function checkRuderverbot() {

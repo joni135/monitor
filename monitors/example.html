@@ -18,14 +18,12 @@
             document.getElementById('autor').setAttribute('content', siteauthor);
             document.getElementById('favicon').setAttribute('href', favicon);
 
-            // Funktion zum laden der Seite
+            // Funktionen und Plugins der Seite laden
             initSite();
 
-            displayWeather();
-            displayHydro();
-            displayRuderverbot();
-            loadCalendar();
-
+            customweathersymboltype = null;
+            weatherandhydrodata_init();
+            calendar_init();
             loadInfos();
             loadSlides();
         });
