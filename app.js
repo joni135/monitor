@@ -162,7 +162,7 @@ app.get('/', (req, res) => {
     try {
         if (monitorparams.plugins.includes("calendar")) {
 
-            // Ergänze Kallenderdaten
+            // Ergänze Kalenderdaten
             try {
                 if (monitorconfig.calendar.json_events) {
                     calendardata = fs.readFileSync(config.plugins.calendar.datapath+monitorconfig.calendar.json_events);
@@ -172,15 +172,15 @@ app.get('/', (req, res) => {
                 };
             } catch(err) {
                 Errors.push ({
-                    'title': `Kallenderdaten konnte nicht gelesen werden`,
-                    'content': `Die Dateien für die Kallenderdaten konnten nicht gelesen werden!\n${err.message}`,
+                    'title': `Kalenderdaten konnte nicht gelesen werden`,
+                    'content': `Die Dateien für die Kalenderdaten konnten nicht gelesen werden!\n${err.message}`,
                     'fatal': false
                 });
             };
         };
     } catch(err) {
         Errors.push ({
-            'title': `Kallenderdaten konnte nicht gelesen werden`,
+            'title': `Kalenderdaten konnte nicht gelesen werden`,
             'content': `Es gab ein unbekannter Fehler beim Lesen der Konfigurationen bzw. Daten oder im Plugin`,
             'fatal': true
         });

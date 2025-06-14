@@ -24,7 +24,7 @@ function initSite() {
             if (typeof weatherdata !== 'undefined' && weatherdata) {console.log('Wetterdaten (weatherdata):', weatherdata);}
             if (typeof hydrodata !== 'undefined' && hydrodata) {console.log('Hydrodaten (hydrodata):', hydrodata);}
             if (typeof weathersymboltype !== 'undefined' && weathersymboltype) {console.log('Wettersymbole (weathersymboltype):', weathersymboltype);}
-            if (typeof calendardata !== 'undefined' && calendardata) {console.log('Kallenderdaten (calendardata):', calendardata);}
+            if (typeof calendardata !== 'undefined' && calendardata) {console.log('Kalenderdaten (calendardata):', calendardata);}
             if (typeof calendar_max_entries !== 'undefined' && calendar_max_entries) {console.log('Maximale Anzahl Events (calendardata):', calendar_max_entries);}
             if (typeof calendar_maxhour_future !== 'undefined' && calendar_maxhour_future) {console.log('Maximale Vorauszeit eines Events (calendardata):', calendar_maxhour_future);}
         } catch (err) {

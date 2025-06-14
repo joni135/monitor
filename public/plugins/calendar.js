@@ -13,7 +13,7 @@ function calendar_init() {
     }
 }
 
-// Setze Kallenderdaten in HTML ein
+// Setze Kalenderdaten in HTML ein
 function loadCalendar(max_entries, maxhour_future) {
     var calendarContainer = document.getElementById('calendarList');
 
