@@ -9,18 +9,18 @@ function loadInfosAdmin() {
     inforequest.open('GET', `/getinfos?slidefolder=${datapath}`, true);
 
     inforequest.onload = function () {
-      if (inforequest.status == 200) {
-        infosData = JSON.parse(inforequest.responseText);
-        if (reqparam.debug == 'true') {
-          console.log('Infotexte: ', infosData);
-        };
-
-        renderInfosAdmin(infosData);
-      }
+        if (inforequest.status == 200) {
+            infosData = JSON.parse(inforequest.responseText);
+            if (reqparam.debug == 'true') {
+                console.log('Infotexte: ', infosData);
+            };
+    
+            renderInfosAdmin(infosData);
+        }
     };
 
     inforequest.send();
-  };
+};
 
 
 // Alle Infos auflisten
@@ -35,44 +35,44 @@ function renderInfosAdmin(infosData) {
 
     // Einzelne Infos in HTML einbetten
     for (var i = 0; i < infosData.length; i++) {
-      if (infosData[i]) {
-        var infoData = infosData[i];
+        if (infosData[i]) {
+            var infoData = infosData[i];
+    
+            // Erstelle infoElement (Tabellenzeile)
+            var info = document.createElement('tr');
+            info.id = 'info-' + (i + 1);
+            info.className = `infoElement`;
+            
+            // Erstelle Spalte Text
+            var infoText = document.createElement('td');
+            infoText.className = 'infoText';
+            infoText.innerHTML = '<b>'+infoData.text+'</b>';
+            info.appendChild(infoText);
+    
+            // Erstelle Spalte Beschreibung
+            var infoDescription = document.createElement('td');
+            infoDescription.className = 'infoDescription';
+            infoDescription.innerHTML = `
+                Bemerkung: ${infoData.comment}<br>
+                Zeitrahmen: ${infoData.starttime} - ${infoData.endtime}`;
+                info.appendChild(infoDescription);
 
-        // Erstelle infoElement (Tabellenzeile)
-        var info = document.createElement('tr');
-        info.id = 'info-' + (i + 1);
-        info.className = `infoElement`;
-        
-        // Erstelle Spalte Text
-        var infoText = document.createElement('td');
-        infoText.className = 'infoText';
-        infoText.innerHTML = '<b>'+infoData.text+'</b>';
-        info.appendChild(infoText);
-
-        // Erstelle Spalte Beschreibung
-        var infoDescription = document.createElement('td');
-        infoDescription.className = 'infoDescription';
-        infoDescription.innerHTML = `
-            Bemerkung: ${infoData.comment}<br>
-            Zeitrahmen: ${infoData.starttime} - ${infoData.endtime}`;
-            info.appendChild(infoDescription);
-
-        // Erstelle Spalte Buttons
-        var infoButtons = document.createElement('td');
-        infoButtons.className = 'infoButtons';
-        infoButtons.innerHTML = `
-            <!-- <button id="buttonUp" onclick="infoUp('${infoData.id}')"><i class="fa fa-arrow-up"></i></button> -->
-            <!-- <button id="buttonDown" onclick="infoDown('${infoData.id}')"><i class="fa fa-arrow-down"></i></button> -->
-            <button id="buttonEdit" onclick="openInfoEditPopup('${infoData.id}')"><i class="fa fa-pencil"></i></button>
-            <button id="buttonDelete" onclick="infoDelete('${infoData.id}')"><i class="fa fa-trash"></i></button>
-            `;
-        info.appendChild(infoButtons);
-        
-        infotableContainer.appendChild(info);
+            // Erstelle Spalte Buttons
+            var infoButtons = document.createElement('td');
+            infoButtons.className = 'infoButtons';
+            infoButtons.innerHTML = `
+                <!-- <button id="buttonUp" onclick="infoUp('${infoData.id}')"><i class="fa fa-arrow-up"></i></button> -->
+                <!-- <button id="buttonDown" onclick="infoDown('${infoData.id}')"><i class="fa fa-arrow-down"></i></button> -->
+                <button id="buttonEdit" onclick="openInfoEditPopup('${infoData.id}')"><i class="fa fa-pencil"></i></button>
+                <button id="buttonDelete" onclick="infoDelete('${infoData.id}')"><i class="fa fa-trash"></i></button>
+                `;
+            info.appendChild(infoButtons);
+            
+            infotableContainer.appendChild(info);
       
-      };
+        };
     };
-  };
+};
 
 
 // Alle Slides aus Datei auslesen (per API-Request)
@@ -83,18 +83,18 @@ function loadSlidesAdmin() {
     sliderequest.open('GET', `/getslides?slidefolder=${datapath}`, true);
 
     sliderequest.onload = function () {
-      if (sliderequest.status == 200) {
-        slidesData = JSON.parse(sliderequest.responseText);
-        if (reqparam.debug == 'true') {
-          console.log('Slidedaten: ', slidesData);
-        };
+        if (sliderequest.status == 200) {
+            slidesData = JSON.parse(sliderequest.responseText);
+            if (reqparam.debug == 'true') {
+                console.log('Slidedaten: ', slidesData);
+            };
 
-        renderSlidesAdmin(slidesData);
-      }
+            renderSlidesAdmin(slidesData);
+        };
     };
 
     sliderequest.send();
-  };
+};
 
 
 // Alle Slides auflisten
@@ -109,67 +109,67 @@ function renderSlidesAdmin(slidesData) {
 
     // Einzelne Slides in HTML einbetten
     for (var i = 0; i < slidesData.length; i++) {
-      if (slidesData[i]) {
-        var slideData = slidesData[i];
+        if (slidesData[i]) {
+            var slideData = slidesData[i];
 
-        // Erstelle slideElement (Tabellenzeile)
-        var slide = document.createElement('tr');
-        slide.id = 'slide-' + (i + 1);
-        slide.className = `slideElement ${slideData.type}`;
-        
-        // Erstelle Spalte Vorschau
-        var slidePreview = document.createElement('td');
-        slidePreview.className = 'slidePreview';
-        if (slideData.type === 'img') { // Erstelle Vorschauelement Bild
-          var image = document.createElement('img');
-          image.src = slideData.path;
-          image.id = slideData.id;
-          image.className = 'slideImage';
-          slidePreview.appendChild(image);
+            // Erstelle slideElement (Tabellenzeile)
+            var slide = document.createElement('tr');
+            slide.id = 'slide-' + (i + 1);
+            slide.className = `slideElement ${slideData.type}`;
+            
+            // Erstelle Spalte Vorschau
+            var slidePreview = document.createElement('td');
+            slidePreview.className = 'slidePreview';
+            if (slideData.type === 'img') { // Erstelle Vorschauelement Bild
+                var image = document.createElement('img');
+                image.src = slideData.path;
+                image.id = slideData.id;
+                image.className = 'slideImage';
+                slidePreview.appendChild(image);
 
-        } else if (slideData.type === 'iframe') { // Erstelle Vorschauelement Iframe
-          var iframe = document.createElement('iframe');
-          iframe.src = slideData.path;
-          iframe.id = slideData.id;
-          iframe.className = 'slideIframe';
-          slidePreview.appendChild(iframe);
-        };
-        slide.appendChild(slidePreview);
+            } else if (slideData.type === 'iframe') { // Erstelle Vorschauelement Iframe
+                var iframe = document.createElement('iframe');
+                iframe.src = slideData.path;
+                iframe.id = slideData.id;
+                iframe.className = 'slideIframe';
+                slidePreview.appendChild(iframe);
+            };
+            slide.appendChild(slidePreview);
 
-        // Bearbeite Daten für Spalte Beschreibung
-        if (!slideData.displayduration || slideData.displayduration === 0 || slideData.displayduration === '') {
-            slideData.displayduration_text = `Standard (${slideduration}s)`
-        } else {
-            slideData.displayduration_text = slideData.displayduration+' Sekunden'
-        };
+            // Bearbeite Daten für Spalte Beschreibung
+            if (!slideData.displayduration || slideData.displayduration === 0 || slideData.displayduration === '') {
+                slideData.displayduration_text = `Standard (${slideduration}s)`
+            } else {
+                slideData.displayduration_text = slideData.displayduration+' Sekunden'
+            };
 
-        // Erstelle Spalte Beschreibung
-        var slideDescription = document.createElement('td');
-        slideDescription.className = 'slideTitle';
-        slideDescription.innerHTML = `
-            Titel: ${slideData.title}<br>
-            Bemerkung: ${slideData.comment}<br>
-            Pfad: <a href="${slideData.path}" target="_blank">${slideData.path}</a><br>
-            Anzeigedauer: ${slideData.displayduration_text}<br>
-            Zeitrahmen: ${slideData.starttime} - ${slideData.endtime}`;
-        slide.appendChild(slideDescription);
+            // Erstelle Spalte Beschreibung
+            var slideDescription = document.createElement('td');
+            slideDescription.className = 'slideTitle';
+            slideDescription.innerHTML = `
+                Titel: ${slideData.title}<br>
+                Bemerkung: ${slideData.comment}<br>
+                Pfad: <a href="${slideData.path}" target="_blank">${slideData.path}</a><br>
+                Anzeigedauer: ${slideData.displayduration_text}<br>
+                Zeitrahmen: ${slideData.starttime} - ${slideData.endtime}`;
+            slide.appendChild(slideDescription);
 
-        // Erstelle Spalte Buttons
-        var slideButtons = document.createElement('td');
-        slideButtons.className = 'slideButtons';
-        slideButtons.innerHTML = `
-            <button id="buttonUp" onclick="slideUp('${slideData.id}')"><i class="fa fa-arrow-up"></i></button>
-            <button id="buttonDown" onclick="slideDown('${slideData.id}')"><i class="fa fa-arrow-down"></i></button>
-            <button id="buttonEdit" onclick="openSlideEditPopup('${slideData.id}')"><i class="fa fa-pencil"></i></button>
-            <button id="buttonDelete" onclick="slideDelete('${slideData.id}')"><i class="fa fa-trash"></i></button>
-            `;
-        slide.appendChild(slideButtons);
-        
-        slidetableContainer.appendChild(slide);
+            // Erstelle Spalte Buttons
+            var slideButtons = document.createElement('td');
+            slideButtons.className = 'slideButtons';
+            slideButtons.innerHTML = `
+                <button id="buttonUp" onclick="slideUp('${slideData.id}')"><i class="fa fa-arrow-up"></i></button>
+                <button id="buttonDown" onclick="slideDown('${slideData.id}')"><i class="fa fa-arrow-down"></i></button>
+                <button id="buttonEdit" onclick="openSlideEditPopup('${slideData.id}')"><i class="fa fa-pencil"></i></button>
+                <button id="buttonDelete" onclick="slideDelete('${slideData.id}')"><i class="fa fa-trash"></i></button>
+                `;
+            slide.appendChild(slideButtons);
+            
+            slidetableContainer.appendChild(slide);
       
-      };
+        };
     };
-  };
+};
 
 
 // Popup-Fenster öffnen
@@ -209,7 +209,7 @@ function openPopup(PopupId) {
         datetimeField.min = formatedDatetime;
     var datetimeField = document.getElementById("SlideEndtimeInput");
         datetimeField.min = formatedDatetime;
-  };
+};
 
 
 // Popup-Fenster schliessen
@@ -221,7 +221,7 @@ function closePopup(PopupId) {
     document.getElementById('overlay').style.display = 'none';
     document.getElementById('confirmationMessage').style.color = 'black';
     document.getElementById(PopupId).style.display = 'none';
-  };
+};
 
 
 // Funktion zum hinzufügen eines Info-Textes
@@ -265,7 +265,7 @@ function addInfo() {
         document.getElementById('addIframeSlide').style.display = 'none';
         document.getElementById('confirmationMessage').style.display = 'block';
     };
-  };
+};
 
 
 // Popup-Fenster für das Bearbeiten der Info öffnen
@@ -294,7 +294,7 @@ function openInfoEditPopup(infoId) {
         EditInfoEndtimeInput.value = infosData[infoPositionId].endtime;
 
     openPopup('editInfo');
-  };
+};
 
 
 // Funktion zum bearbeiten einer Info
@@ -326,7 +326,7 @@ function editInfo() {
         document.getElementById('editInfo').style.display = 'none';
         document.getElementById('confirmationMessage').style.display = 'block';
     });
-  };
+};
 
 
 // Funktion zum löschen einer Info
@@ -352,7 +352,7 @@ function infoDelete(infoId) {
     };
   
     infodeleterequest.send();
-  };
+};
 
 
 // Funktion zum hinzufügen einer Bilder-Slide
@@ -407,7 +407,7 @@ function addImageSlide() {
         document.getElementById('addImageSlide').style.display = 'none';
         document.getElementById('confirmationMessage').style.display = 'block';
     };
-  };
+};
 
 
 // Funktion zum hinzufügen einer Iframe-Slide
@@ -451,7 +451,7 @@ function addIframeSlide() {
         document.getElementById('addIframeSlide').style.display = 'none';
         document.getElementById('confirmationMessage').style.display = 'block';
     };
-  };
+};
 
 
 // Popup-Fenster für das Bearbeiten der Slide öffnen
@@ -483,7 +483,7 @@ function openSlideEditPopup(slideId) {
         SlideEndtimeInput.value = slidesData[slidePositionId].endtime;
     
     openPopup('editSlide');
-  };
+};
 
 
 // Funktion zum bearbeiten einer Slide
@@ -516,7 +516,7 @@ function editSlide() {
         document.getElementById('editSlide').style.display = 'none';
         document.getElementById('confirmationMessage').style.display = 'block';
     });
-  };
+};
 
 
 // Funktion zum löschen einer Slide
@@ -542,7 +542,7 @@ function slideDelete(slideId) {
     };
   
     slidedeleterequest.send();
-  };
+};
 
 
 // Slide eine Position nach oben verschieben
@@ -568,7 +568,7 @@ function slideUp(slideId) {
     };
   
     slidechangerequest.send();
-  };
+};
 
 
 // Slide eine Position nach unten verschieben
@@ -594,4 +594,4 @@ function slideDown(slideId) {
     };
   
     slidechangerequest.send();
-  };
+};

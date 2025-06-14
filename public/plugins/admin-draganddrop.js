@@ -10,15 +10,15 @@ document.addEventListener('dragenter', function(event) {
 
     // console.log('dragenter');
 
-  });
+});
 
-  document.addEventListener('dragover', function(event) {
+document.addEventListener('dragover', function(event) {
     event.preventDefault(); // Damit der Browser das Standardverhalten verhindert
 
     // console.log('dragover');
-  });
+});
 
-  document.addEventListener('dragleave', function(event) {
+document.addEventListener('dragleave', function(event) {
     dragCounter--; // Drag leave verringert den Zähler
 
     if (dragCounter === 0) {
@@ -29,9 +29,9 @@ document.addEventListener('dragenter', function(event) {
     
     // console.log('dragleave');
 
-  });
+});
 
-  document.addEventListener('drop', function(event) {
+document.addEventListener('drop', function(event) {
     dragCounter = 0; // Zurücksetzen des Zählers
 
     event.preventDefault(); // Damit der Browser das Standardverhalten verhindert
@@ -58,4 +58,4 @@ document.addEventListener('dragenter', function(event) {
             document.getElementById('confirmationMessage').style.display = 'block';
         };
     }
-  });
+});

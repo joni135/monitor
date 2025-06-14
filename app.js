@@ -1154,6 +1154,11 @@ app.get('/changeorderslidedown', (req, res) => {
 });
 
 
+app.get('/favicon.ico', function(req, res) {
+    res.status(200).send();
+});
+
+
 // debug listen port
 app.listen(port, () => {
     console.log(`Monitor läuft auf Port ${port}`);
