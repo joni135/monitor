@@ -7,6 +7,8 @@ monitors/*
 weathercalculator
 calendar
 test*.*
+test/
+test*/
 archiv/
 
 Thumbs.db
