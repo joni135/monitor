@@ -144,6 +144,7 @@ body {
 .calendarList {
     list-style: none;
     padding-left: 10px;
+    margin: 0;
 }
 
 .CalendarEvent {
@@ -165,7 +166,14 @@ body {
     font-weight: bold;
 }
 .EventLocation::before {
-    content: "📍";
+    content: '';
+    display: inline-block;
+    vertical-align: middle;
+    width: var(--textsize);
+    height: var(--textsize);
+    -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500"><path d="m 227.441,210.739 10,274.473 h 10.327 l 10,-274.473 z"/><path d="M 348.748,106.141 C 348.748,47.532 301.212,0 242.604,0 183.995,0 136.465,47.532 136.465,106.141 c 0,53.424 39.61,97.196 90.976,104.598 h 30.327 c 51.351,-7.402 90.98,-51.174 90.98,-104.598 z"/></svg>');
+    mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500"><path d="m 227.441,210.739 10,274.473 h 10.327 l 10,-274.473 z"/><path d="M 348.748,106.141 C 348.748,47.532 301.212,0 242.604,0 183.995,0 136.465,47.532 136.465,106.141 c 0,53.424 39.61,97.196 90.976,104.598 h 30.327 c 51.351,-7.402 90.98,-51.174 90.98,-104.598 z"/></svg>');
+    background-color: var(--primary-color);
 }
 .EventCategroies {
     font-style: italic;

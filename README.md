@@ -32,7 +32,7 @@ Javascript-Funktion: loadInfos();
 Javascript-Parameter: keine
 
 ### slideshow
-Mit diesem Plugin lassen sich Folien (Slides) als Diashow anzeigen. Die Slides können im Admin-Portal verwaltet werden und werden in den Projektkonfigurationen gespeichert. Als Slide-Typen werden aktuell nur Bilder (img) unterstützt, Iframes sind zwar möglich, werden aber noch nicht richtig angezeigt.
+Mit diesem Plugin lassen sich Folien (Slides) als Diashow anzeigen. Die Slides können im Admin-Portal verwaltet werden und werden in den Projektkonfigurationen gespeichert. Als Slide-Typen werden aktuell nur Bilder (img) und Iframes unterstützt, Iframes werden zum Teil aber noch nicht richtig angezeigt.
 
 Plugin-Name: slideshow
 Backend-Konfigurationen: keine
