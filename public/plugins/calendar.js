@@ -101,6 +101,11 @@ function loadCalendar(max_entries, maxhour_future) {
             };
         };
     };
+
+    if (calendarContainer.innerHTML === '') {
+        console.warn('Die Kalender-Funktion hat keine Events zum anzeigen, Element wird deaktiviert.');
+        document.getElementById('calendar').style.display = 'none';
+    };
 };
 
 
