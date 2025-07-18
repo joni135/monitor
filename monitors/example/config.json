@@ -13,6 +13,9 @@
     "stylevariables": {
         "--primary-color": "blue"
     },
+    "admin": {
+        "insertslideposition": 0
+    },
     "infos": [
         {
             "id": "HieristeinBeispieltext",
@@ -24,12 +27,14 @@
     ],
     "slides": [
         {
-            "id": "DJI_0176.JPG",
-            "type": "img",
-            "path": "./example//DJI_0176.JPG",
+            "id": "80cea898-3cd6-4cdc-a355-d962942ab7fe",
+            "type": "video",
+            "originalfilename": "DJI_0397.MP4",
+            "path": "./example//80cea898-3cd6-4cdc-a355-d962942ab7fe.MP4",
             "title": "",
-            "comment": "Testfolie BILD",
-            "starttime": "2024-10-12T13:09",
+            "comment": "Testfolie VIDEO",
+            "displayduration": "",
+            "starttime": "2025-07-14T23:30",
             "endtime": ""
         },
         {
@@ -42,23 +47,25 @@
             "endtime": ""
         },
         {
-            "id": "IMG_0567.JPG",
+            "id": "a90eafae-beea-442b-b8ab-5b9a9d8d57e1",
             "type": "img",
-            "path": "./example//IMG_0567.JPG",
-            "title": "Test Folientitel",
-            "comment": "Testfolie FOLIENTITEL",
-            "starttime": "2024-06-30T18:13",
+            "originalfilename": "DJI_0399.JPG",
+            "path": "./example//a90eafae-beea-442b-b8ab-5b9a9d8d57e1.JPG",
+            "title": "",
+            "comment": "Testfolie ANZEIGEDAUER",
+            "displayduration": "",
+            "starttime": "2025-07-14T23:29",
             "endtime": ""
         },
         {
-            "id": "c2917fdb-1e2f-45ed-98f3-30b4ea32285b",
+            "id": "81983e19-04b7-44cf-906b-9015ad06a0bf",
             "type": "img",
-            "originalfilename": "DJI_0363.JPG",
-            "path": "./example//c2917fdb-1e2f-45ed-98f3-30b4ea32285b.JPG",
-            "title": "",
-            "comment": "Testfolie ANZEIGEDAUER",
-            "displayduration": "1",
-            "starttime": "2025-05-31T18:32",
+            "originalfilename": "DJI_0391.JPG",
+            "path": "./example//81983e19-04b7-44cf-906b-9015ad06a0bf.JPG",
+            "title": "Das ist ein Titel",
+            "comment": "Testfolie FOLIENTITEL",
+            "displayduration": "",
+            "starttime": "2025-07-14T23:28",
             "endtime": ""
         }
     ]
