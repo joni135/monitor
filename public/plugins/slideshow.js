@@ -29,7 +29,7 @@ function loadSlides() {
                         slideContainer.id = 'slide-' + (i);
                         slideContainer.className = `slideContainer fade ${slideData.type}`;
                         if (slideData.displayduration) {
-                            slideContainer.dataset.slidedisplayduration = slideData.displayduration;
+                            slideContainer.dataset.userslideduration = slideData.displayduration;
                         };
         
                         // Erstelle Inhalt von slideContainer wenn vorhanden
@@ -49,6 +49,31 @@ function loadSlides() {
                                 bgimage.id = 'bg-' + slideData.id;
                                 bgimage.className = 'slideBackground';
                                 content.appendChild(bgimage);
+                            } else if (slideData.type === 'video') { // Erstelle Videoelement
+                                var video = document.createElement('video');
+                                video.id = slideData.id;
+                                video.muted = true;  // wichtig für Autoplay
+                                video.setAttribute('muted', '');  // fallback für alte Browser
+                                var videosrc = document.createElement('source');
+                                videosrc.id = 'src-' + slideData.id;
+                                videosrc.src = slideData.path;
+                                videosrc.type = 'video/mp4';
+                                videosrc.content = 'Dein Browser unterstützt dieses Video nicht.';
+                                video.appendChild(videosrc);
+                                video.className = 'slideVideo';
+                                content.appendChild(video);
+                                var bgvideo = document.createElement('video');
+                                bgvideo.id = 'bg-' + slideData.id;
+                                bgvideo.muted = true;  // wichtig für Autoplay
+                                bgvideo.setAttribute('muted', '');  // fallback für alte Browser
+                                var bgvideosrc = document.createElement('source');
+                                bgvideosrc.id = 'bg-src-' + slideData.id;
+                                bgvideosrc.src = slideData.path;
+                                bgvideosrc.type = 'video/mp4';
+                                bgvideosrc.content = 'Dein Browser unterstützt dieses Video nicht.';
+                                bgvideo.appendChild(bgvideosrc);
+                                bgvideo.className = 'slideBackground slideBackgroundVideo';
+                                content.appendChild(bgvideo);
                             } else if (slideData.type === 'iframe') { // Erstelle Iframeelement
                                 var iframe = document.createElement('iframe');
                                 iframe.src = slideData.path;
@@ -87,40 +112,84 @@ function loadSlides() {
 var slideIndex = 0;
 function showSlides() {
     try {
-
-        // Alle Slides auf inaktiv setzen
+        
+        // Alle Slides deaktivieren
         var slides = document.getElementsByClassName('slideContainer');
         for (var i = 0; i < slides.length; i++) {
             slides[i].classList.remove('active');
             slides[i].classList.remove('next');
             slides[i].style.display = 'none';
+
+            // Falls Video, pausieren
+            var video = slides[i].querySelector('video');
+            if (video) {
+                video.pause();
+                video.currentTime = 0;
+            };
         };
 
-        // Aktuelle Slide als aktiv setzen
-        slides[slideIndex].classList.add('active');
-        slides[slideIndex].style.display = 'block';
+        // Aktuelle Slide aktivieren
+        var currentSlide = slides[slideIndex];
+        currentSlide.classList.add('active');
+        currentSlide.style.display = 'block';
+        var slidedisplayduration;
 
-        // Spezifische Anzeigedauer setzen oder Standardwert nehmen
-        var currentslide = document.getElementById('slide-'+slideIndex);
-        if (currentslide.dataset.slidedisplayduration) {
-            var specificslideduration = currentslide.dataset.slidedisplayduration;
-            //console.log(`Slide "slide-${slideIndex}" hat Anzeigedauer angegeben: ${specificslideduration}s`);
+        // Prüfen ob Slide ein Video ist
+        var video = currentSlide.querySelector('video');
+        if (video) {
+            if (video.readyState >= 1) {
+                let videoduration = video.duration;
+                console.log('Videolänge (videoduration): ' + videoduration);
+                video.play();
+                if (currentSlide.dataset.userslideduration) {
+                    slidedisplayduration = currentSlide.dataset.userslideduration;
+                } else {
+                    slidedisplayduration = videoduration;
+                };
+                if (reqparam.debug == 'true') {
+                    console.log(`Slide "slide-${slideIndex}" wird für ${slidedisplayduration} Sekunden angezeigt`)
+                }
+                setTimeout(showSlides, slidedisplayduration * 1000);
+            } else {
+                // Falls nicht, warten bis Metadaten geladen sind
+                video.onloadedmetadata = function () {
+                    let videoduration = video.duration;
+                    console.log('Videolänge (videoduration): ' + videoduration);
+                    video.play();
+                    if (currentSlide.dataset.userslideduration) {
+                        slidedisplayduration = currentSlide.dataset.userslideduration;
+                    } else {
+                        slidedisplayduration = videoduration;
+                    };
+                    if (reqparam.debug == 'true') {
+                        console.log(`Slide "slide-${slideIndex}" wird für ${slidedisplayduration} Sekunden angezeigt`)
+                    }
+                    setTimeout(showSlides, slidedisplayduration * 1000);
+                };
+            };
         } else {
-            var specificslideduration = slideduration;
-            //console.log(`Slide "slide-${slideIndex}" hat keine spezifische Anzeigedauer (Standardwert ${slideduration}s wird verwendet)`);
+            // Dauer aus Attribut oder Standard nehmen
+            if (currentSlide.dataset.userslideduration) {
+                slidedisplayduration = currentSlide.dataset.userslideduration;
+            } else {
+                slidedisplayduration = slideduration;
+            };
+
+            if (reqparam.debug == 'true') {
+                console.log(`Slide "slide-${slideIndex}" wird für ${slidedisplayduration} Sekunden angezeigt`)
+            }
+            setTimeout(showSlides, slidedisplayduration * 1000);
         };
 
-        // Nächste Slide-ID berechnen und Slide kennzeichnen
+        // Nächsten Slide vorbereiten
         slideIndex++;
         if (slideIndex >= slides.length) {
             slideIndex = 0;
         };
         slides[slideIndex].classList.add('next');
 
-        setTimeout(showSlides, specificslideduration*1000);
-    
-    } catch(err) {
-        console.error(`Fehler beim anzeigen der Slide "slide-${slideIndex}": ${err}`);
+    } catch (err) {
+        console.error(`Fehler beim Anzeigen der Slide "slide-${slideIndex}": ${err}`);
         slideIndex = 0;
         showSlides();
     };

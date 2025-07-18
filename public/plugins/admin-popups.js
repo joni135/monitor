@@ -26,6 +26,8 @@ function openPopup(PopupId) {
     setField("EditInfoEndtimeInput");
     setField("ImageStarttimeInput", true);
     setField("ImageEndtimeInput");
+    setField("VideoStarttimeInput", true);
+    setField("VideoEndtimeInput");
     setField("IframeStarttimeInput", true);
     setField("IframeEndtimeInput");
     setField("SlideStarttimeInput");

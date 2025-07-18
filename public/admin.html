@@ -47,8 +47,9 @@
     <body>
         <!-- Overlay beim Laden der Seite -->
         <div id="loadingscreen">
-            <i id="loadingspinner" class="fa fa-spin fa-spinner fa-2x"></i>
+            <i id="loadingscreen-spinner" class="fa fa-spin fa-spinner fa-2x"></i>
         </div>
+        <i id="loadingspinner" class="fa fa-spin fa-spinner fa-2x"></i>
 
         <!-- Eigentlicher Inhalt der Seite -->
         <header>
@@ -64,6 +65,7 @@
             <div class="placeholder" style="height: 20px;"></div>
             <div id="slideshow-admin" class="container">
                 <button onclick="openPopup('addImageSlide')">Bild-Slide hinzufügen</button>
+                <button onclick="openPopup('addVideoSlide')">Video-Slide hinzufügen</button>
                 <button onclick="openPopup('addIframeSlide')">Iframe-Slide hinzufügen</button>
                 <table id="slidetable"></table>
             </div>
@@ -168,6 +170,41 @@
             <div class="button-container">
                 <button onclick="addImageSlide()">Hinzufügen</button>
                 <button onclick="closePopup('addImageSlide')">Abbrechen</button>
+            </div>
+        </div>
+
+        <!-- Popup-Fenster für das hinzufügen einer Video-Slide -->
+        <div id="addVideoSlide" class="Popup">
+            <h3 id="addVideoSlideTitel">Video-Slide hinzufügen</h3>
+            <form id="addVideoSlideForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="VideoFileInput" class="mandatory">Videodatei:</label>
+                    <input type="file" name="file" id="VideoFileInput" title="Videodatei, die als Slide angezeigt werden soll">
+                </div>
+                <div class="form-group">
+                    <label for="VideoTitleInput">Folientitel:</label>
+                    <input type="text" name="title" id="VideoTitleInput" title="Titel, der auf der Folie angezeigt wird">
+                </div>
+                <div class="form-group">
+                    <label for="VideoCommentInput">Bemerkung:</label>
+                    <input type="text" name="comment" id="VideoCommentInput" title="Bemerkung (wird nicht angezeigt)">
+                </div>
+                <div class="form-group">
+                    <label for="VideoDisplaydurationInput">Anzeigedauer (Sekunden) falls nicht Gesamtlänge:</label>
+                    <input type="number" name="displayduration" id="VideoDisplaydurationInput" min="1" title="Anzeigedauer der Slide in Sekunden (Standardmässig wird das ganze Video abgespielt, bevor die Slide gewechselt wird)">
+                </div>
+                <div class="form-group">
+                    <label for="VideoStarttimeInput">Startdatum des Anzeigens:</label>
+                    <input type="datetime-local" name="starttime" id="VideoStarttimeInput" title="Datum/Zeit, ab wann die Folie angezeigt wird">
+                </div>
+                <div class="form-group">
+                    <label for="VideoEndtimeInput">Enddatum des Anzeigens:</label>
+                    <input type="datetime-local" name="endtime" id="VideoEndtimeInput" title="Datum/Zeit, bis wann die Folie angezeigt wird">
+                </div>
+            </form>
+            <div class="button-container">
+                <button onclick="addVideoSlide()">Hinzufügen</button>
+                <button onclick="closePopup('addVideoSlide')">Abbrechen</button>
             </div>
         </div>
 

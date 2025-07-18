@@ -45,14 +45,35 @@ function renderSlidesAdmin(slidesData) {
             var slidePreview = document.createElement('td');
             slidePreview.className = 'slidePreview';
             if (slideData.type === 'img') { // Erstelle Vorschauelement Bild
-                var image = document.createElement('img');
+                const image = document.createElement('img');
                 image.src = slideData.path;
                 image.id = slideData.id;
                 image.className = 'slideImage';
                 slidePreview.appendChild(image);
-
+            } else if (slideData.type === 'video') { // Erstelle Vorschauelement Video
+                const video = document.createElement('video');
+                video.id = slideData.id;
+                video.muted = true;  // wichtig für Autoplay
+                video.setAttribute('muted', '');  // fallback für alte Browser
+                const videosrc = document.createElement('source');
+                videosrc.id = 'src-' + slideData.id;
+                videosrc.src = slideData.path;
+                videosrc.type = 'video/mp4';
+                videosrc.content = 'Dein Browser unterstützt dieses Video nicht.';
+                video.appendChild(videosrc);
+                video.className = 'slideVideo';
+                slidePreview.appendChild(video);
+                video.onloadedmetadata = function () {
+                    const videoduration = video.duration;
+                    video.play();
+                    displayduration_text_element = document.getElementById(video.id+'-displayduration_text');
+                    if (displayduration_text_element && displayduration_text_element.innerHTML.includes('Standard')) {
+                        displayduration_text = `Gesamtlänge (${videoduration}s)`;
+                        displayduration_text_element.innerHTML = displayduration_text;
+                    }
+                };
             } else if (slideData.type === 'iframe') { // Erstelle Vorschauelement Iframe
-                var iframe = document.createElement('iframe');
+                const iframe = document.createElement('iframe');
                 iframe.src = slideData.path;
                 iframe.id = slideData.id;
                 iframe.className = 'slideIframe';
@@ -71,11 +92,11 @@ function renderSlidesAdmin(slidesData) {
             var slideDescription = document.createElement('td');
             slideDescription.className = 'slideTitle';
             slideDescription.innerHTML = `
-                Titel: ${slideData.title}<br>
-                Bemerkung: ${slideData.comment}<br>
-                Pfad: <a href="${slideData.path}" target="_blank">${slideData.path}</a><br>
-                Anzeigedauer: ${slideData.displayduration_text}<br>
-                Zeitrahmen: ${slideData.starttime} - ${slideData.endtime}`;
+                Titel: <span id="${slideData.id}-title">${slideData.title}</span><br>
+                Bemerkung: <span id="${slideData.id}-comment">${slideData.comment}</span><br>
+                Pfad: <span id="${slideData.id}-path><a href="${slideData.path}" target="_blank">${slideData.path}</a></span><br>
+                Anzeigedauer: <span id="${slideData.id}-displayduration_text">${slideData.displayduration_text}</span><br>
+                Zeitrahmen: <span id="${slideData.id}-startend">${slideData.starttime} - ${slideData.endtime}</span>`;
             slide.appendChild(slideDescription);
 
             // Erstelle Spalte Buttons
@@ -107,12 +128,14 @@ function addImageSlide() {
             const form = document.getElementById('addImageSlideForm');
             const formData = new FormData(form);
 
+            document.getElementById('loadingspinner').style.display = 'block';
             fetch(`/uploadimage?slidefolder=${datapath}`, {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.text())
             .then(data => {
+                document.getElementById('loadingspinner').style.display = 'none';
                 const responseJson = JSON.parse(data);
                 confirmationMessage = responseJson;
 
@@ -123,6 +146,7 @@ function addImageSlide() {
                 closePopup('addImageSlide', confirmationMessage);
             })
             .catch(error => {
+                document.getElementById('loadingspinner').style.display = 'none';
                 confirmationMessage = {
                     'title': 'Fehler beim Hochladen des Bildes',
                     'content': error.message,
@@ -148,6 +172,61 @@ function addImageSlide() {
     closePopup('addImageSlide', confirmationMessage);
 }
 
+// Funktion zum Hinzufügen einer Video-Slide
+function addVideoSlide() {
+    const fileInput = document.getElementById('VideoFileInput');
+    const file = fileInput.files[0];
+    let confirmationMessage;
+
+    if (file) {
+        if (file.type.startsWith('video/')) {
+            const form = document.getElementById('addVideoSlideForm');
+            const formData = new FormData(form);
+
+            document.getElementById('loadingspinner').style.display = 'block';
+            fetch(`/uploadvideo?slidefolder=${datapath}`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('loadingspinner').style.display = 'none';
+                const responseJson = JSON.parse(data);
+                confirmationMessage = responseJson;
+
+                if (responseJson.fatal !== true) {
+                    slidesData = responseJson.slidesData;
+                    renderSlidesAdmin(slidesData);
+                }
+                closePopup('addVideoSlide', confirmationMessage);
+            })
+            .catch(error => {
+                document.getElementById('loadingspinner').style.display = 'none';
+                confirmationMessage = {
+                    'title': 'Fehler beim Hochladen des Videos',
+                    'content': error.message,
+                    'fatal': true
+                };
+                closePopup('addVideoSlide', confirmationMessage);
+            });
+            return;
+        } else {
+            confirmationMessage = {
+                'title': 'Video-Slide konnte nicht erstellt werden',
+                'content': 'Die hochgeladene Datei ist kein Video.',
+                'fatal': true
+            };
+        }
+    } else {
+        confirmationMessage = {
+            'title': 'Video-Slide konnte nicht erstellt werden',
+            'content': 'Es ist keine Video-Datei zum hochladen angegeben.',
+            'fatal': true
+        };
+    }
+    closePopup('addVideoSlide', confirmationMessage);
+}
+
 // Funktion zum hinzufügen einer Iframe-Slide
 function addIframeSlide() {
     const urlInput = document.getElementById('IframeUrlInput');
@@ -157,12 +236,14 @@ function addIframeSlide() {
         const form = document.getElementById('addIframeSlideForm');
         const formData = new FormData(form);
 
+        document.getElementById('loadingspinner').style.display = 'block';
         fetch(`/uploadiframe?slidefolder=${datapath}`, {
             method: 'POST',
             body: formData
         })
         .then(response => response.text())
         .then(data => {
+            document.getElementById('loadingspinner').style.display = 'none';
             const responseJson = JSON.parse(data);
 
             if (responseJson.fatal !== true) {
@@ -172,6 +253,7 @@ function addIframeSlide() {
             closePopup('addIframeSlide', responseJson);
         })
         .catch(error => {
+            document.getElementById('loadingspinner').style.display = 'none';
             confirmationMessage = {
                 'title': 'Fehler beim Hochladen des Iframe',
                 'content': error.message,

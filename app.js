@@ -277,6 +277,7 @@ app.get('/', (req, res) => {
 
 // Liste alle Infos aus Konfigurationsdatei aus
 app.get('/getinfos', (req, res) => {
+    console.log('/getinfos')
     const parsedUrl = url.parse(req.url, true);
     const queryParameters = parsedUrl.query;
     var monitorconfigPath = '';
@@ -308,6 +309,7 @@ app.get('/getinfos', (req, res) => {
 
 // POST-Anfrage für das Hochladen einer Info-Nachricht
 app.post('/uploadinfo', (req, res) => {
+    console.log('/uploadinfo')
     const uuid_v4 = uuidv4();
 
     const parsedUrl = url.parse(req.url, true);
@@ -331,7 +333,7 @@ app.post('/uploadinfo', (req, res) => {
         if (err) {
             res.status(500).send({
                 'title': `Fehler beim parsen des HTML-Formulars`,
-                'content': err,
+                'content': JSON.stringify(err, null, 2),
                 'fatal': true
             });
         };
@@ -401,6 +403,7 @@ app.post('/uploadinfo', (req, res) => {
 
 // POST-Anfrage für das bearbeiten einer Info
 app.post('/editinfo', (req, res) => {
+    console.log('/editinfo')
     const parsedUrl = url.parse(req.url, true);
     const queryParameters = parsedUrl.query;
     var uploadDirectory = '';
@@ -431,7 +434,7 @@ app.post('/editinfo', (req, res) => {
         if (err) {
             res.status(500).send({
                 'title': `Fehler beim parsen des HTML-Formulars`,
-                'content': err,
+                'content': JSON.stringify(err, null, 2),
                 'fatal': true
             });
         };
@@ -493,6 +496,7 @@ app.post('/editinfo', (req, res) => {
 
 // GET-Anfrage für das löschen einer Info
 app.get('/deleteinfo', (req, res) => {
+    console.log('/deleteinfo')
     const parsedUrl = url.parse(req.url, true);
     const queryParameters = parsedUrl.query;
     var uploadDirectory = '';
@@ -567,6 +571,7 @@ app.get('/deleteinfo', (req, res) => {
 
 // Liste alle Slides aus Konfigurationsdatei aus
 app.get('/getslides', (req, res) => {
+    console.log('/getslides')
     const parsedUrl = url.parse(req.url, true);
     const queryParameters = parsedUrl.query;
     var monitorconfigPath = '';
@@ -598,6 +603,7 @@ app.get('/getslides', (req, res) => {
 
 // POST-Anfrage für das Hochladen einer Bilder-Slide
 app.post('/uploadimage', (req, res) => {
+    console.log('/uploadimage')
     const uuid_v4 = uuidv4();
 
     const parsedUrl = url.parse(req.url, true);
@@ -615,14 +621,24 @@ app.post('/uploadimage', (req, res) => {
     };
 
     // Formular parsen und Daten verarbeiten
-    const form = new formidable.IncomingForm();
+    const form = new formidable.IncomingForm({
+        maxFileSize: 250 * 1024 * 1024  // 200 MB in Bytes
+    });
 
     form.parse(req, (err, fields, files) => {
         if (err) {
-            res.status(500).send({
-                'title': `Fehler beim parsen des HTML-Formulars`,
-                'content': err,
-                'fatal': true
+            if (err.code === 'LIMIT_FILE_SIZE' || err.code === 1009 || err.message.includes('maxFileSize exceeded')) {
+                return res.status(413).send({
+                    title: 'Datei zu gross',
+                    content: 'Die hochgeladene Datei überschreitet die erlaubte Maximalgröße von 250 MB.',
+                    fatal: true
+                });
+            };
+
+            return res.status(500).send({
+                title: 'Fehler beim Parsen des HTML-Formulars',
+                content: JSON.stringify(err, null, 2),
+                fatal: true
             });
         };
         
@@ -646,7 +662,7 @@ app.post('/uploadimage', (req, res) => {
         try {
             // Daten in JSON abspeichern
             if (fields.displayduration[0] <= 1) {
-                fields.displayduration[0] = ''
+                fields.displayduration[0] = '';
             };
             const newSlide = {
                 "id": uuid_v4,
@@ -667,8 +683,17 @@ app.post('/uploadimage', (req, res) => {
 
             // neue Slide anhängen und Datei speichern
             var slidesData = monitorconfig.slides
+            var insertslideposition = monitorconfig.admin.insertslideposition
+            try {
+                let position = parseInt(insertslideposition, 10);
+                if (position < 0) position = 0;
+                if (position > slidesData.length) position = slidesData.length;
+                slidesData.splice(position, 0, newSlide);
+            } catch {
+                slidesData.push(newSlide);
+            }
             //slidesData.unshift(newSlide);  // -> fügt Slide am Anfang ein
-            slidesData.push(newSlide);
+            //slidesData.push(newSlide); // -> fügt Slide am Ende ein
             monitorconfig.slides = slidesData
             let jsontext = JSON.stringify(monitorconfig, null, 4);
             fs.writeFile(monitorconfigPath, jsontext, (err) => {
@@ -703,8 +728,136 @@ app.post('/uploadimage', (req, res) => {
 });
 
 
+// POST-Anfrage für das Hochladen einer Video-Slide
+app.post('/uploadvideo', (req, res) => {
+    console.log('/uploadvideo')
+    const uuid_v4 = uuidv4();
+
+    const parsedUrl = url.parse(req.url, true);
+    const queryParameters = parsedUrl.query;
+    var uploadDirectory = '';
+    
+    if (queryParameters.slidefolder) {
+        uploadDirectory = path.join(__dirname, config.maininfos.system.monitorsfolder, queryParameters.slidefolder);
+    } else {
+        res.status(500).send({
+            'title': `Fehler beim erstellen der Slide`,
+            'content': `Der URL-Parameter SLIDEFOLDER ist nicht angegeben! Dieser ist pflicht...`,
+            'fatal': true
+        });
+    };
+
+    // Formular parsen und Daten verarbeiten
+    const form = new formidable.IncomingForm({
+        maxFileSize: 250 * 1024 * 1024  // 200 MB in Bytes
+    });
+
+    form.parse(req, (err, fields, files) => {
+        if (err) {
+            if (err.code === 'LIMIT_FILE_SIZE' || err.code === 1009 || err.message.includes('maxFileSize exceeded')) {
+                return res.status(413).send({
+                    title: 'Datei zu gross',
+                    content: 'Die hochgeladene Datei überschreitet die erlaubte Maximalgröße von 250 MB.',
+                    fatal: true
+                });
+            };
+
+            return res.status(500).send({
+                title: 'Fehler beim Parsen des HTML-Formulars',
+                content: JSON.stringify(err, null, 2),
+                fatal: true
+            });
+        };
+        
+        // Hochgeladenes Video ablegen
+        const videoData = files.file[0];
+        const oldPath = videoData.filepath;
+
+        const newFilename = uuid_v4+path.extname(videoData.originalFilename)
+        const newPath = path.join(uploadDirectory, newFilename);
+        fs.copyFile(oldPath, newPath, (err) => {
+            if (err) {
+                res.status(500).send({
+                   'title': `Fehler beim abspeichern der Datei auf dem Server`,
+                    'content': err,
+                    'fatal': true
+                });
+            };
+        });
+
+        // Informationen in Slidesdaten ergänzen
+        try {
+            // Daten in JSON abspeichern
+            if (fields.displayduration[0] <= 1) {
+                fields.displayduration[0] = '';
+            };
+            const newSlide = {
+                "id": uuid_v4,
+                "type": "video",
+                "originalfilename": videoData.originalFilename,
+                "path": `${queryParameters.slidefolder}/${newFilename}`,
+                "title": fields.title[0],
+                "comment": fields.comment[0],
+                "displayduration": fields.displayduration[0],
+                "starttime": fields.starttime[0],
+                "endtime": fields.endtime[0]
+            };
+
+            // bestehende Slides-Informationen lesen
+            monitorconfigPath = path.join(uploadDirectory, config.maininfos.monitorconfigfile);
+            const monitorconfigFile = fs.readFileSync(monitorconfigPath);
+            var monitorconfig = JSON.parse(monitorconfigFile);
+
+            // neue Slide anhängen und Datei speichern
+            var slidesData = monitorconfig.slides
+            var insertslideposition = monitorconfig.admin.insertslideposition
+            try {
+                let position = parseInt(insertslideposition, 10);
+                if (position < 0) position = 0;
+                if (position > slidesData.length) position = slidesData.length;
+                slidesData.splice(position, 0, newSlide);
+            } catch {
+                slidesData.push(newSlide);
+            }
+            //slidesData.unshift(newSlide);  // -> fügt Slide am Anfang ein
+            //slidesData.push(newSlide); // -> fügt Slide am Ende ein
+            monitorconfig.slides = slidesData
+            let jsontext = JSON.stringify(monitorconfig, null, 4);
+            fs.writeFile(monitorconfigPath, jsontext, (err) => {
+                if (err) {
+                    res.status(500).send({
+                        'title': `Fehler beim abspeichern der Informationen zu dem hochgeladenen Video`,
+                        'content': err,
+                        'fatal': true
+                    });
+                } else {
+
+                    // Finale Bestätigungsmeldung
+                    res.status(200).send({
+                        'title': `Datei hochgeladen`,
+                        'content': `Datei "${videoData.originalFilename}" erfolgreich hochgeladen`,
+                        'fatal': false,
+                        'slidesData': slidesData
+                    });
+                };
+            });
+
+        } catch (err) {
+            res.status(500).send({
+                'title': `Fehler beim abspeichern der Informationen zu dem hochgeladenen Video`,
+                'content': err,
+                'fatal': true
+            });
+        };
+        
+    });
+    
+});
+
+
 // POST-Anfrage für das Hochladen einer Iframe-Slide
 app.post('/uploadiframe', (req, res) => {
+    console.log('/uploadiframe')
     const uuid_v4 = uuidv4();
 
     const parsedUrl = url.parse(req.url, true);
@@ -728,7 +881,7 @@ app.post('/uploadiframe', (req, res) => {
         if (err) {
             res.status(500).send({
                 'title': `Fehler beim parsen des HTML-Formulars`,
-                'content': err,
+                'content': JSON.stringify(err, null, 2),
                 'fatal': true
             });
         };
@@ -754,8 +907,17 @@ app.post('/uploadiframe', (req, res) => {
 
             // neue Slide anhängen und Datei speichern
             var slidesData = monitorconfig.slides
+            var insertslideposition = monitorconfig.admin.insertslideposition
+            try {
+                let position = parseInt(insertslideposition, 10);
+                if (position < 0) position = 0;
+                if (position > slidesData.length) position = slidesData.length;
+                slidesData.splice(position, 0, newSlide);
+            } catch {
+                slidesData.push(newSlide);
+            }
             //slidesData.unshift(newSlide);  // -> fügt Slide am Anfang ein
-            slidesData.push(newSlide);
+            //slidesData.push(newSlide); // -> fügt Slide am Ende ein
             monitorconfig.slides = slidesData
             let jsontext = JSON.stringify(monitorconfig, null, 4);
             fs.writeFile(monitorconfigPath, jsontext, (err) => {
@@ -792,6 +954,7 @@ app.post('/uploadiframe', (req, res) => {
 
 // POST-Anfrage für das bearbeiten einer Slide
 app.post('/editslide', (req, res) => {
+    console.log('/editslide')
     const parsedUrl = url.parse(req.url, true);
     const queryParameters = parsedUrl.query;
     var uploadDirectory = '';
@@ -822,7 +985,7 @@ app.post('/editslide', (req, res) => {
         if (err) {
             res.status(500).send({
                 'title': `Fehler beim parsen des HTML-Formulars`,
-                'content': err,
+                'content': JSON.stringify(err, null, 2),
                 'fatal': true
             });
         };
@@ -885,6 +1048,7 @@ app.post('/editslide', (req, res) => {
 
 // GET-Anfrage für das löschen einer Slide
 app.get('/deleteslide', (req, res) => {
+    console.log('/deleteslide')
     const parsedUrl = url.parse(req.url, true);
     const queryParameters = parsedUrl.query;
     var uploadDirectory = '';
@@ -922,18 +1086,11 @@ app.get('/deleteslide', (req, res) => {
             };
         };
 
-        // Falls Slide ein Bild ist, Datei löschen
-        if (slidesData[slidePositionId].type === 'img') {
-            slideImagePath = path.join(__dirname, config.maininfos.system.monitorsfolder, slidesData[slidePositionId].path);
-            fs.unlink(slideImagePath, (err) => {
-                if (err) {
-                    res.status(500).send({
-                        'title': `Fehler beim löschen des Slide-Bildes`,
-                        'content': err,
-                        'fatal': true
-                    });
-                };
-            });
+        // Evaluieren, ob Datei mit Slide verknüpft ist
+        if (slidesData[slidePositionId].type === 'img' || slidesData[slidePositionId].type === 'video' ) {
+            filepath = path.join(__dirname, config.maininfos.system.monitorsfolder, slidesData[slidePositionId].path);
+        } else {
+            filepath = false
         };
 
         // Slidedaten löschen und Datei speichern
@@ -949,13 +1106,34 @@ app.get('/deleteslide', (req, res) => {
                 });
             } else {
 
-                // Finale Bestätigungsmeldung
-                res.status(200).send({
-                    'title': `Slide gelöscht`,
-                    'content': `Slide "${queryParameters.slideid}" erfolgreich gelöscht`,
-                    'fatal': false,
-                    'slidesData': slidesData
-                });
+                // Falls Slide eine Datei verlinkt hat, Datei löschen
+                if (filepath && filepath !== '') {
+                    fs.unlink(filepath, (err) => {
+                        if (err) {
+                            res.status(200).send({
+                                'title': `Slide gelöscht`,
+                                'content':  `Slide "${queryParameters.slideid}" wurde gelöscht, Datei jedoch nicht (Fehler ${err})`,
+                                'fatal': false,
+                                'slidesData': slidesData
+                            });
+                        } else {
+                            res.status(200).send({
+                                'title': `Slide gelöscht`,
+                                'content': `Slide "${queryParameters.slideid}" inklusive Datei erfolgreich gelöscht`,
+                                'fatal': false,
+                                'slidesData': slidesData
+                            });
+                        };
+                    });
+                } else {
+
+                    res.status(200).send({
+                        'title': `Slide gelöscht`,
+                        'content': `Slide "${queryParameters.slideid}" erfolgreich gelöscht`,
+                        'fatal': false,
+                        'slidesData': slidesData
+                    });
+                };
             };
         });
 
@@ -973,6 +1151,7 @@ app.get('/deleteslide', (req, res) => {
 
 // GET-Anfrage für das ändern der Slide-Reihenfolge (Slide eine Position nach oben)
 app.get('/changeorderslideup', (req, res) => {
+    console.log('/changeorderslideup')
     const parsedUrl = url.parse(req.url, true);
     const queryParameters = parsedUrl.query;
     var uploadDirectory = '';
@@ -1063,6 +1242,7 @@ app.get('/changeorderslideup', (req, res) => {
 
 // GET-Anfrage für das ändern der Slide-Reihenfolge (Slide eine Position nach unten)
 app.get('/changeorderslidedown', (req, res) => {
+    console.log('/changeorderslidedown')
     const parsedUrl = url.parse(req.url, true);
     const queryParameters = parsedUrl.query;
     var uploadDirectory = '';

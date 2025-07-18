@@ -81,13 +81,16 @@ body {
 .slideBackground {
     z-index: -1;
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: -10px;
+    left: -10px;
+    width: calc(100% + 20px);
+    height: calc(100% + 20px);
+    object-fit: cover;
+    object-position: center;
     background-size: cover;
     background-position: center;
     filter: blur(5px);
+    pointer-events: none;
 }
 
 .slideTitle {

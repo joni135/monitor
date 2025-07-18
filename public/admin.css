@@ -31,13 +31,24 @@ body {
     background-color: var(--light-color);
     z-index: 98;
 }
-#loadingspinner {
+#loadingscreen-spinner {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 99;
     color: var(--primary-color);
+}
+#loadingspinner {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 99;
+    color: var(--primary-color);
+    border-radius: 50%;
+    background-color: var(--light-color);
 }
 
 
@@ -128,6 +139,15 @@ button:active {
     display: block;
     margin: auto;
 }
+.slidePreview video {
+    min-height: 100%;
+    max-width: 100%;
+    max-height: 120%;
+    max-width: 100%;
+    object-fit: cover;
+    display: block;
+    margin: auto;
+}
 .slidePreview iframe {
     -webkit-transform: scale(0.5);
     transform: scale(0.5);
@@ -155,7 +175,7 @@ button:active {
     left: 0;
     background-color: var(--dark-color);
     opacity: 0.5;
-    z-index: 98;
+    z-index: 88;
 }
 
 .Popup {
@@ -164,7 +184,7 @@ button:active {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 99;
+    z-index: 89;
     padding: 20px;
     min-width: 300px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
