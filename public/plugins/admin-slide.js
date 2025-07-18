@@ -129,12 +129,14 @@ function addImageSlide() {
             const formData = new FormData(form);
 
             document.getElementById('loadingspinner').style.display = 'block';
+            document.querySelectorAll('button').forEach(btn => btn.disabled = true);
             fetch(`/uploadimage?slidefolder=${datapath}`, {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.text())
             .then(data => {
+                document.querySelectorAll('button').forEach(btn => btn.disabled = false);
                 document.getElementById('loadingspinner').style.display = 'none';
                 const responseJson = JSON.parse(data);
                 confirmationMessage = responseJson;
@@ -146,6 +148,7 @@ function addImageSlide() {
                 closePopup('addImageSlide', confirmationMessage);
             })
             .catch(error => {
+                document.querySelectorAll('button').forEach(btn => btn.disabled = false);
                 document.getElementById('loadingspinner').style.display = 'none';
                 confirmationMessage = {
                     'title': 'Fehler beim Hochladen des Bildes',
@@ -184,12 +187,14 @@ function addVideoSlide() {
             const formData = new FormData(form);
 
             document.getElementById('loadingspinner').style.display = 'block';
+            document.querySelectorAll('button').forEach(btn => btn.disabled = true);
             fetch(`/uploadvideo?slidefolder=${datapath}`, {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.text())
             .then(data => {
+                document.querySelectorAll('button').forEach(btn => btn.disabled = false);
                 document.getElementById('loadingspinner').style.display = 'none';
                 const responseJson = JSON.parse(data);
                 confirmationMessage = responseJson;
@@ -201,6 +206,7 @@ function addVideoSlide() {
                 closePopup('addVideoSlide', confirmationMessage);
             })
             .catch(error => {
+                document.querySelectorAll('button').forEach(btn => btn.disabled = false);
                 document.getElementById('loadingspinner').style.display = 'none';
                 confirmationMessage = {
                     'title': 'Fehler beim Hochladen des Videos',
@@ -237,12 +243,14 @@ function addIframeSlide() {
         const formData = new FormData(form);
 
         document.getElementById('loadingspinner').style.display = 'block';
+        document.querySelectorAll('button').forEach(btn => btn.disabled = true);
         fetch(`/uploadiframe?slidefolder=${datapath}`, {
             method: 'POST',
             body: formData
         })
         .then(response => response.text())
         .then(data => {
+            document.querySelectorAll('button').forEach(btn => btn.disabled = false);
             document.getElementById('loadingspinner').style.display = 'none';
             const responseJson = JSON.parse(data);
 
@@ -253,6 +261,7 @@ function addIframeSlide() {
             closePopup('addIframeSlide', responseJson);
         })
         .catch(error => {
+            document.querySelectorAll('button').forEach(btn => btn.disabled = false);
             document.getElementById('loadingspinner').style.display = 'none';
             confirmationMessage = {
                 'title': 'Fehler beim Hochladen des Iframe',

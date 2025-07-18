@@ -283,14 +283,21 @@
                 <button id="closeConfirmationMessage" onclick="closeConfirmationMessage()">Schliessen</button>
             </div>
             <script>
-                // Schliesse Popup mit Enter
                 document.addEventListener('keydown', function(event) {
+                    console.log('Key pressed: ' + event.key);
+
+                    // Schliesse Popup mit Enter
                     if (event.key === 'Enter') {
                         const popup = document.getElementById('confirmationMessage');
                         if (popup && window.getComputedStyle(popup).display !== 'none') {
                             document.getElementById('closeConfirmationMessage').click();
                         }
                     }
+
+                    // Schliesse alle aktuell geöffneten Popups mit Escape
+                    if (event.key === 'Escape') {
+                        closeallPopup();
+                    };
                 });
             </script>
         </div>

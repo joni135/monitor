@@ -62,3 +62,15 @@ function closeConfirmationMessage() {
     document.getElementById('confirmationMessage').style.display = 'none';
     document.getElementById('overlay').style.display = 'none';
 }
+
+// Schließt alle aktuell geöffneten Popups mit der Klasse "Popup"
+function closeallPopup() {
+    const popups = document.querySelectorAll('.Popup');
+    popups.forEach(popup => {
+        popup.style.display = 'none';
+        const form = popup.querySelector('form');
+        if (form) {form.reset()};
+    });
+    document.getElementById('overlay').style.display = 'none';
+    closeConfirmationMessage();
+};
