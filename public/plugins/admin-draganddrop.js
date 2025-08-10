@@ -47,9 +47,9 @@ document.addEventListener('drop', function(event) {
             const fileInput = document.getElementById('ImageFileInput');
             fileInput.files = event.dataTransfer.files; // Setzt die Datei in das Input-Feld
         } else if (event.dataTransfer.files[0].type === 'video/mp4') {
-            document.getElementById('confirmationMessageTitel').innerHTML = `Videoupload comming soon`;
-            document.getElementById('confirmationMessageText').innerHTML = `Aktuell sind noch keine Videos in der Slideshow möglich. An der Implementierung wird aber gearbeitet.`;
-            document.getElementById('confirmationMessage').style.display = 'block';
+            openPopup('addVideoSlide'); // Öffnet das Popup, wenn eine Datei gezogen wird
+            const fileInput = document.getElementById('VideoFileInput');
+            fileInput.files = event.dataTransfer.files; // Setzt die Datei in das Input-Feld
         } else {
             // ungültiges Dateiformat angegeben
             document.getElementById('confirmationMessageTitel').innerHTML = `Ungültiges Dateiformat: ${event.dataTransfer.files[0].type}`;
