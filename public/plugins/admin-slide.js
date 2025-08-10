@@ -134,13 +134,25 @@ function addImageSlide() {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.text())
-            .then(data => {
+            .then(async response => {
                 document.querySelectorAll('button').forEach(btn => btn.disabled = false);
                 document.getElementById('loadingspinner').style.display = 'none';
-                const responseJson = JSON.parse(data);
-                confirmationMessage = responseJson;
 
+                let rawText = await response.text();
+                let responseJson;
+                try {
+                    responseJson = JSON.parse(rawText);
+                } catch {
+                    confirmationMessage = {
+                        title: `Fehler beim Hochladen des Bildes (${response.status} ${response.statusText})`,
+                        content: rawText,
+                        fatal: true
+                    };
+                    closePopup('addImageSlide', confirmationMessage);
+                    return;
+                }
+            
+                confirmationMessage = responseJson;
                 if (responseJson.fatal !== true) {
                     slidesData = responseJson.slidesData;
                     renderSlidesAdmin(slidesData);
@@ -150,26 +162,28 @@ function addImageSlide() {
             .catch(error => {
                 document.querySelectorAll('button').forEach(btn => btn.disabled = false);
                 document.getElementById('loadingspinner').style.display = 'none';
+
+                let message = error.message || error.toString();
                 confirmationMessage = {
-                    'title': 'Fehler beim Hochladen des Bildes',
-                    'content': error.message,
-                    'fatal': true
+                    title: `Fehler beim Upload (${response.status} ${response.statusText})`,
+                    content: message,
+                    fatal: true
                 };
                 closePopup('addImageSlide', confirmationMessage);
             });
             return;
         } else {
             confirmationMessage = {
-                'title': 'Bilder-Slide konnte nicht erstellt werden',
-                'content': 'Die hochgeladene Datei ist kein Bild.',
-                'fatal': true
+                title: 'Bilder-Slide konnte nicht erstellt werden',
+                content: 'Die hochgeladene Datei ist kein Bild.',
+                fatal: true
             };
         }
     } else {
         confirmationMessage = {
-            'title': 'Bilder-Slide konnte nicht erstellt werden',
-            'content': 'Es ist keine Bild-Datei zum hochladen angegeben.',
-            'fatal': true
+            title: 'Bilder-Slide konnte nicht erstellt werden',
+            content: 'Es ist keine Bild-Datei zum hochladen angegeben.',
+            fatal: true
         };
     }
     closePopup('addImageSlide', confirmationMessage);
@@ -192,13 +206,25 @@ function addVideoSlide() {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.text())
-            .then(data => {
+            .then(async response => {
                 document.querySelectorAll('button').forEach(btn => btn.disabled = false);
                 document.getElementById('loadingspinner').style.display = 'none';
-                const responseJson = JSON.parse(data);
-                confirmationMessage = responseJson;
 
+                let rawText = await response.text();
+                let responseJson;
+                try {
+                    responseJson = JSON.parse(rawText);
+                } catch {
+                    confirmationMessage = {
+                        title: `Fehler beim Hochladen des Videos (${response.status} ${response.statusText})`,
+                        content: rawText,
+                        fatal: true
+                    };
+                    closePopup('addVideoSlide', confirmationMessage);
+                    return;
+                }
+            
+                confirmationMessage = responseJson;
                 if (responseJson.fatal !== true) {
                     slidesData = responseJson.slidesData;
                     renderSlidesAdmin(slidesData);
@@ -208,26 +234,28 @@ function addVideoSlide() {
             .catch(error => {
                 document.querySelectorAll('button').forEach(btn => btn.disabled = false);
                 document.getElementById('loadingspinner').style.display = 'none';
+
+                let message = error.message || error.toString();
                 confirmationMessage = {
-                    'title': 'Fehler beim Hochladen des Videos',
-                    'content': error.message,
-                    'fatal': true
+                    title: `Fehler beim Upload (${response.status} ${response.statusText})`,
+                    content: message,
+                    fatal: true
                 };
                 closePopup('addVideoSlide', confirmationMessage);
             });
             return;
         } else {
             confirmationMessage = {
-                'title': 'Video-Slide konnte nicht erstellt werden',
-                'content': 'Die hochgeladene Datei ist kein Video.',
-                'fatal': true
+                title: 'Video-Slide konnte nicht erstellt werden',
+                content: 'Die hochgeladene Datei ist kein Video.',
+                fatal: true
             };
         }
     } else {
         confirmationMessage = {
-            'title': 'Video-Slide konnte nicht erstellt werden',
-            'content': 'Es ist keine Video-Datei zum hochladen angegeben.',
-            'fatal': true
+            title: 'Video-Slide konnte nicht erstellt werden',
+            content: 'Es ist keine Video-Datei zum hochladen angegeben.',
+            fatal: true
         };
     }
     closePopup('addVideoSlide', confirmationMessage);
@@ -248,33 +276,48 @@ function addIframeSlide() {
             method: 'POST',
             body: formData
         })
-        .then(response => response.text())
-        .then(data => {
+        .then(async response => {
             document.querySelectorAll('button').forEach(btn => btn.disabled = false);
             document.getElementById('loadingspinner').style.display = 'none';
-            const responseJson = JSON.parse(data);
-
+            
+            let rawText = await response.text();
+            let responseJson;
+            try {
+                responseJson = JSON.parse(rawText);
+            } catch {
+                confirmationMessage = {
+                    title: `Fehler beim Hochladen des Iframes (${response.status} ${response.statusText})`,
+                    content: rawText,
+                    fatal: true
+                };
+                closePopup('addIframeSlide', confirmationMessage);
+                return;
+            }
+        
+            confirmationMessage = responseJson;
             if (responseJson.fatal !== true) {
                 slidesData = responseJson.slidesData;
                 renderSlidesAdmin(slidesData);
             }
-            closePopup('addIframeSlide', responseJson);
+            closePopup('addIframeSlide', confirmationMessage);
         })
         .catch(error => {
             document.querySelectorAll('button').forEach(btn => btn.disabled = false);
             document.getElementById('loadingspinner').style.display = 'none';
+
+            let message = error.message || error.toString();
             confirmationMessage = {
-                'title': 'Fehler beim Hochladen des Iframe',
-                'content': error.message,
-                'fatal': true
+                title: `Fehler beim Upload (${response.status} ${response.statusText})`,
+                content: message,
+                fatal: true
             };
             closePopup('addIframeSlide', confirmationMessage);
         });
     } else {
         confirmationMessage = {
-            'title': 'Iframe-Slide konnte nicht erstellt werden',
-            'content': 'Es ist keine URL für das Iframe angegeben.',
-            'fatal': true
+            title: 'Iframe-Slide konnte nicht erstellt werden',
+            content: 'Es ist keine URL für das Iframe angegeben.',
+            fatal: true
         };
         closePopup('addIframeSlide', confirmationMessage);
     }
