@@ -6,7 +6,12 @@
             "publicfolder": "./public/",
             "monitorsfolder": "./monitors/"
         },
-        "monitorconfigfile": "config.json"
+        "monitorconfigfile": "config.json",
+        "proxy": {
+            "allowedTargets": {
+                "localhost": "http://localhost:8080"
+            }
+        }
     },
     "plugins": {
         "weatherandhydrodata": {

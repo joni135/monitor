@@ -1331,6 +1331,31 @@ app.get('/changeorderslidedown', (req, res) => {
 });
 
 
+// PROXY als Weiterleitung zu anderen API's für externe abfragen im Frontend
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const allowedTargets = config.maininfos.proxy.allowedTargets;
+app.use('/proxy', (req, res, next) => {
+    console.log('/proxy')
+    const targetKey = req.query.target;
+    var target = allowedTargets[targetKey];
+
+    if (!target) {
+        return res.status(400).send('Ungültiges API-Target');
+    };
+
+    if (req.query.urlpath && req.query.urlpath != '') {
+        console.log(req.query.urlpath)
+        target = target+req.query.urlpath
+    }
+
+    console.log(`proxy for URL "${target}"`)
+
+    createProxyMiddleware({
+        target,
+        changeOrigin: true,
+    })(req, res, next);
+});
+
 app.get('/favicon.ico', function(req, res) {
     res.status(200).send();
 });
