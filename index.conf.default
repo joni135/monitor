@@ -15,14 +15,14 @@
     },
     "plugins": {
         "weatherandhydrodata": {
-            "processpath": "./weathercalculator/",
-            "datapath": "./weathercalculator/data/",
-            "symbolpath": "./weathercalculator/data/weather_svgs/"
+            "processpath": "./backend/weathercalculator/",
+            "datapath": "./backend/weathercalculator/data/",
+            "symbolpath": "./backend/weathercalculator/data/weather_svgs/"
         },
         "calendar": {
-            "processpath": "./calendar/",
-            "datapath": "./calendar/data/",
-            "symbolpath": "./calendar/data/symbols/"
+            "processpath": "./backend/calendar/",
+            "datapath": "./backend/calendar/data/",
+            "symbolpath": "./backend/calendar/data/symbols/"
         }
     },
 
