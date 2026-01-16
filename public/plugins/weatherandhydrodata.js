@@ -97,6 +97,9 @@ function displayRuderverbot() {
         try {document.getElementById("welcometext").innerHTML = "";} catch(err) {};
         document.getElementById("statusRuderverbot").innerHTML = statusRuderverbot.text; //`<b>${statustext}</b>`;
     };
+    if (statusRuderverbot.urgency > 1) {
+        document.getElementById("footer").classList.add("warning");
+    };
 
 };
 

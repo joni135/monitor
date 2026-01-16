@@ -7,8 +7,7 @@ monitors/*
 !monitors/example*
 
 ## backend plugins
-weathercalculator
-calendar
+backend/*
 
 ## logs
 *.log
