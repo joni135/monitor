@@ -158,6 +158,41 @@ app.get('/', (req, res) => {
     try {hydrodata} catch(err) {hydrodata = JSON.stringify({})};
 
 
+    // Starte Backend-Skript für Plugin "efa"
+    try {
+        if (monitorparams.plugins.includes("efa")) {
+
+            // Ergänze EFA-Daten
+            try {
+                if (monitorconfig.efa.jsons) {
+                    efadata = {};
+                    for (var i=0; i<monitorconfig.efa.jsons.length; i++) {
+                        data = fs.readFileSync(config.plugins.efa.datapath+monitorconfig.efa.jsons[i]);
+                        keyname = monitorconfig.efa.jsons[i].replace(".json", "");
+                        efadata[keyname] = JSON.parse(data);
+                    };
+                    efa_max_entries = monitorconfig.efa.max_entries;
+                };
+            } catch(err) {
+                Errors.push ({
+                    'title': `EFA-Daten konnte nicht gelesen werden`,
+                    'content': `Die Dateien für die EFA-Daten konnten nicht gelesen werden!\n${err.message}`,
+                    'fatal': false
+                });
+            };
+        };
+    } catch(err) {
+        Errors.push ({
+            'title': `EFA-Daten konnte nicht gelesen werden`,
+            'content': `Es gab ein unbekannter Fehler beim Lesen der Konfigurationen bzw. Daten oder im Plugin`,
+            'fatal': true
+        });
+    };
+
+    try {efadata} catch(err) {efadata = JSON.stringify({})};
+    try {efa_max_entries} catch(err) {efa_max_entries = 0};
+
+
     // Starte Backend-Skript für Plugin "calendar"
     try {
         if (monitorparams.plugins.includes("calendar")) {
@@ -213,6 +248,8 @@ app.get('/', (req, res) => {
             const weatherdata = ${weatherdata};
             const weathersymboltype = "${weathersymboltype}";
             const hydrodata = ${hydrodata};
+            const efadata = ${JSON.stringify(efadata)};
+            const efa_max_entries = ${efa_max_entries};
             const calendardata = ${calendardata};
             const calendar_max_entries = ${calendar_max_entries};
             const calendar_maxhour_future = ${calendar_maxhour_future};

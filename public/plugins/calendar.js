@@ -80,14 +80,14 @@ function loadCalendar(max_entries, maxhour_future) {
                         CalendarEvent.appendChild(categories);
                     };
 
-                    // wenn vorhanden Beschreibung des Events
-                    if (event.description !== 'None') {
-                        var description = document.createElement('p');
-                        description.id = `EventDescription-${i}`;
-                        description.className = `EventDescription EventDetails CalendarEvent-${i}`;
-                        description.innerHTML = event.description;
-                        CalendarEvent.appendChild(description);
-                    };
+                    // // wenn vorhanden Beschreibung des Events
+                    // if (event.description !== 'None') {
+                    //     var description = document.createElement('p');
+                    //     description.id = `EventDescription-${i}`;
+                    //     description.className = `EventDescription EventDetails CalendarEvent-${i}`;
+                    //     description.innerHTML = event.description;
+                    //     CalendarEvent.appendChild(description);
+                    // };
                     
                     calendarContainer.appendChild(CalendarEvent);
                     entrie_count = entrie_count+1

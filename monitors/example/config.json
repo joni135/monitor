@@ -5,13 +5,18 @@
         "json_hydro": "hydrodata_baden_limmat.json",
         "weathersymboltype": "svg_light"
     },
+    "efa": {
+        "jsons": ["gesperrte_boote.json"],
+        "max_entries": 8
+    },
     "calendar": {
         "json_events": "rcb_clubdesk.json",
         "max_entries": 3,
         "maxhour_future": 200
     },
     "stylevariables": {
-        "--primary-color": "blue"
+        "--primary-color": "blue",
+        "--warning-color": "red"
     },
     "admin": {
         "insertslideposition": 0

@@ -23,6 +23,7 @@
 
             customweathersymboltype = null;
             weatherandhydrodata_init();
+            gesperrteboote_init();
             calendar_init();
             loadInfos();
             loadSlides();
@@ -37,9 +38,16 @@
     <body>
         <div id="main" class="main">
             <div id="slideshow" class="main"></div>
-            <div id="calendar">
-                <h3 id="calendarTitle" class="calendarTitle">Clubdesk Kalender</h3>
-                <ul id="calendarList" class="calendarList"></ul>
+            <div id="rightpane" class="main">
+                <div id="gesperrte-boote">
+                    <h3 id="gespertebooteTitle" class="paneTitle">Geserrte Boote</h3>
+                    <ul id="gespertebooteList" class="paneList"></ul>
+                    <p id="gespertebooteDatum" class="paneText"></p>
+                </div>
+                <div id="calendar">
+                    <h3 id="calendarTitle" class="paneTitle">Clubdesk Kalender</h3>
+                    <ul id="calendarList" class="paneList"></ul>
+                </div>
             </div>
         </div>
         <div id="footer" class="footer">
@@ -64,6 +72,7 @@
                     <td id="description_wind" class="textsizehalf row-0 col-5">Wind</td>
                     <td id="description_discharge" class="textsizehalf row-0 col-7">Durchfluss</td>
                     <td id="description_watertemp" class="textsizehalf row-0 col-8">Wassertemperatur</td>
+                    <!-- <td id="welcometext" class="row-0 col-9" rowspan="2">Willkommen im<br><span class="textsizedouble">Beispiel</span></td> -->
                 </tr>
                 <tr>
                     <td id="weather0_text" class="currentweather row-1 col-1">jetzt:</td>
@@ -85,6 +94,7 @@
                     <td id="current-date-time" class="row-2 col-9">ERR:ERR</td>
                 </tr>
             </table>
+            <span id="copyright" class="textsizehalf">Quelle Wetterdaten: srf.ch/meteo - Quelle Wasserdaten: hydrodaten.admin.ch/ - Powered by: Jonathan Kaufmann - Copyright: 2026 @ Jonathan Kaufmann</span>
         </div>
     </body>
 </html>
